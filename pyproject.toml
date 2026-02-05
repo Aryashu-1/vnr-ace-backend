@@ -1,0 +1,54 @@
+[project]
+name = "vnr-ace-backend"
+version = "0.1.0"
+description = "Backend for VNR-ACE (FastAPI + LangGraph)"
+authors = [
+    {name = "Aryashu-1",email = "aryashu448@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "fastapi (>=0.121.3,<0.122.0)",
+    "uvicorn[standard] (>=0.38.0,<0.39.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "pydantic (>=2.12.4,<3.0.0)",
+    "pydantic-settings (>=2.12.0,<3.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "langgraph (>=1.0.3,<2.0.0)",
+    "langchain-core (>=1.0.7,<2.0.0)",
+    "langchain-openai (>=1.0.3,<2.0.0)",
+    "openai (>=2.8.1,<3.0.0)",
+    "tiktoken (>=0.12.0,<0.13.0)",
+    "tenacity (>=9.1.2,<10.0.0)",
+    "sqlalchemy (>=2.0.44,<3.0.0)",
+    "asyncpg (>=0.30.0,<0.31.0)",
+    "alembic (>=1.17.2,<2.0.0)",
+    "redis (>=7.1.0,<8.0.0)",
+    "rq (>=2.6.0,<3.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "pillow (>=12.0.0,<13.0.0)",
+    "pypdf (>=6.3.0,<7.0.0)",
+    "pymupdf (>=1.26.6,<2.0.0)",
+    "python-jose (>=3.5.0,<4.0.0)",
+    "passlib[bcrypt] (>=1.7.4,<2.0.0)",
+    "bcrypt (>=4.1.2)",
+    "argon2-cffi (>=25.1.0,<26.0.0)",
+    "groq (>=0.36.0,<0.37.0)",
+    "langchain-groq (>=1.0.1,<2.0.0)",
+    "pandas (>=3.0.0,<4.0.0)",
+    "openpyxl (>=3.1.5,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.1,<10.0.0)",
+    "pytest-asyncio (>=1.3.0,<2.0.0)",
+    "black (>=25.11.0,<26.0.0)",
+    "ruff (>=0.14.5,<0.15.0)",
+    "mypy (>=1.18.2,<2.0.0)"
+]
