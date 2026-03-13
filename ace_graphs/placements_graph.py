@@ -66,7 +66,7 @@ dashboard_graph = dashboard_builder.compile()
 # ---------------------------
 
 async def resume_agent(state: PlacementsState):
-    prompt = f"Analyze this resume request: {state['message']}. Return a constructive critique."
+    prompt = f"Analyze this resume request: {state['message']}. Return a constructive critique. IMPORTANT: Your scope is strictly limited to Placements and Resumes. If the user asks anything outside of this scope, you MUST immediately respond exactly with: 'I cannot handle this request, out of boundary. Please ask something related to Placements.'"
     # response = await call_llm(prompt) 
     response = "Resume Analysis: formatting looks good, add more metrics to your projects." # Mock for speed
     return {"response": response}
@@ -201,7 +201,8 @@ Format as JSON array:
   ...
 ]
 
-Return ONLY the JSON array, no additional text."""
+Return ONLY the JSON array, no additional text.
+IMPORTANT: Your scope is strictly limited to interview preparation for placements. If the company or role is completely unrelated to tech companies or job placements, return exactly this JSON array: [{"category": "Error", "question": "I cannot handle this request, out of boundary. Please ask something related to interview preparation for placements.", "difficulty": "N/A", "relevance": "N/A"}]"""
 
     try:
         response = await call_llm(prompt)

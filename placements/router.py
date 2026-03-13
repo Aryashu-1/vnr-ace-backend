@@ -4,12 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.db import get_db
 from core.deps import role_required
 from core.auth import get_current_user
+from core.guardrails import check_input_guardrail, check_output_guardrail
 from ace_graphs import placements_graph
 # Import all graphs dynamically or by name
 from ace_graphs.placements_graph import (
     dashboard_graph, resume_graph, prep_graph, 
     shortlisting_graph, tracking_graph, notification_graph
 )
+from ace_graphs.tp_admin_graph import tp_admin_agent
 
 router = APIRouter(prefix="/placements", tags=["Placements"])
 
@@ -26,6 +28,24 @@ GRAPH_MAP = {
 @router.get("/admin")
 async def admin_access(user = Depends(role_required("admin"))):
     return {"message": "Placements Admin Access", "user": user.email}
+
+@router.post("/admin/process-emails")
+async def process_emails():
+    """
+    Triggers the autonomous T&P Admin Agent to process pending emails.
+    """
+    initial_state = {"messages": []}
+    
+    # Run graph asynchronously
+    result = await tp_admin_agent.ainvoke(initial_state)
+    
+    # Extract the last AI message as the summary
+    final_message = result.get("messages", [])[-1].content if result.get("messages") else "No result."
+    
+    return {
+        "status": "success",
+        "summary": final_message
+    }
 
 @router.get("/student")
 async def student_access(user = Depends(role_required("student"))):
@@ -51,6 +71,14 @@ async def placements_chat(
         # Default message if none provided (some widgets might just be 'triggers')
         message = "trigger"
 
+    # Input Guardrail
+    if message != "trigger" and not await check_input_guardrail(message):
+        return {
+            "reply": "I cannot process this request as it contains inappropriate or abusive language.",
+            "graph": graph_id,
+            "blocked": True
+        }
+
     # Mock user for testing
     current_user_id = 999
     current_user_role = "student"
@@ -68,9 +96,18 @@ async def placements_chat(
 
     # Run graph
     result = await target_graph.ainvoke(initial_state)
+    reply = result.get("response")
+
+    # Output Guardrail
+    if reply and message != "trigger" and not await check_output_guardrail(reply, message):
+        return {
+            "reply": "I cannot provide a response to this request as it violates safety guidelines or contains sensitive information.",
+            "graph": graph_id,
+            "blocked": True
+        }
 
     return {
-        "reply": result.get("response"),
+        "reply": reply,
         "graph": graph_id
     }
 
@@ -158,7 +195,12 @@ async def get_company_questions(body: dict):
         raise HTTPException(status_code=400, detail="company_name is required")
     
     job_role = body.get("job_role", "Software Engineer")
-    
+    message = f"{company_name} {job_role}"
+
+    # Input Guardrail
+    if not await check_input_guardrail(message):
+        raise HTTPException(status_code=400, detail="Input contains inappropriate or abusive language.")
+
     # Prepare state for prep_graph
     initial_state = {
         "user_id": 999,
@@ -175,6 +217,12 @@ async def get_company_questions(body: dict):
     try:
         # Run prep graph
         result = await prep_graph.ainvoke(initial_state)
+        
+        reply = result.get("response")
+        
+        # Output Guardrail
+        if reply and not await check_output_guardrail(reply, message):
+            raise HTTPException(status_code=500, detail="Generated output violated output safety guardrails.")
         
         return {
             "company": result.get("company_name"),

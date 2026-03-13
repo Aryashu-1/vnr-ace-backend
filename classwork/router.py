@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from core.deps import role_required, get_current_user
-# from core.auth import get_current_user # Commented out DB dependency
+from core.guardrails import check_input_guardrail, check_output_guardrail
 from ace_graphs.classwork_graph import classwork_graph
 from ace_graphs.classwork_student_graph import classwork_student_graph
 from typing import Optional
@@ -33,6 +33,13 @@ async def classwork_chat(
         raise HTTPException(status_code=400, detail="Message cannot be empty")
 
     try:
+        # Input Guardrail
+        if not await check_input_guardrail(message):
+            return {
+                "reply": "I cannot process this request as it contains inappropriate or abusive language.",
+                "metadata": {"query": message, "blocked_by": "input_guardrail"}
+            }
+
         # Prepare graph state
         initial_state = {
             "user_query": message,
@@ -45,6 +52,14 @@ async def classwork_chat(
 
         # Extract response and metadata
         final_response = result.get("final_response", "No response generated")
+        
+        # Output Guardrail
+        if not await check_output_guardrail(final_response, message):
+            return {
+                "reply": "I cannot provide a response to this request as it violates safety guidelines or contains sensitive information.",
+                "metadata": {"query": message, "blocked_by": "output_guardrail"}
+            }
+
         dataset = result.get("unified_dataset", [])
         
         return {
@@ -77,6 +92,13 @@ async def student_chat(
         raise HTTPException(status_code=400, detail="Message cannot be empty")
 
     try:
+        # Input Guardrail
+        if not await check_input_guardrail(message):
+            return {
+                "reply": "I cannot process this request as it contains inappropriate or abusive language.",
+                "metadata": {"query": message, "blocked_by": "input_guardrail"}
+            }
+
         # Prepare graph state
         initial_state = {
             "user_query": message,
@@ -89,6 +111,13 @@ async def student_chat(
 
         # Extract response
         final_response = result.get("final_response", "No response generated")
+        
+        # Output Guardrail
+        if not await check_output_guardrail(final_response, message):
+            return {
+                "reply": "I cannot provide a response to this request as it violates safety guidelines or contains sensitive information.",
+                "metadata": {"query": message, "blocked_by": "output_guardrail"}
+            }
         
         return {
             "reply": final_response,

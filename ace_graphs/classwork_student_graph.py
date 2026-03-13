@@ -90,7 +90,7 @@ async def response_generator(state: ClassworkStudentState):
     # Filter data slightly to reduce context if possible, or just pass all valid JSON
     # For now, we pass the whole small dataset.
     
-    prompt = f"""You are a helpful assistant for students.
+    prompt = f"""You are a strict and compliant assistant for students for the Classwork module. You ONLY answer questions about the provided Faculty Data.
     
     User Query: "{query}"
     Intent: {intent}
@@ -104,6 +104,11 @@ async def response_generator(state: ClassworkStudentState):
     - If asking for availability, check the schedule for the current day (assume today is Monday if not specified, or just list the relevant day's schedule).
     - If the faculty is not found, say so politely.
     - Format usage: Use markdown (bold keys, simple lists).
+    
+    CRITICAL RULES:
+    1. Your scope is strictly limited to Classwork and Faculty Data.
+    2. If the user asks for ANYTHING outside of this scope (e.g., general knowledge, recipes, unrelated tasks), or if the data to answer it is not in the provided context, you MUST NOT attempt to answer.
+    3. Instead, you MUST immediately respond EXACTLY with: 'I cannot handle this request, out of boundary. Please ask something related to the Classwork module.' AND NOTHING ELSE.
     
     Response:"""
     

@@ -61,6 +61,8 @@ async def faq_agent(state: AdmissionsState):
 
     Student question:
     {state['message']}
+    
+    IMPORTANT: Your scope is strictly limited to Admissions FAQs. If the user asks anything outside of this scope, you MUST immediately respond exactly with: 'I cannot handle this request, out of boundary. Please ask something related to Admissions.'
     """
 
     answer = await call_llm(prompt)
@@ -78,6 +80,8 @@ async def tracking_agent(state: AdmissionsState):
     The user is asking about application status.
 
     Provide a helpful response.
+    
+    IMPORTANT: Your scope is strictly limited to Application Tracking. If the user asks anything outside of this scope, you MUST immediately respond exactly with: 'I cannot handle this request, out of boundary. Please ask something related to Application Tracking.'
     """
 
     answer = await call_llm(prompt)
@@ -124,6 +128,8 @@ async def admin_agent(state: AdmissionsState):
     {state['message']}
 
     Provide a structured, useful response.
+    
+    IMPORTANT: Your scope is strictly limited to Admin Actions for Admissions. If the user asks anything outside of this scope, you MUST immediately respond exactly with: 'I cannot handle this request, out of boundary. Please ask something related to Admin Actions.'
     """
 
     answer = await call_llm(prompt)

@@ -119,6 +119,7 @@ Guidelines:
 - Use markdown formatting for tables
 - Be concise but informative
 - Include student names, roll numbers, and relevant metrics in tables
+- IMPORTANT: Your scope is strictly limited to student data and classwork. If the user asks anything outside of this scope, or if the data to answer it is not in the provided context, you MUST immediately respond exactly with: 'I cannot handle this request, out of boundary. Please ask something related to student classwork data.'
 
 Response:"""
     

@@ -1,0 +1,119 @@
+﻿poetry : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ poetry run python 
+-c "import 
+traceback; import 
+sys; from scripts 
+impo ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : 
+NotSpecified:     
+(Traceback (most rec 
+   ent call 
+last)::Stri    ng) 
+[], RemoteExcept    
+ion
+    + 
+FullyQualifiedErro   
+ rId : 
+NativeCommandE    
+rror
+ 
+  File "<string>", 
+line 1, in <module>
+  File "C:\Users\Work
+\code\vnr-ace-backend
+\scripts\test_tp_admi
+n.py", line 2, in 
+<module>
+    from ace_graphs.t
+p_admin_graph import 
+tp_admin_agent
+  File "C:\Users\Work
+\code\vnr-ace-backend
+\ace_graphs\tp_admin_
+graph.py", line 152, 
+in <module>
+    tp_admin_agent = 
+create_react_agent(ll
+m, tools, messages_mo
+difier=system_prompt)
+                     
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Work
+\AppData\Local\pypoet
+ry\Cache\virtualenvs\
+vnr-ace-backend-ZcrMj
+pSq-py3.11\Lib\site-p
+ackages\typing_extens
+ions.py", line 3004, 
+in wrapper
+    return 
+arg(*args, **kwargs)
+           
+^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Work
+\AppData\Local\pypoet
+ry\Cache\virtualenvs\
+vnr-ace-backend-ZcrMj
+pSq-py3.11\Lib\site-p
+ackages\langgraph\pre
+built\chat_agent_exec
+utor.py", line 518, 
+in create_react_agent
+    raise TypeError(
+TypeError: 
+create_react_agent() 
+got unexpected 
+keyword arguments: {'
+messages_modifier': 
+'You are the 
+autonomous Training 
+& Placement (T&P) 
+Admin Agent.\nYour 
+job is to manage the 
+placement process 
+autonomously by 
+reading emails and 
+taking corresponding 
+actions.\nWhen 
+executed, you 
+MUST:\n1. Always 
+start by reading the 
+inbox using `read_inb
+ox_tool`.\n2. For 
+ANY job notification 
+email: \n    a) 
+Extract the details 
+and use `add_job_noti
+fication_tool` to 
+save it to the 
+database.\n    b) 
+Then, use `shortlist_
+and_email_students_to
+ol` with the same 
+criteria to notify 
+eligible 
+students.\n3. For 
+ANY placement 
+results email:\n    
+a) Extract the 
+company name, list 
+of roll numbers, and 
+CTC.\n    b) Use `upd
+ate_placement_results
+_tool` to record 
+their 
+success.\n\nOnce you 
+have processed all 
+emails, summarize 
+the actions you took 
+and finish.\n'}

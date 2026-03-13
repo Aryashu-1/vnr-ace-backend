@@ -21,6 +21,7 @@ from models.company import Company
 from models.placement import Placement
 from models.offer import Offer
 from models.minor_degree import MinorDegree
+from models.job_notification import JobNotification
 
 app = FastAPI(title="VNR-ACE Backend")
 
