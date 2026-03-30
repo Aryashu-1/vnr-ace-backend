@@ -10,6 +10,13 @@ from pydantic import BaseModel
 from pyparsing import Dict
 from pydantic import BaseModel
 from typing import List, Dict
+import faiss
+import numpy as np
+import pickle
+from collections import defaultdict
+from sentence_transformers import SentenceTransformer
+import fitz
+import spacy
 
 load_dotenv()
 
@@ -165,6 +172,74 @@ class ResumeAdvisor:
         print("\n=== PRIORITY FIXES ===")
         for p in analysis.priority_fixes:
             print("-", p)
+
+
+class ResumeShortlister:
+    # Configuration constants
+    FAISS_PATH = "faiss_index/"
+
+    def __init__(self):
+        self.model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        self.index = faiss.read_index(f"{self.FAISS_PATH}/index.faiss")
+        with open(f"{self.FAISS_PATH}/metadata.pkl", "rb") as f:
+            self.metadata = pickle.load(f)
+
+    def get_embedding(self, text: str) -> list:
+        embedding = self.model.encode(text)
+        return embedding.tolist()
+
+    def extract_text_from_pdf(self, path):
+        doc = fitz.open(path)
+        text = " ".join(page.get_text() for page in doc)
+        
+        nlp = spacy.load("en_core_web_sm")
+        doc = nlp(text)
+        
+        filtered_tokens = [token.lemma_ for token in doc if token.is_alpha]
+        return " ".join(filtered_tokens)
+
+    def chunk_text(self, text, size=800):
+        return [text[i:i+size] for i in range(0, len(text), size)]
+
+    def match_job(self, job_description, top_k=5):
+
+        query_embedding = np.array([self.get_embedding(job_description)], dtype="float32")
+    
+        faiss.normalize_L2(query_embedding)
+
+        scores, indices = self.index.search(query_embedding, 20)
+
+
+        resume_hits = defaultdict(list)
+
+        for idx, score in zip(indices[0], scores[0]):
+            hit = self.metadata[idx]
+            hit["score"] = float(score)
+            resume_hits[hit["resume_id"]].append(hit)
+
+        ranked = sorted(
+            resume_hits.items(),
+            key=lambda x: max(chunk["score"] for chunk in x[1]),
+            reverse=True
+        )
+
+        return ranked[:top_k]
+
+    def run(self, company_id, job_description, top_k=5):
+        top_matches = self.match_job(job_description, top_k=top_k)
+
+
+        # TESTING PURPOSES ONLY
+        # for resume_id, chunks in top_matches:
+        #     print(f"Resume ID: {resume_id}")
+        #     with open(f"output/{company_id}.txt", "a") as f:
+        #         f.write(str(f"Resume ID: {resume_id}\n"))
+        #         for chunk in chunks:
+        #             f.write(str(f"Score: {chunk['score']}\n"))
+        #             f.write(str(f"Text: {chunk['text']}\n\n"))
+
+        
+        return top_matches
 
     
 
