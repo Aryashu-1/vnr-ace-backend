@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Any, Dict
 
 from .constants import (
@@ -22,6 +23,55 @@ from .prompts import (
 )
 from .schemas import ScopeClassifierOutput, IntentClassifierOutput, SQLGeneratorOutput
 from .utils import make_audit_event, compact_rows, trim_memory
+
+
+def _heuristic_scope(query: str) -> ScopeClassifierOutput:
+    q = (query or "").lower()
+    kws = ["faculty", "timetable", "schedule", "room", "venue", "section", "period", "cabin", "where"]
+    label = "in_scope" if any(k in q for k in kws) else "out_of_scope"
+    return ScopeClassifierOutput(label=label, confidence=0.75, reason="Heuristic fallback")
+
+
+def _heuristic_intent(query: str) -> IntentClassifierOutput:
+    q = (query or "").strip()
+    ql = q.lower()
+
+    entities: Dict[str, Any] = {}
+
+    room_match = re.search(r"\b(?:room|rm|class(?:room)?)\s*[:\-]?\s*([a-z0-9\-]+)\b", ql)
+    if room_match:
+        entities["room_no"] = room_match.group(1).upper()
+
+    faculty_match = re.search(r"\b(dr\.?\s+[a-z]+(?:\s+[a-z]+)?)\b", q, flags=re.IGNORECASE)
+    if faculty_match:
+        entities["faculty_name"] = faculty_match.group(1).strip()
+
+    if "section" in ql:
+        entities["section"] = q
+
+    if "subject" in ql:
+        entities["subject"] = q
+
+    if "room" in ql or entities.get("room_no"):
+        intent = "room_timetable_lookup"
+    elif "section" in ql:
+        intent = "section_timetable_lookup"
+    elif "subject" in ql:
+        intent = "subject_timetable_lookup"
+    elif any(k in ql for k in ["where", "cabin", "venue"]):
+        intent = "faculty_venue_lookup"
+    elif any(k in ql for k in ["available", "free", "busy"]):
+        intent = "faculty_availability"
+    else:
+        intent = "faculty_schedule_lookup"
+
+    return IntentClassifierOutput(
+        intent=intent,
+        confidence=0.65,
+        interpreted_entities=entities,
+        clarification_needed=False,
+        clarification_question=None,
+    )
 
 
 def access_control_node(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -64,16 +114,16 @@ def language_guardrail_node(state: Dict[str, Any]) -> Dict[str, Any]:
 def scope_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
     query = state.get("user_query", "")
     if llm_service is None:
-        q = query.lower()
-        kws = ["faculty", "timetable", "schedule", "room", "venue", "section", "period"]
-        label = "in_scope" if any(k in q for k in kws) else "out_of_scope"
-        result = ScopeClassifierOutput(label=label, confidence=0.75, reason="Heuristic fallback")
+        result = _heuristic_scope(query)
     else:
-        result = llm_service.invoke_structured(
-            system_prompt=SCOPE_CLASSIFIER_PROMPT,
-            user_prompt=query,
-            schema=ScopeClassifierOutput,
-        )
+        try:
+            result = llm_service.invoke_structured(
+                system_prompt=SCOPE_CLASSIFIER_PROMPT,
+                user_prompt=query,
+                schema=ScopeClassifierOutput,
+            )
+        except Exception:
+            result = _heuristic_scope(query)
 
     state["in_scope"] = result.label == "in_scope"
 
@@ -92,9 +142,6 @@ def scope_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dic
 
 
 def intent_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
-    if llm_service is None:
-        raise ValueError("intent_classifier_node requires llm_service for production use.")
-
     memory = trim_memory(state.get("memory", []), 10)
     user_prompt = (
         f"Conversation memory: {memory}\n"
@@ -102,11 +149,17 @@ def intent_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Di
         f"Allowed intents: {sorted(ALLOWED_INTENTS)}"
     )
 
-    result: IntentClassifierOutput = llm_service.invoke_structured(
-        system_prompt=INTENT_CLASSIFIER_PROMPT,
-        user_prompt=user_prompt,
-        schema=IntentClassifierOutput,
-    )
+    if llm_service is None:
+        result = _heuristic_intent(state.get("user_query", ""))
+    else:
+        try:
+            result = llm_service.invoke_structured(
+                system_prompt=INTENT_CLASSIFIER_PROMPT,
+                user_prompt=user_prompt,
+                schema=IntentClassifierOutput,
+            )
+        except Exception:
+            result = _heuristic_intent(state.get("user_query", ""))
 
     state["intent"] = result.intent
     state["intent_confidence"] = result.confidence
@@ -267,11 +320,18 @@ def answer_formatter_node(state: Dict[str, Any], llm_service: Any = None) -> Dic
         "If multiple matches or no matches, explain why clearly."
     )
     
-    answer = llm_service.invoke_text(
-        system_prompt=system_prompt,
-        user_prompt=user_prompt,
-    )
-    state["final_response"] = answer
+    try:
+        answer = llm_service.invoke_text(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+        )
+        state["final_response"] = answer
+    except Exception:
+        # Fallback response to remain available during LLM outages/quota limits.
+        state["final_response"] = (
+            f"Found {len(rows)} matching record(s). "
+            f"Here are key details: {compact_rows(rows, limit=3)}"
+        )
     return state
 
 
