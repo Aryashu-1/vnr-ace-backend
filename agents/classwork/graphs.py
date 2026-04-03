@@ -16,7 +16,8 @@ sql_repo = SQLRepo()
 email_automation_graph = build_mail_graph(
     llm=llm_service, 
     email_service=email_service, 
-    audit_repo=audit_repo
+    audit_repo=audit_repo,
+    sql_repo=sql_repo
 )
 
 faculty_timetable_enquiry_graph = build_faculty_timetable_enquiry_graph(

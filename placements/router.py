@@ -7,32 +7,36 @@ from sqlalchemy import select
 from core.auth import get_current_user
 from core.guardrails import check_input_guardrail, check_output_guardrail
 from models.company_prep import CompanyPrepQuestion
-from ace_graphs import placements_graph
-# Import all graphs dynamically or by name
-from ace_graphs.placements_graph import (
-    dashboard_graph, resume_graph, prep_graph, 
-    shortlisting_graph, tracking_graph, notification_graph
-)
-from ace_graphs.tp_admin_graph import tp_admin_agent
+import os
+import traceback
 
-# New Agents
+# New Agents Graphs
+from ace_graphs.placements_graph import prep_graph
+from ace_graphs.tp_admin_graph import tp_admin_agent
 from agents.placements.graphs import (
     chart_generator_graph,
     live_dashboard_graph,
     resume_feedback_graph,
-    shortlisting_graph
+    shortlisting_graph,
+    interview_prep_graph,
 )
+from agents.placements.interview_prep.schemas import InterviewStartRequest, InterviewChatRequest
+import uuid
+
+# New Services
+from agents.placements.resume_feedback.services import ResumeRAGService
+from agents.placements.resume_feedback.nodes import resume_chat_node
+from agents.placements.shortlisting.services import ShortlistingService
+from agents.placements.interview_prep.utils import load_company_data
 
 router = APIRouter(prefix="/placements", tags=["Placements"])
 
 # Map graph_id to actual graph object
 GRAPH_MAP = {
-    "dashboard": dashboard_graph,
-    "resume": resume_graph,
+    "dashboard": live_dashboard_graph,
+    "resume": resume_feedback_graph,
     "prep": prep_graph,
     "shortlisting": shortlisting_graph,
-    "tracking": tracking_graph,
-    "notification": notification_graph,
 }
 
 @router.get("/admin")
@@ -359,3 +363,184 @@ async def shortlisting_agent_endpoint(body: dict, current_user=Depends(role_requ
         "reply": result.get("final_response"),
         "shortlisted_students": result.get("shortlisted_students")
     }
+
+
+# ---------------------------
+#   DIRECT FEATURE ENDPOINTS
+# ---------------------------
+
+@router.post("/resume/analyze")
+async def analyze_resume_direct(
+    file: Optional[UploadFile] = File(None),
+    resume_text: Optional[str] = Form(None),
+    # current_user=Depends(get_current_user)
+):
+    """
+    Direct endpoint for detailed resume analysis.
+    """
+    service = ResumeRAGService()
+    
+    try:
+        if file:
+            # Save file temporarily to analyze
+            os.makedirs("tmp", exist_ok=True)
+            temp_path = f"tmp/{file.filename}"
+            with open(temp_path, "wb") as f:
+                f.write(await file.read())
+            
+            analysis = service.analyze_resume(resume_path=temp_path)
+            # os.remove(temp_path) # Clean up
+        elif resume_text:
+            analysis = service.analyze_resume(resume_text=resume_text)
+        else:
+            raise HTTPException(status_code=400, detail="Either file or resume_text must be provided")
+
+        return analysis
+    except HTTPException:
+        raise
+    except Exception as e:
+        traceback.print_exc()  # prints full stack trace to server log
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/shortlist/run")
+async def run_shortlisting_direct(
+    jd_text: str = Form(...),
+    no_of_students: int = Form(5),
+    min_cgpa: float = Form(None),
+    branch: str = Form(None),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Direct endpoint for ranking resumes based on Job Description.
+    DB filtering is currently disabled to ensure the pipeline is triggered.
+    """
+    # 1. Rank resumes using FAISS
+    from agents.core_modules import LLMService
+    llm = LLMService()
+    service = ShortlistingService(llm=llm)
+    
+    try:
+        results = service.shortlist(
+            jd_text=jd_text, 
+            top_k=no_of_students
+        )
+        
+        # 2. Generate match explanations
+        if results:
+            results = await service.explain_matches(jd_text, results)
+        
+        return {"matches": results, "count": len(results)}
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ---------------------------
+#   RESUME CHAT ENDPOINT
+# ---------------------------
+
+from pydantic import BaseModel
+from typing import Any
+
+class ResumeChatRequest(BaseModel):
+    message: str
+    structured_analysis: dict                   # full dict returned by /resume/analyze
+    conversation_history: list[dict] = []       # Gemini-format history, start with []
+
+@router.post("/resume/chat")
+async def resume_chat(
+    body: ResumeChatRequest,
+    # current_user=Depends(get_current_user)   # uncomment when auth is ready
+):
+    """
+    Multi-turn contextual chat grounded on a prior resume analysis.
+
+    - Pass the full `structured_analysis` object from /resume/analyze.
+    - Pass `conversation_history` from the previous response ([] for first message).
+    - The response includes the reply and the updated `conversation_history` to
+      send back in the next request.
+    """
+    state = {
+        "user_id": 999,           # replace with current_user.id when auth enabled
+        "user_role": "student",
+        "user_query": body.message,
+        "structured_analysis": body.structured_analysis,
+        "conversation_history": body.conversation_history,
+        "audit_events": [],
+    }
+
+    try:
+        result = resume_chat_node(state)
+        return {
+            "reply": result.get("final_response"),
+            "conversation_history": result.get("conversation_history", []),
+        }
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ---------------------------
+#   INTERVIEW PREP ENDPOINTS
+# ---------------------------
+
+INTERVIEW_PREP_SESSIONS = {}
+
+@router.post("/prep/start")
+async def prep_start(body: InterviewStartRequest):
+    """
+    Initializes an interview preparation session and returns company-specific data.
+    """
+    session_id = str(uuid.uuid4())
+    
+    # Load rich company data (experiences, questions)
+    company_data = load_company_data(body.company)
+    
+    INTERVIEW_PREP_SESSIONS[session_id] = {
+        "company": body.company,
+        "topics": body.topics,
+        "history": [],
+        "company_data": company_data
+    }
+    
+    return {
+        "session_id": session_id,
+        "company": body.company,
+        "topics": body.topics,
+        "experiences": company_data.get("experiences", []),
+        "questions": company_data.get("questions", []),
+        "role": company_data.get("role", "Software Engineer")
+    }
+
+@router.post("/prep/chat")
+async def prep_chat(body: InterviewChatRequest):
+    """
+    Continues the interview preparation chat using LangGraph.
+    """
+    session = INTERVIEW_PREP_SESSIONS.get(body.session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    initial_state = {
+        "company": session["company"],
+        "topics": session["topics"],
+        "user_query": body.message,
+        "session_id": body.session_id,
+        "company_data": session.get("company_data"),
+        "audit_events": []
+    }
+
+    try:
+        result = await interview_prep_graph.ainvoke(initial_state)
+        reply = result.get("response")
+        
+        # Update session history if needed (optional)
+        session["history"].append({"user": body.message, "ai": reply})
+        
+        return {
+            "reply": reply,
+            "session_id": body.session_id
+        }
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Graph execution error: {str(e)}")

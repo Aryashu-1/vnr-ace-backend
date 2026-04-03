@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-import os
-from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from core.db import engine
 from sqlalchemy import text
+from core.llm import get_llm
 
 router = APIRouter(prefix="/ai", tags=["AI Engine API"])
 
@@ -33,11 +32,11 @@ User Question: {question}
 
 @router.post("/query")
 async def generate_sql_query(request: AIQueryRequest):
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="LLM API Key missing")
-        
-    llm = ChatGroq(model="llama3-8b-8192", temperature=0)
+    try:
+        llm = get_llm(temperature=0)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
     prompt_template = PromptTemplate(template=SQL_PROMPT, input_variables=["question"])
     
     chain = prompt_template | llm

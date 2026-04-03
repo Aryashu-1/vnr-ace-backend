@@ -1,0 +1,799 @@
+{
+    "companies": [
+        {
+            "name": "Oracle",
+            "experiences": [
+                {
+                    "candidate": "General Experience 1",
+                    "rounds": [
+                        {
+                            "round": "Technical Round 1",
+                            "questions": [
+                                {
+                                    "question": "Write code for binary search",
+                                    "tags": [
+                                        "DSA",
+                                        "array",
+                                        "searching"
+                                    ]
+                                },
+                                {
+                                    "question": "Rearrange array such that even numbers come first and odd numbers later (start with brute force, then optimize, without extra space)",
+                                    "tags": [
+                                        "DSA",
+                                        "array",
+                                        "two-pointer"
+                                    ]
+                                },
+                                {
+                                    "question": "Reverse a linked list (iterative and recursive)",
+                                    "tags": [
+                                        "DSA",
+                                        "linked_list"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain primary and secondary memory",
+                                    "tags": [
+                                        "CS Fundamentals"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain ACID properties",
+                                    "tags": [
+                                        "DBMS"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain normalization and its forms with examples",
+                                    "tags": [
+                                        "DBMS"
+                                    ]
+                                },
+                                {
+                                    "question": "Difference between var and let",
+                                    "tags": [
+                                        "JavaScript"
+                                    ]
+                                },
+                                {
+                                    "question": "Difference between == and ===",
+                                    "tags": [
+                                        "JavaScript"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "Technical Round 2",
+                            "questions": [
+                                {
+                                    "question": "Explain your project and show demo",
+                                    "tags": [
+                                        "Projects"
+                                    ]
+                                },
+                                {
+                                    "question": "Probability question (based on favorite subject)",
+                                    "tags": [
+                                        "Math"
+                                    ]
+                                },
+                                {
+                                    "question": "Second largest element in array and count occurrences (optimized)",
+                                    "tags": [
+                                        "DSA",
+                                        "array"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "Technical Round 3",
+                            "questions": [
+                                {
+                                    "question": "JavaScript problem",
+                                    "tags": [
+                                        "JavaScript"
+                                    ]
+                                },
+                                {
+                                    "question": "Minimum hops to reach end of array (DP and Greedy)",
+                                    "tags": [
+                                        "DSA",
+                                        "greedy",
+                                        "dp"
+                                    ]
+                                },
+                                {
+                                    "question": "Factorial using recursion with edge cases",
+                                    "tags": [
+                                        "DSA",
+                                        "recursion"
+                                    ]
+                                },
+                                {
+                                    "question": "Handle factorial overflow (large numbers)",
+                                    "tags": [
+                                        "DSA",
+                                        "edge_cases"
+                                    ]
+                                },
+                                {
+                                    "question": "Views about PG in India",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "candidate": "K.Hanish",
+                    "rounds": [
+                        {
+                            "round": "Online Test",
+                            "questions": [
+                                {
+                                    "question": "Longest Increasing Subsequence",
+                                    "tags": [
+                                        "DP"
+                                    ]
+                                },
+                                {
+                                    "question": "REST API problem",
+                                    "tags": [
+                                        "API"
+                                    ]
+                                },
+                                {
+                                    "question": "10 Aptitude questions",
+                                    "tags": [
+                                        "Aptitude"
+                                    ]
+                                },
+                                {
+                                    "question": "10 English questions",
+                                    "tags": [
+                                        "English"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "TR1",
+                            "questions": [
+                                {
+                                    "question": "Trailing zeroes in factorial",
+                                    "tags": [
+                                        "Math",
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Count occurrences of digit in number",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "SQL queries with joins and conditions",
+                                    "tags": [
+                                        "SQL"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain types of joins",
+                                    "tags": [
+                                        "DBMS"
+                                    ]
+                                },
+                                {
+                                    "question": "Merge join vs hash join",
+                                    "tags": [
+                                        "DBMS"
+                                    ]
+                                },
+                                {
+                                    "question": "Binary search vs linear search with complexity",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Why binary search is O(log n)",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain merge sort",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain Dijkstra algorithm",
+                                    "tags": [
+                                        "Graph"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain BFS with pseudocode",
+                                    "tags": [
+                                        "Graph"
+                                    ]
+                                },
+                                {
+                                    "question": "Normalization",
+                                    "tags": [
+                                        "DBMS"
+                                    ]
+                                },
+                                {
+                                    "question": "OS concepts: kernel, paging, thrashing, virtual memory, LRU",
+                                    "tags": [
+                                        "OS"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "candidate": "Multiple Students Combined",
+                    "rounds": [
+                        {
+                            "round": "Round 1",
+                            "questions": [
+                                {
+                                    "question": "What are promises in JavaScript",
+                                    "tags": [
+                                        "JavaScript"
+                                    ]
+                                },
+                                {
+                                    "question": "What is synchronized block",
+                                    "tags": [
+                                        "Java"
+                                    ]
+                                },
+                                {
+                                    "question": "Merge sort vs quick sort (dry run)",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Merge sort implementation",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Merge 3 unsorted arrays into sorted array",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Runtime vs compile time polymorphism",
+                                    "tags": [
+                                        "OOPS"
+                                    ]
+                                },
+                                {
+                                    "question": "SQL query",
+                                    "tags": [
+                                        "SQL"
+                                    ]
+                                },
+                                {
+                                    "question": "Serializability",
+                                    "tags": [
+                                        "DBMS"
+                                    ]
+                                },
+                                {
+                                    "question": "Left view of binary tree",
+                                    "tags": [
+                                        "Tree"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "Round 2",
+                            "questions": [
+                                {
+                                    "question": "Explain internship experience",
+                                    "tags": [
+                                        "Projects"
+                                    ]
+                                },
+                                {
+                                    "question": "Round robin scheduling",
+                                    "tags": [
+                                        "OS"
+                                    ]
+                                },
+                                {
+                                    "question": "yield() in Python",
+                                    "tags": [
+                                        "Python"
+                                    ]
+                                },
+                                {
+                                    "question": "Reverse each word in string",
+                                    "tags": [
+                                        "String"
+                                    ]
+                                },
+                                {
+                                    "question": "Level order traversal",
+                                    "tags": [
+                                        "Tree"
+                                    ]
+                                },
+                                {
+                                    "question": "Least common ancestor",
+                                    "tags": [
+                                        "Tree"
+                                    ]
+                                },
+                                {
+                                    "question": "Word wrap problem",
+                                    "tags": [
+                                        "DP"
+                                    ]
+                                },
+                                {
+                                    "question": "Remove duplicates in string maintaining order",
+                                    "tags": [
+                                        "String"
+                                    ]
+                                },
+                                {
+                                    "question": "Interchange keys and values in dictionary",
+                                    "tags": [
+                                        "Python"
+                                    ]
+                                },
+                                {
+                                    "question": "String constant pool in Java",
+                                    "tags": [
+                                        "Java"
+                                    ]
+                                },
+                                {
+                                    "question": "Virtual keyword in C++",
+                                    "tags": [
+                                        "OOPS"
+                                    ]
+                                },
+                                {
+                                    "question": "Closest pair sum in sorted array",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Split circular linked list",
+                                    "tags": [
+                                        "LinkedList"
+                                    ]
+                                },
+                                {
+                                    "question": "Merge two sorted linked lists",
+                                    "tags": [
+                                        "LinkedList"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "Round 3",
+                            "questions": [
+                                {
+                                    "question": "Explain previous code decisions",
+                                    "tags": [
+                                        "Coding"
+                                    ]
+                                },
+                                {
+                                    "question": "Write unit test cases",
+                                    "tags": [
+                                        "Testing"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain inheritance with example",
+                                    "tags": [
+                                        "OOPS"
+                                    ]
+                                },
+                                {
+                                    "question": "Why Oracle",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Where do you see yourself in 5 years",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Min heap vs max heap",
+                                    "tags": [
+                                        "Heap"
+                                    ]
+                                },
+                                {
+                                    "question": "Heapify process",
+                                    "tags": [
+                                        "Heap"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "summary": {
+                "focus": [
+                    "DSA (very strong)",
+                    "DBMS and SQL",
+                    "Core CS (OS, CN)",
+                    "Project depth",
+                    "Multi-approach thinking"
+                ],
+                "difficulty": "Medium to High"
+            }
+        },
+        {
+            "name": "Infosys",
+            "experiences": [
+                {
+                    "candidate": "Multiple Students",
+                    "rounds": [
+                        {
+                            "round": "Technical",
+                            "questions": [
+                                {
+                                    "question": "Explain OOPS concepts",
+                                    "tags": [
+                                        "OOPS"
+                                    ]
+                                },
+                                {
+                                    "question": "Deadlock",
+                                    "tags": [
+                                        "OS"
+                                    ]
+                                },
+                                {
+                                    "question": "SQL queries",
+                                    "tags": [
+                                        "SQL"
+                                    ]
+                                },
+                                {
+                                    "question": "Exception handling in Java",
+                                    "tags": [
+                                        "Java"
+                                    ]
+                                },
+                                {
+                                    "question": "SDLC",
+                                    "tags": [
+                                        "Software Engineering"
+                                    ]
+                                },
+                                {
+                                    "question": "Polymorphism",
+                                    "tags": [
+                                        "OOPS"
+                                    ]
+                                },
+                                {
+                                    "question": "StringBuffer",
+                                    "tags": [
+                                        "Java"
+                                    ]
+                                },
+                                {
+                                    "question": "HTML questions",
+                                    "tags": [
+                                        "Web"
+                                    ]
+                                },
+                                {
+                                    "question": "Recent trends in tech",
+                                    "tags": [
+                                        "General"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "HR",
+                            "questions": [
+                                {
+                                    "question": "Tell me about yourself",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Strengths and weaknesses",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Why should we hire you",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Team conflict handling",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Are you willing to learn new technologies",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "TCS",
+            "experiences": [
+                {
+                    "candidate": "Adithya Phani Thota",
+                    "rounds": [
+                        {
+                            "round": "Technical",
+                            "questions": [
+                                {
+                                    "question": "Reverse string without built-in function",
+                                    "tags": [
+                                        "String"
+                                    ]
+                                },
+                                {
+                                    "question": "Pascal triangle",
+                                    "tags": [
+                                        "Pattern"
+                                    ]
+                                },
+                                {
+                                    "question": "Bubble sort",
+                                    "tags": [
+                                        "Sorting"
+                                    ]
+                                },
+                                {
+                                    "question": "SQL joins and constraints",
+                                    "tags": [
+                                        "SQL"
+                                    ]
+                                },
+                                {
+                                    "question": "Explain OOPS with examples",
+                                    "tags": [
+                                        "OOPS"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "HR",
+                            "questions": [
+                                {
+                                    "question": "Why TCS",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Why not selected previously",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Night shifts and relocation",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "F5 Networks",
+            "experiences": [
+                {
+                    "candidate": "General",
+                    "rounds": [
+                        {
+                            "round": "Coding",
+                            "questions": [
+                                {
+                                    "question": "Two sum problem",
+                                    "tags": [
+                                        "Array"
+                                    ]
+                                },
+                                {
+                                    "question": "Tree traversal (level order)",
+                                    "tags": [
+                                        "Tree"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "Technical",
+                            "questions": [
+                                {
+                                    "question": "OS concepts",
+                                    "tags": [
+                                        "OS"
+                                    ]
+                                },
+                                {
+                                    "question": "Networking basics",
+                                    "tags": [
+                                        "CN"
+                                    ]
+                                },
+                                {
+                                    "question": "SQL queries",
+                                    "tags": [
+                                        "SQL"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Amazon",
+            "experiences": [
+                {
+                    "candidate": "Sample Experience",
+                    "rounds": [
+                        {
+                            "round": "Technical",
+                            "questions": [
+                                {
+                                    "question": "Two sum optimized",
+                                    "tags": [
+                                        "Array"
+                                    ]
+                                },
+                                {
+                                    "question": "Sliding window problem",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "LRU cache implementation",
+                                    "tags": [
+                                        "Design"
+                                    ]
+                                },
+                                {
+                                    "question": "Graph traversal",
+                                    "tags": [
+                                        "Graph"
+                                    ]
+                                },
+                                {
+                                    "question": "Design URL shortener",
+                                    "tags": [
+                                        "System Design"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "round": "HR",
+                            "questions": [
+                                {
+                                    "question": "Leadership principles questions",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                },
+                                {
+                                    "question": "Conflict resolution",
+                                    "tags": [
+                                        "HR"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Google",
+            "experiences": [
+                {
+                    "candidate": "Sample Experience",
+                    "rounds": [
+                        {
+                            "round": "Technical",
+                            "questions": [
+                                {
+                                    "question": "Binary search variations",
+                                    "tags": [
+                                        "DSA"
+                                    ]
+                                },
+                                {
+                                    "question": "Dynamic programming problem",
+                                    "tags": [
+                                        "DP"
+                                    ]
+                                },
+                                {
+                                    "question": "Graph shortest path",
+                                    "tags": [
+                                        "Graph"
+                                    ]
+                                },
+                                {
+                                    "question": "Design autocomplete system",
+                                    "tags": [
+                                        "System Design"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "global_patterns": {
+        "most_common_topics": [
+            "Arrays",
+            "Linked Lists",
+            "Trees",
+            "Graphs",
+            "SQL",
+            "OOPS",
+            "OS",
+            "HR questions"
+        ],
+        "interview_tips": [
+            "Explain brute force first, then optimize",
+            "Think aloud",
+            "Be strong in resume topics",
+            "Do not fake answers",
+            "Communicate clearly"
+        ]
+    }
+}

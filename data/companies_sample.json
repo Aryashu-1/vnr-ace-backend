@@ -1,0 +1,8 @@
+[
+  {"id": 1, "name": "Google", "sector": "Tech"},
+  {"id": 2, "name": "Amazon", "sector": "E-Commerce"},
+  {"id": 3, "name": "Microsoft", "sector": "Tech"},
+  {"id": 4, "name": "Goldman Sachs", "sector": "Finance"},
+  {"id": 5, "name": "TCS", "sector": "Service"},
+  {"id": 6, "name": "Oracle", "sector": "Tech"}
+]

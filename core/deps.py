@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 from core.auth_utils import decode_access_token
 from core.db import get_db
@@ -24,8 +25,10 @@ async def get_current_user(
     if not user_id:
         raise HTTPException(status_code=401, detail="Token missing user ID")
 
-    # Fetch user
-    result = await db.execute(select(User).where(User.id == user_id))
+    # Fetch user with role
+    result = await db.execute(
+        select(User).options(joinedload(User.role)).where(User.id == user_id)
+    )
     user = result.scalar_one_or_none()
 
     if not user:

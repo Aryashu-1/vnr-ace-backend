@@ -190,15 +190,17 @@ async def faculty_enquiry(body: dict, current_user=Depends(get_current_user)):
     if not query:
         raise HTTPException(status_code=400, detail="Message required")
 
+    thread_id = body.get("thread_id", f"faculty_enquiry_{current_user.id}")
     initial_state = {
         "user_query": query,
-        "user_role": current_user.role_id,
+        "user_role": current_user.role.name,
         "user_id": current_user.id,
-        "messages": [],
+        "messages": [("human", query)],
         "audit_events": []
     }
     
-    result = await faculty_timetable_enquiry_graph.ainvoke(initial_state)
+    config = {"configurable": {"thread_id": thread_id}}
+    result = await faculty_timetable_enquiry_graph.ainvoke(initial_state, config=config)
     return {
         "reply": result.get("final_response"),
         "metadata": {
@@ -216,15 +218,17 @@ async def report_generation(body: dict, current_user=Depends(role_required("admi
     if not query:
         raise HTTPException(status_code=400, detail="Message required")
 
+    thread_id = body.get("thread_id", f"report_gen_{current_user.id}")
     initial_state = {
         "user_query": query,
         "user_role": "admin",
         "user_id": current_user.id,
-        "messages": [],
+        "messages": [("human", query)],
         "audit_events": []
     }
     
-    result = await report_generation_graph.ainvoke(initial_state)
+    config = {"configurable": {"thread_id": thread_id}}
+    result = await report_generation_graph.ainvoke(initial_state, config=config)
     return {
         "reply": result.get("final_response"),
         "data": result.get("analysis_result"),

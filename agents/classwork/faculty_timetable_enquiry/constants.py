@@ -88,21 +88,10 @@ SQL_FORBIDDEN_PATTERNS = {
 }
 
 DB_SCHEMA_HINT = {
-    "faculty_profiles": [
-        "faculty_id", "faculty_name", "department", "designation", "email"
+    "faculty": [
+        "id", "name", "department", "cabin", "designation"
     ],
-    "faculty_timetable": [
-        "faculty_id", "day_of_week", "period_no", "start_time", "end_time",
-        "section", "subject_code", "subject_name", "room_no", "building"
-    ],
-    "section_timetable": [
-        "section", "department", "semester", "day_of_week", "period_no",
-        "start_time", "end_time", "subject_code", "subject_name",
-        "faculty_id", "faculty_name", "room_no", "building"
-    ],
-    "room_schedule": [
-        "room_no", "building", "day_of_week", "period_no", "start_time",
-        "end_time", "section", "subject_code", "subject_name",
-        "faculty_id", "faculty_name"
-    ],
+    "timetable": [
+        "faculty_id", "day", "time_range", "activity"
+    ]
 }

@@ -1,111 +1,139 @@
 import os
+import json
+from pathlib import Path
+from datetime import datetime
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
-from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
-from sqlalchemy import select, func, desc
 from core.db import get_db
-from models.placement import Placement
-from models.student import Student
-from models.company import Company
-from models.offer import Offer
+from core.llm import get_llm
+
+DATA_DIR = Path("data")
+STUDENTS_FILE = DATA_DIR / "students_sample.json"
+PLACEMENTS_FILE = DATA_DIR / "placements_sample.json"
+COMPANIES_FILE = DATA_DIR / "companies_sample.json"
+
+def load_local_data(file_path):
+    if not file_path.exists():
+        return []
+    with open(file_path, "r") as f:
+        return json.load(f)
 
 router = APIRouter(prefix="/charts", tags=["Charts API"])
 
 @router.get("/placement-trend")
-async def get_placement_trend(db: Session = Depends(get_db)):
-    # Group by year or month of placement_date. Let's assume year for trend.
-    # Note: SQLite date functions differ from Postgres.
-    # We will do a generic approach fetching dates and grouping in Python for safety
-    # or use SQLAlchemy func.date_trunc if strictly Postgres.
-    
-    placements = db.execute(select(Placement.placement_date)).scalars().all()
-    
+async def get_placement_trend(db: AsyncSession = Depends(get_db)):
+    placements = load_local_data(PLACEMENTS_FILE)
     trends = {}
-    for p_date in placements:
-        if p_date:
-            year = p_date.year
-            trends[year] = trends.get(year, 0) + 1
+    for p in placements:
+        p_date_str = p.get("placement_date")
+        if p_date_str:
+            try:
+                # Handle ISO format
+                dt = datetime.fromisoformat(p_date_str.replace('Z', '+00:00'))
+                year = dt.year
+                trends[year] = trends.get(year, 0) + 1
+            except:
+                continue
             
-    # Format for chart:
-    result = [{"year": str(y), "count": count} for y, count in sorted(trends.items())]
+    result = [{"name": str(y), "value": count} for y, count in sorted(trends.items())]
     return result
 
 @router.get("/branch-wise")
-async def get_branch_wise_stats(db: Session = Depends(get_db)):
-    # Total students per branch vs Placed per branch
-    branches_query = select(Student.branch, func.count(Student.id)).group_by(Student.branch)
-    total_by_branch = dict(db.execute(branches_query).all())
+async def get_branch_wise_stats(db: AsyncSession = Depends(get_db)):
+    students = load_local_data(STUDENTS_FILE)
+    placements = load_local_data(PLACEMENTS_FILE)
     
-    placed_query = select(Student.branch, func.count(Student.id)).join(Placement).group_by(Student.branch)
-    placed_by_branch = dict(db.execute(placed_query).all())
+    # Map student_id to whether they are placed
+    placed_student_ids = {p["student_id"] for p in placements}
     
+    branch_stats = {}
+    for s in students:
+        branch = s.get("branch", "UNKNOWN")
+        if branch not in branch_stats:
+            branch_stats[branch] = {"total": 0, "placed": 0}
+        
+        branch_stats[branch]["total"] += 1
+        if s["id"] in placed_student_ids:
+            branch_stats[branch]["placed"] += 1
+            
     result = []
-    for branch, total in total_by_branch.items():
-        if not branch:
-            continue
-        placed = placed_by_branch.get(branch, 0)
+    for branch, stats in branch_stats.items():
+        total = stats["total"]
+        placed = stats["placed"]
         percentage = round((placed / total * 100), 2) if total > 0 else 0
         result.append({
-            "branch": branch,
+            "name": branch,
+            "value": placed,
             "total": total,
-            "placed": placed,
             "percentage": percentage
         })
-    
     return result
 
 @router.get("/salary-distribution")
-async def get_salary_distribution(db: Session = Depends(get_db)):
-    # Group into buckets: < 5, 5-10, 10-15, > 15
-    salaries = db.execute(select(Placement.ctc_lpa)).scalars().all()
+async def get_salary_distribution(db: AsyncSession = Depends(get_db)):
+    placements = load_local_data(PLACEMENTS_FILE)
     buckets = {"< 5 LPA": 0, "5 - 10 LPA": 0, "10 - 15 LPA": 0, "> 15 LPA": 0}
     
-    for s in salaries:
-        if s is None:
-            continue
-        if s < 5:
-            buckets["< 5 LPA"] += 1
-        elif s < 10:
-            buckets["5 - 10 LPA"] += 1
-        elif s < 15:
-            buckets["10 - 15 LPA"] += 1
-        else:
-            buckets["> 15 LPA"] += 1
+    for p in placements:
+        s = p.get("ctc_lpa")
+        if s is None: continue
+        if s < 5: buckets["< 5 LPA"] += 1
+        elif s < 10: buckets["5 - 10 LPA"] += 1
+        elif s < 15: buckets["10 - 15 LPA"] += 1
+        else: buckets["> 15 LPA"] += 1
             
-    return [{"bucket": k, "count": v} for k, v in buckets.items()]
+    return [{"name": k, "value": v} for k, v in buckets.items()]
 
 @router.get("/company-wise")
-async def get_company_wise_stats(db: Session = Depends(get_db)):
-    # Top hiring companies
-    query = select(Company.name, func.count(Placement.id)).join(Placement).group_by(Company.name).order_by(desc(func.count(Placement.id))).limit(10)
-    data = db.execute(query).all()
+async def get_company_wise_stats(db: AsyncSession = Depends(get_db)):
+    placements = load_local_data(PLACEMENTS_FILE)
+    companies = load_local_data(COMPANIES_FILE)
     
-    return [{"company": row[0], "hires": row[1]} for row in data]
+    comp_map = {c["id"]: c["name"] for c in companies}
+    hires = {}
+    for p in placements:
+        cid = p.get("company_id")
+        name = comp_map.get(cid, "Unknown")
+        hires[name] = hires.get(name, 0) + 1
+        
+    sorted_hires = sorted(hires.items(), key=lambda x: x[1], reverse=True)[:10]
+    return [{"name": name, "value": count} for name, count in sorted_hires]
 
 @router.get("/minor-degree")
-async def get_minor_degree_stats(db: Session = Depends(get_db)):
-    # Impact of minor degree on placements
-    with_minor = db.execute(select(func.count(Student.id)).filter(Student.minor_degree != None)).scalar() or 0
-    with_minor_placed = db.execute(select(func.count(Student.id)).join(Placement).filter(Student.minor_degree != None)).scalar() or 0
+async def get_minor_degree_stats(db: AsyncSession = Depends(get_db)):
+    students = load_local_data(STUDENTS_FILE)
+    placements = load_local_data(PLACEMENTS_FILE)
+    placed_ids = {p["student_id"] for p in placements}
     
-    without_minor = db.execute(select(func.count(Student.id)).filter(Student.minor_degree == None)).scalar() or 0
-    without_minor_placed = db.execute(select(func.count(Student.id)).join(Placement).filter(Student.minor_degree == None)).scalar() or 0
+    with_minor = [s for s in students if s.get("minor_degree")]
+    without_minor = [s for s in students if not s.get("minor_degree")]
     
-    return {
-        "with_minor": {"total": with_minor, "placed": with_minor_placed},
-        "without_minor": {"total": without_minor, "placed": without_minor_placed}
-    }
+    with_minor_placed = len([s for s in with_minor if s["id"] in placed_ids])
+    without_minor_placed = len([s for s in without_minor if s["id"] in placed_ids])
+    
+    return [
+        {"name": "With Minor", "value": with_minor_placed, "total": len(with_minor)},
+        {"name": "Without Minor", "value": without_minor_placed, "total": len(without_minor)}
+    ]
 
 @router.get("/multiple-offers")
-async def get_multiple_offers(db: Session = Depends(get_db)):
-    # Students with > 1 offer
-    query = select(Offer.student_id, func.count(Offer.id)).group_by(Offer.student_id).having(func.count(Offer.id) > 1)
-    multiple_offer_students = db.execute(query).all()
-    count = len(multiple_offer_students)
+async def get_multiple_offers(db: AsyncSession = Depends(get_db)):
+    placements = load_local_data(PLACEMENTS_FILE)
     
-    return {"students_with_multiple_offers": count}
+    student_counts = {}
+    for p in placements:
+        sid = p["student_id"]
+        student_counts[sid] = student_counts.get(sid, 0) + 1
+        
+    multiple = len([sid for sid, count in student_counts.items() if count > 1])
+    single = len([sid for sid, count in student_counts.items() if count == 1])
+    
+    return [
+        {"name": "Multiple Offers", "value": multiple},
+        {"name": "Single Offer", "value": single}
+    ]
 
 class ChartQueryRequest(BaseModel):
     query: str
@@ -126,12 +154,12 @@ If the query does not match any of these charts, reply with ONLY the word: unkno
 User Query: {query}
 """
 
-async def _process_dynamic_chart(query: str, db: Session):
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="LLM API Key missing")
-        
-    llm = ChatGroq(model="llama3-8b-8192", temperature=0)
+async def _process_dynamic_chart(query: str, db: AsyncSession):
+    try:
+        llm = get_llm(temperature=0)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
     prompt_template = PromptTemplate(template=CHART_PROMPT, input_variables=["query"])
     chain = prompt_template | llm
     
@@ -164,14 +192,14 @@ async def _process_dynamic_chart(query: str, db: Session):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/dynamic")
-async def get_dynamic_chart(query: str, db: Session = Depends(get_db)):
+async def get_dynamic_chart(query: str, db: AsyncSession = Depends(get_db)):
     """
     Identify and return chart data based on a natural language text query (GET).
     """
     return await _process_dynamic_chart(query, db)
 
 @router.post("/dynamic")
-async def generate_dynamic_chart(request: ChartQueryRequest, db: Session = Depends(get_db)):
+async def generate_dynamic_chart(request: ChartQueryRequest, db: AsyncSession = Depends(get_db)):
     """
     Identify and return chart data based on a natural language text query (POST).
     """

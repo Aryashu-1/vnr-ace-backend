@@ -125,6 +125,7 @@ def planner_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, An
 
     user_prompt = (
         f"User query: {state.get('user_query', '')}\n"
+        f"Conversation history: {state.get('messages', [])}\n"
         f"Allowed report types: {sorted(ALLOWED_REPORT_TYPES)}\n"
         f"Allowed datasets: {sorted(DATASET_REGISTRY.keys())}\n"
         f"Allowed export formats: {sorted(ALLOWED_EXPORT_FORMATS)}\n"
@@ -409,13 +410,19 @@ def followup_node(state: Dict[str, Any]) -> Dict[str, Any]:
 
     if query in {"stop", "exit", "end", "close"}:
         state["stop_requested"] = True
-        state["final_response"] = "Report workflow closed."
+        state["final_response"] = "Report workflow closed. Thank you!"
         return state
 
     state["followup_mode"] = True
+    report_type = state.get("report_type", "report")
+    row_count = state.get("analysis_result", {}).get("row_count", 0)
+    
     state["final_response"] = (
-        "You can continue with follow-up changes such as refining filters, "
-        "changing export format, or requesting another report preview."
+        f"I've generated the {report_type} with {row_count} rows. "
+        "What would you like to do next? You can:\n"
+        "1. Filter this data further (e.g., 'only show ECE students')\n"
+        "2. Change the export format (e.g., 'export as CSV')\n"
+        "3. Request a different report type entirely."
     )
     return state
 

@@ -39,7 +39,15 @@ dependencies = [
     "openpyxl (>=3.1.5,<4.0.0)",
     "tavily-python (>=0.3.0,<0.4.0)",
     "psycopg2-binary (>=2.9.11,<3.0.0)",
-    "beautifulsoup4 (>=4.14.3,<5.0.0)"
+    "beautifulsoup4 (>=4.14.3,<5.0.0)",
+    "pdfplumber (>=0.11.9,<0.12.0)",
+    "python-docx (>=1.2.0,<2.0.0)",
+    "google-generativeai (>=0.8.6,<0.9.0)",
+    "faiss-cpu (>=1.13.2,<2.0.0)",
+    "sentence-transformers (>=5.3.0,<6.0.0)",
+    "spacy (>=3.8.14,<4.0.0)",
+    "numpy (>=2.4.4,<3.0.0)",
+    "matplotlib (>=3.9.0,<4.0.0)",
 ]
 
 
@@ -55,3 +63,6 @@ dev = [
     "ruff (>=0.14.5,<0.15.0)",
     "mypy (>=1.18.2,<2.0.0)"
 ]
+
+[tool.poetry]
+package-mode = false

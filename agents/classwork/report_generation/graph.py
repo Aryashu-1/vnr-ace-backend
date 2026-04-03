@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Callable, Dict
 
 from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
 
 from .state import ReportGenerationState
 from .nodes import (
@@ -97,4 +98,4 @@ def build_report_generation_graph(llm_service: Any = None, audit_repo: Any = Non
     builder.add_edge("followup", "persist_audit_logs")
     builder.add_edge("persist_audit_logs", END)
 
-    return builder.compile()
+    return builder.compile(checkpointer=MemorySaver())

@@ -1,0 +1,12 @@
+[
+    {"id": 1, "roll_no": "20BD1A0501", "name": "Aarav Sharma", "branch": "CSE", "section": "A", "semester": 6, "attendance_percent": 82, "backlogs": 0, "cgpa": 8.5, "email": "aarav.s@vnr.edu.in"},
+    {"id": 2, "roll_no": "20BD1A0502", "name": "Ananya Reddy", "branch": "CSE", "section": "A", "semester": 6, "attendance_percent": 65, "backlogs": 1, "cgpa": 9.2, "email": "ananya.r@vnr.edu.in"},
+    {"id": 3, "roll_no": "20BD1A0503", "name": "Vikram Singh", "branch": "CSE", "section": "B", "semester": 6, "attendance_percent": 72, "backlogs": 3, "cgpa": 7.8, "email": "vikram.s@vnr.edu.in"},
+    {"id": 4, "roll_no": "20BD1A0504", "name": "Sanya Malhotra", "branch": "CSE", "section": "B", "semester": 6, "attendance_percent": 88, "backlogs": 0, "cgpa": 8.1, "email": "sanya.m@vnr.edu.in"},
+    {"id": 5, "roll_no": "20BD1A1201", "name": "Rohan Das", "branch": "IT", "section": "A", "semester": 6, "attendance_percent": 91, "backlogs": 0, "cgpa": 8.9, "email": "rohan.d@vnr.edu.in"},
+    {"id": 6, "roll_no": "20BD1A1202", "name": "Priya Gupta", "branch": "IT", "section": "A", "semester": 6, "attendance_percent": 68, "backlogs": 4, "cgpa": 8.4, "email": "priya.g@vnr.edu.in"},
+    {"id": 7, "roll_no": "20BD1A0401", "name": "Arjun Rao", "branch": "ECE", "section": "A", "semester": 4, "attendance_percent": 78, "backlogs": 2, "cgpa": 7.5, "email": "arjun.r@vnr.edu.in"},
+    {"id": 8, "roll_no": "20BD1A0402", "name": "Isha Verma", "branch": "ECE", "section": "A", "semester": 4, "attendance_percent": 84, "backlogs": 0, "cgpa": 7.9, "email": "isha.v@vnr.edu.in"},
+    {"id": 9, "roll_no": "20BD1A0201", "name": "Karthik Jayram", "branch": "EEE", "section": "B", "semester": 4, "attendance_percent": 62, "backlogs": 5, "cgpa": 8.2, "email": "karthik.j@vnr.edu.in"},
+    {"id": 10, "roll_no": "20BD1A0202", "name": "Meera Nair", "branch": "EEE", "section": "B", "semester": 4, "attendance_percent": 95, "backlogs": 0, "cgpa": 8.7, "email": "meera.n@vnr.edu.in"}
+]

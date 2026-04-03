@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.db import get_db
 from core.guardrails import check_input_guardrail, check_output_guardrail
-from ace_graphs.admissions_graph import admissions_graph
+from agents.admissions.graph import admissions_graph
 
 
 router = APIRouter(prefix="/admissions", tags=["Admissions"])
@@ -26,14 +26,17 @@ async def admissions_chat(
         }
 
     # Prepare graph state
+    thread_id = body.get("thread_id", "default_thread")
     initial_state = {
         "message": message,
+        "messages": [("human", message)],
         "reply": None,
         "route": None,
     }
 
-    # Run graph
-    result = await admissions_graph.ainvoke(initial_state)
+    # Run graph with configuration for checkpointer
+    config = {"configurable": {"thread_id": thread_id}}
+    result = await admissions_graph.ainvoke(initial_state, config=config)
     reply = result.get("reply")
 
     # Output Guardrail

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import os
 from typing import Any, Dict
 
 from .constants import (
@@ -136,6 +138,25 @@ def clarification_node(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
+def faculty_data_loader_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Loads raw faculty data from JSON file.
+    """
+    json_path = os.path.join(os.path.dirname(__file__), "../../../data/faculty_data.json")
+    try:
+        if os.path.exists(json_path):
+            with open(json_path, "r") as f:
+                data = json.load(f)
+            state["query_result_rows"] = data
+        else:
+            state["query_result_rows"] = []
+    except Exception as e:
+        print(f"Error loading faculty JSON: {e}")
+        state["query_result_rows"] = []
+    
+    return state
+
+
 def sql_generation_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
     if llm_service is None:
         raise ValueError("sql_generation_node requires llm_service for production use.")
@@ -195,11 +216,11 @@ def sql_safety_validation_node(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def sql_execution_node(state: Dict[str, Any], sql_repo: Any = None) -> Dict[str, Any]:
+async def sql_execution_node(state: Dict[str, Any], sql_repo: Any = None) -> Dict[str, Any]:
     if sql_repo is None:
         raise ValueError("sql_execution_node requires sql_repo for production use.")
 
-    rows = sql_repo.execute_read_only(
+    rows = await sql_repo.execute_read_only(
         sql_query=state.get("sql_query", ""),
         sql_params=state.get("sql_params", {}),
     )
@@ -226,17 +247,28 @@ def answer_formatter_node(state: Dict[str, Any], llm_service: Any = None) -> Dic
         return state
 
     if llm_service is None:
-        state["final_response"] = f"Found {len(rows)} matching rows: {compact_rows(rows, 5)}"
+        state["final_response"] = f"Found data for {len(rows)} faculty members."
         return state
 
+    # Direct JSON-to-Answer flow
     user_prompt = (
-        f"Intent: {state.get('intent')}\n"
         f"User query: {state.get('user_query')}\n"
-        f"Entities: {state.get('interpreted_entities', {})}\n"
-        f"Rows: {compact_rows(rows, 10)}"
+        f"Extracted Entities: {state.get('interpreted_entities', {})}\n"
+        f"Conversation history: {state.get('memory', [])}\n"
+        f"Faculty Data (JSON): {json.dumps(rows, indent=2)}\n"
     )
+    
+    system_prompt = (
+        "You are a helpful Faculty Enquiry assistant. "
+        "Answer the user's query strictly based on the provided Faculty Data JSON, while considering the conversation history. "
+        "If the user is asking a follow-up question (e.g., 'What about their room?'), locate the faculty member from the history and answer using the current data. "
+        "Include cabin numbers, designations, and schedules in your answer where relevant. "
+        "If a specific faculty is found, give their full details. "
+        "If multiple matches or no matches, explain why clearly."
+    )
+    
     answer = llm_service.invoke_text(
-        system_prompt=ANSWER_FORMATTER_PROMPT,
+        system_prompt=system_prompt,
         user_prompt=user_prompt,
     )
     state["final_response"] = answer
@@ -256,7 +288,7 @@ def memory_update_node(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def persist_audit_logs_node(state: Dict[str, Any], audit_repo: Any = None) -> Dict[str, Any]:
+async def persist_audit_logs_node(state: Dict[str, Any], audit_repo: Any = None) -> Dict[str, Any]:
     if audit_repo is not None:
-        audit_repo.persist_events(state.get("audit_events", []))
+        await audit_repo.persist_events(state.get("audit_events", []))
     return state

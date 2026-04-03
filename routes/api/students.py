@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import Optional
@@ -11,13 +12,21 @@ router = APIRouter(prefix="/students", tags=["Students API"])
 
 @router.get("/")
 async def get_students(
+    search: Optional[str] = None,
     branch: Optional[str] = None,
     placed: Optional[bool] = None,
     salary_min: Optional[float] = None,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     query = select(Student)
     
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            (Student.full_name.ilike(search_filter)) | 
+            (Student.roll_no.ilike(search_filter))
+        )
+
     if branch:
         query = query.filter(Student.branch == branch.upper())
     
@@ -34,12 +43,12 @@ async def get_students(
         if salary_min is not None:
             query = query.filter(Placement.ctc_lpa >= salary_min)
 
-    result = db.execute(query).scalars().all()
+    result = (await db.execute(query)).scalars().all()
     return result
 
 @router.get("/{student_id}")
-async def get_student(student_id: int, db: Session = Depends(get_db)):
-    student = db.query(Student).filter(Student.id == student_id).first()
+async def get_student(student_id: int, db: AsyncSession = Depends(get_db)):
+    student = (await db.execute(select(Student).filter(Student.id == student_id))).scalar()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     return student

@@ -4,7 +4,7 @@ from .constants import *
 from .guardrails import check_access, check_language
 from .utils import make_event
 from .prompts import *
-from .schemas import IntentOutput, EmailDraftOutput
+from .schemas import IntentOutput, EmailDraftOutput, SearchOutput
 
 
 def access_node(state):
@@ -31,8 +31,33 @@ def intent_node(state, llm):
     )
     state["intent"] = result.intent
     state["interpreted_entities"] = result.interpreted_entities
+    state["search_criteria"] = result.search_criteria
     state["clarification_needed"] = result.clarification_needed
     state["clarification_question"] = result.clarification_question
+    return state
+
+
+def search_node(state, sql_repo, llm):
+    if state.get("clarification_needed"):
+        return state
+
+    # 1. Generate Query
+    search_input = f"Search Criteria: {state.get('search_criteria')}\nEntities: {state.get('interpreted_entities')}"
+    query_result: SearchOutput = llm.invoke_structured(
+        SEARCH_QUERY_PROMPT,
+        search_input,
+        SearchOutput
+    )
+
+    # 2. Execute
+    rows = asyncio.run(sql_repo.execute_read_only(
+        query_result.sql_query,
+        query_result.sql_params
+    ))
+
+    # 3. Collect emails
+    emails = [row["email"] for row in rows if "email" in row]
+    state["recipients"] = emails
     return state
 
 

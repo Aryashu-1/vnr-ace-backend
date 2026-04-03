@@ -17,7 +17,7 @@ UNSAFE_PATTERNS = {
 
 
 def check_access(user_role: str) -> Tuple[bool, str | None]:
-    if (user_role or "").strip().lower() in ALLOWED_ROLES:
+    if user_role and str(user_role).strip().lower() in ALLOWED_ROLES:
         return True, None
     return False, "access_denied"
 

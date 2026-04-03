@@ -2,19 +2,25 @@
 
 from __future__ import annotations
 
+import os
+import json
 from typing import Any, Dict
+import google.generativeai as genai
+from dotenv import load_dotenv
 
 from .constants import (
     AGENT_NAME,
     ALLOWED_INTENTS,
     MAX_MEMORY_ITEMS,
     STANDARD_MESSAGES,
+    COLLEGE_RESUME_RULES,
 )
 from .guardrails import check_access, check_language_and_exploit
 from .prompts import (
     SCOPE_CLASSIFIER_PROMPT,
     INTENT_CLASSIFIER_PROMPT,
     FOLLOWUP_ANSWER_PROMPT,
+    RESUME_CHAT_SYSTEM_PROMPT,
 )
 from .schemas import (
     ScopeClassifierOutput,
@@ -25,6 +31,9 @@ from .utils import (
     trim_memory,
     build_cache_key,
 )
+
+# Load environment variables (needed for GEMINI_API_KEY)
+load_dotenv()
 
 
 def access_control_node(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -298,4 +307,70 @@ def memory_update_node(state: Dict[str, Any]) -> Dict[str, Any]:
 def persist_audit_logs_node(state: Dict[str, Any], audit_repo: Any = None) -> Dict[str, Any]:
     if audit_repo is not None:
         audit_repo.persist_events(state.get("audit_events", []))
+    return state
+
+
+# ----------------------------------------------------------
+# Resume Chat Node  (contextual Q&A grounded on analysis)
+# ----------------------------------------------------------
+
+def resume_chat_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Stateless Gemini-powered node for multi-turn chat about a resume analysis.
+
+    Required state keys:
+        structured_analysis  – dict produced by /resume/analyze
+        user_query           – the user's current question
+        conversation_history – list of {"role": "user"|"model", "parts": [str]}
+                               (Gemini native format; pass [] for first turn)
+    Writes:
+        final_response       – the model's reply text
+        conversation_history – updated list with new user + model turns appended
+    """
+    analysis = state.get("structured_analysis")
+    user_query = state.get("user_query", "").strip()
+
+    if not analysis:
+        state["final_response"] = (
+            "No resume analysis is available yet. "
+            "Please upload and analyze your resume first."
+        )
+        return state
+
+    if not user_query:
+        state["final_response"] = "Please ask a question about your resume."
+        return state
+
+    # Build system prompt with analysis embedded
+    analysis_json = json.dumps(analysis, indent=2)
+    system_prompt = (
+        RESUME_CHAT_SYSTEM_PROMPT
+        + f"\n\n--- COLLEGE SPECIFIC RULES ---\n{COLLEGE_RESUME_RULES}\n--- END OF RULES ---"
+        + f"\n\n--- RESUME ANALYSIS ---\n{analysis_json}\n--- END OF ANALYSIS ---"
+    )
+
+    # Restore or initialise Gemini chat history
+    history = state.get("conversation_history", [])
+
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+    model = genai.GenerativeModel(
+        model_name="models/gemini-2.5-flash",
+        system_instruction=system_prompt,
+    )
+    chat = model.start_chat(history=history)
+
+    response = chat.send_message(
+        user_query,
+        generation_config=genai.types.GenerationConfig(temperature=0.3),
+    )
+    reply_text = response.text
+
+    # Append the new turn to history so the caller can persist it
+    updated_history = list(history) + [
+        {"role": "user", "parts": [user_query]},
+        {"role": "model", "parts": [reply_text]},
+    ]
+
+    state["final_response"] = reply_text
+    state["conversation_history"] = updated_history
     return state

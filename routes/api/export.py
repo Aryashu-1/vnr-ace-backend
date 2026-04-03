@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from core.db import get_db
@@ -13,8 +14,8 @@ from models.company import Company
 router = APIRouter(prefix="/export", tags=["Export API"])
 
 @router.get("/students")
-async def export_students_csv(db: Session = Depends(get_db)):
-    students = db.execute(select(Student)).scalars().all()
+async def export_students_csv(db: AsyncSession = Depends(get_db)):
+    students = (await db.execute(select(Student))).scalars().all()
     
     output = io.StringIO()
     writer = csv.writer(output)
@@ -30,10 +31,10 @@ async def export_students_csv(db: Session = Depends(get_db)):
     )
 
 @router.get("/placements")
-async def export_placements_csv(db: Session = Depends(get_db)):
+async def export_placements_csv(db: AsyncSession = Depends(get_db)):
     # Join Placements + Students + Companies
     query = select(Placement, Student.roll_no, Company.name).join(Student).join(Company)
-    results = db.execute(query).all()
+    results = (await db.execute(query)).all()
     
     output = io.StringIO()
     writer = csv.writer(output)
@@ -50,7 +51,7 @@ async def export_placements_csv(db: Session = Depends(get_db)):
     )
 
 @router.get("/dashboard")
-async def export_dashboard_csv(db: Session = Depends(get_db)):
+async def export_dashboard_csv(db: AsyncSession = Depends(get_db)):
     # Exporting a simple stats summary
     output = io.StringIO()
     writer = csv.writer(output)

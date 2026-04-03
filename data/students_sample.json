@@ -1,0 +1,12 @@
+[
+  {"id": 1, "roll_no": "20BD1A0501", "full_name": "Aarav Sharma", "gender": "Male", "branch": "CSE", "cgpa": 8.5, "minor_degree": "AI"},
+  {"id": 2, "roll_no": "20BD1A0502", "full_name": "Ananya Reddy", "gender": "Female", "branch": "CSE", "cgpa": 9.2, "minor_degree": null},
+  {"id": 3, "roll_no": "20BD1A0401", "full_name": "Vikram Singh", "gender": "Male", "branch": "ECE", "cgpa": 7.8, "minor_degree": "Robotics"},
+  {"id": 4, "roll_no": "20BD1A0402", "full_name": "Sanya Malhotra", "gender": "Female", "branch": "ECE", "cgpa": 8.1, "minor_degree": null},
+  {"id": 5, "roll_no": "20BD1A1201", "full_name": "Rohan Das", "gender": "Male", "branch": "IT", "cgpa": 8.9, "minor_degree": "Data Science"},
+  {"id": 6, "roll_no": "20BD1A1202", "full_name": "Priya Gupta", "gender": "Female", "branch": "IT", "cgpa": 8.4, "minor_degree": null},
+  {"id": 7, "roll_no": "20BD1A0301", "full_name": "Arjun Rao", "gender": "Male", "branch": "MECH", "cgpa": 7.5, "minor_degree": null},
+  {"id": 8, "roll_no": "20BD1A0302", "full_name": "Isha Verma", "gender": "Female", "branch": "MECH", "cgpa": 7.9, "minor_degree": null},
+  {"id": 9, "roll_no": "20BD1A0201", "full_name": "Karthik Jayram", "gender": "Male", "branch": "EEE", "cgpa": 8.2, "minor_degree": null},
+  {"id": 10, "roll_no": "20BD1A0202", "full_name": "Meera Nair", "gender": "Female", "branch": "EEE", "cgpa": 8.7, "minor_degree": "Power Systems"}
+]

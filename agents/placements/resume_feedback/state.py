@@ -43,5 +43,8 @@ class ResumeFeedbackState(TypedDict, total=False):
     structured_analysis: Dict[str, Any]
     final_response: Optional[str]
 
+    # multi-turn chat history (Gemini format: [{role, parts}])
+    conversation_history: List[Dict[str, Any]]
+
     # logs
     audit_events: List[Dict[str, Any]]

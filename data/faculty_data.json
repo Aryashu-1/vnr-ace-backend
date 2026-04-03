@@ -6,26 +6,11 @@
         "cabin": "C-201",
         "designation": "Professor",
         "schedule": {
-            "Monday": [
-                "09:00-10:00 (CSE-A)",
-                "11:00-12:00 (CSE-B Lab)"
-            ],
-            "Tuesday": [
-                "10:00-11:00 (CSE-C)",
-                "14:00-16:00 (Project Review)"
-            ],
-            "Wednesday": [
-                "09:00-11:00 (Research Work)",
-                "12:00-13:00 (Lunch)"
-            ],
-            "Thursday": [
-                "10:00-12:00 (CSE-A Lab)",
-                "15:00-16:00 (Counseling)"
-            ],
-            "Friday": [
-                "11:00-12:00 (CSE-B)",
-                "14:00-15:00 (Meeting)"
-            ]
+            "Monday": ["09:00-10:00 (CSE-A)", "11:00-12:00 (CSE-B Lab)"],
+            "Tuesday": ["10:00-11:00 (CSE-C)", "14:00-16:00 (Project Review)"],
+            "Wednesday": ["09:00-11:00 (Research Work)", "12:00-13:00 (Lunch)"],
+            "Thursday": ["10:00-12:00 (CSE-A Lab)", "15:00-16:00 (Counseling)"],
+            "Friday": ["11:00-12:00 (CSE-B)", "14:00-15:00 (Meeting)"]
         }
     },
     {
@@ -35,26 +20,11 @@
         "cabin": "IT-104",
         "designation": "Assistant Professor",
         "schedule": {
-            "Monday": [
-                "10:00-11:00 (IT-A)",
-                "14:00-16:00 (IT-B Lab)"
-            ],
-            "Tuesday": [
-                "09:00-10:00 (IT-B)",
-                "11:00-12:00 (Mentoring)"
-            ],
-            "Wednesday": [
-                "10:00-12:00 (IT-A Lab)",
-                "14:00-15:00 (IT-C)"
-            ],
-            "Thursday": [
-                "09:00-10:00 (Free)",
-                "11:00-13:00 (Project Guidance)"
-            ],
-            "Friday": [
-                "10:00-11:00 (IT-B)",
-                "15:00-16:00 (Department Meeting)"
-            ]
+            "Monday": ["10:00-11:00 (IT-A)", "14:00-16:00 (IT-B Lab)"],
+            "Tuesday": ["09:00-10:00 (IT-B)", "11:00-12:00 (Mentoring)"],
+            "Wednesday": ["10:00-12:00 (IT-A Lab)", "14:00-15:00 (IT-C)"],
+            "Thursday": ["09:00-10:00 (Free)", "11:00-13:00 (Project Guidance)"],
+            "Friday": ["10:00-11:00 (IT-B)", "15:00-16:00 (Department Meeting)"]
         }
     },
     {
@@ -64,26 +34,11 @@
         "cabin": "E-305",
         "designation": "Associate Professor",
         "schedule": {
-            "Monday": [
-                "09:00-11:00 (ECE-A Lab)",
-                "14:00-15:00 (ECE-B)"
-            ],
-            "Tuesday": [
-                "11:00-12:00 (ECE-C)",
-                "15:00-16:00 (Free)"
-            ],
-            "Wednesday": [
-                "10:00-11:00 (ECE-A)",
-                "12:00-13:00 (Lunch)"
-            ],
-            "Thursday": [
-                "09:00-10:00 (ECE-B)",
-                "14:00-16:00 (ECE-C Lab)"
-            ],
-            "Friday": [
-                "11:00-12:00 (Staff Meeting)",
-                "14:00-15:00 (Project Review)"
-            ]
+            "Monday": ["09:00-11:00 (ECE-A Lab)", "14:00-15:00 (ECE-B)"],
+            "Tuesday": ["11:00-12:00 (ECE-C)", "15:00-16:00 (Free)"],
+            "Wednesday": ["10:00-11:00 (ECE-A)", "12:00-13:00 (Lunch)"],
+            "Thursday": ["09:00-10:00 (ECE-B)", "14:00-16:00 (ECE-C Lab)"],
+            "Friday": ["11:00-12:00 (Staff Meeting)", "14:00-15:00 (Project Review)"]
         }
     },
     {
@@ -93,26 +48,39 @@
         "cabin": "H-102",
         "designation": "HOD",
         "schedule": {
-            "Monday": [
-                "10:00-12:00 (Admin Work)",
-                "14:00-15:00 (Class 1-A)"
-            ],
-            "Tuesday": [
-                "11:00-12:00 (Class 1-B)",
-                "15:00-16:00 (Meeting)"
-            ],
-            "Wednesday": [
-                "09:00-10:00 (Class 1-C)",
-                "11:00-13:00 (Admin Work)"
-            ],
-            "Thursday": [
-                "10:00-11:00 (Guest Lecture)",
-                "14:00-15:00 (Free)"
-            ],
-            "Friday": [
-                "09:00-11:00 (Admin Work)",
-                "15:00-16:00 (Weekly Review)"
-            ]
+            "Monday": ["10:00-12:00 (Admin Work)", "14:00-15:00 (Class 1-A)"],
+            "Tuesday": ["11:00-12:00 (Class 1-B)", "15:00-16:00 (Meeting)"],
+            "Wednesday": ["09:00-10:00 (Class 1-C)", "11:00-13:00 (Admin Work)"],
+            "Thursday": ["10:00-11:00 (Guest Lecture)", "14:00-15:00 (Free)"],
+            "Friday": ["09:00-11:00 (Admin Work)", "15:00-16:00 (Weekly Review)"]
+        }
+    },
+    {
+        "id": 5,
+        "name": "Dr. K. Venkatesh",
+        "department": "CSE",
+        "cabin": "C-302",
+        "designation": "Assistant Professor",
+        "schedule": {
+            "Monday": ["10:00-11:00 (CSE-C)", "14:00-16:00 (Lab 2)"],
+            "Tuesday": ["09:00-10:00 (CSE-A)", "11:00-13:00 (Meeting)"],
+            "Wednesday": ["14:00-15:00 (CSE-B)", "15:00-16:00 (Free)"],
+            "Thursday": ["11:00-12:00 (CSE-C Lab)", "14:00-15:00 (Consultation)"],
+            "Friday": ["09:00-10:00 (CSE-A)", "12:00-13:00 (Lunch)"]
+        }
+    },
+    {
+        "id": 6,
+        "name": "Mrs. Sneha Kumari",
+        "department": "IT",
+        "cabin": "IT-201",
+        "designation": "Assistant Professor",
+        "schedule": {
+            "Monday": ["09:00-10:00 (IT-C)", "11:00-12:00 (Free)"],
+            "Tuesday": ["14:00-16:00 (IT-A Lab)", "16:00-17:00 (Seminar)"],
+            "Wednesday": ["11:00-13:00 (IT-B Lab)", "14:00-15:00 (IT-A)"],
+            "Thursday": ["10:00-11:00 (IT-C)", "15:00-16:00 (Mentoring)"],
+            "Friday": ["09:00-11:00 (Research Lab)", "14:00-15:00 (IT-B)"]
         }
     }
 ]

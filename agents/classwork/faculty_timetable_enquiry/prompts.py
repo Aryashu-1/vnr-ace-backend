@@ -53,27 +53,32 @@ Extract structured entities where possible:
 - start_time
 - end_time
 
-If the request is ambiguous, set clarification_needed=true and ask exactly one concise clarification question.
-Do not invent missing entities.
+If the request is ambiguous (especially regarding which branch, section, or department), set clarification_needed=true and ask exactly one concise clarification question.
+Do not invent missing entities or hallucinate branches.
 """
 
 SQL_GENERATOR_PROMPT = """
 You are a read-only SQL generator for a college timetable enquiry system.
 
-You must generate ONLY safe read-only SQL.
+Database Schema:
+1. Table 'faculty':
+   - id: INTEGER (Primary Key)
+   - name: TEXT (Use LIKE for fuzzy matches)
+   - department: TEXT
+   - cabin: TEXT
+   - designation: TEXT
+2. Table 'timetable':
+   - faculty_id: INTEGER (Foreign Key to faculty.id)
+   - day: TEXT (Monday, Tuesday, Wednesday, Thursday, Friday)
+   - time_range: TEXT (e.g., '09:00-10:00')
+   - activity: TEXT (e.g., 'CSE-A', 'Lab', 'Meeting')
+
 Rules:
 - Only generate SELECT queries.
-- Never generate INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE, EXEC, CALL, or multiple statements.
-- Use only the provided tables and columns.
-- Use parameter placeholders where appropriate.
-- Keep queries simple, efficient, and scoped to the user's request.
-- If the request is ambiguous, do not guess.
-
-Available schema will be supplied in the user prompt.
-Return:
-- sql_query
-- sql_params
-- explanation
+- Use 'JOIN' to link faculty and timetable.
+- Always use 'LIKE' for name searches (e.g., WHERE name LIKE '%Ravi%') to be fuzzy.
+- If a time is mentioned without a day, ask for clarification.
+- Return: sql_query, sql_params, explanation.
 """
 
 ANSWER_FORMATTER_PROMPT = """
@@ -84,5 +89,5 @@ Rules:
 - Stay faithful to results.
 - Do not invent rows or schedules.
 - If no rows are found, say so clearly.
-- Keep answers concise but useful.
+- Keep answers concise but useful. Do not include repetitive greetings like 'Welcome back' or 'Hello'. Provide only the relevant information.
 """
