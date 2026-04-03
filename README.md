@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VNR-ACE Backend
 
 VNR-ACE is an advanced AI-powered platform for campus intelligence, admissions assistance, and placement automation. 
@@ -38,3 +39,6 @@ The server will be available at `http://localhost:8000`.
 
 ## 🛠️ Maintenance
 - Use `placements/resume_ingester.py` to rebuild the resume FAISS index after adding new files.
+=======
+.
+>>>>>>> e003ac7ca6f33c80f32aed71ca383c9ceb09a7f0
