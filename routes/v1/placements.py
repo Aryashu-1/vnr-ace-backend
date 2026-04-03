@@ -1,8 +1,9 @@
 import os
 import uuid
 import traceback
-from typing import List, Optional
+from typing import Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Body
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -29,9 +30,16 @@ from agents.placements.graphs import (
 )
 from agents.placements.interview_prep.utils import load_company_data
 from agents.placements.resume_feedback.services import ResumeRAGService
+from agents.placements.resume_feedback.nodes import resume_chat_node
 from agents.placements.shortlisting.services import ShortlistingService
 
 router = APIRouter(prefix="/placements", tags=["Placements"])
+
+
+class ResumeChatRequest(BaseModel):
+    message: str
+    structured_analysis: dict
+    conversation_history: list[dict] = []
 
 @router.get("/stats", response_model=DashboardResponse)
 async def get_dashboard_stats():
@@ -133,6 +141,28 @@ async def prep_chat(req: InterviewChatRequest):
     }
     result = await interview_prep_graph.ainvoke(initial_state)
     return ChatResponse(reply=result.get("response"))
+
+
+@router.post("/resume/chat")
+async def resume_chat(body: ResumeChatRequest):
+    state = {
+        "user_id": 999,
+        "user_role": "student",
+        "user_query": body.message,
+        "structured_analysis": body.structured_analysis,
+        "conversation_history": body.conversation_history,
+        "audit_events": [],
+    }
+
+    try:
+        result = resume_chat_node(state)
+        return {
+            "reply": result.get("final_response"),
+            "conversation_history": result.get("conversation_history", []),
+        }
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/admin/process-emails")
 async def process_emails(current_user = Depends(role_required("admin"))):
