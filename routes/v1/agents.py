@@ -4,10 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.db import get_db
 from core.deps import role_required, get_current_user
 from core.guardrails import check_input_guardrail, check_output_guardrail
+from core.llm import LLMServiceError
 from schemas.agents import ChatRequest, ChatResponse
 
 # Agent Graphs
 from agents.admissions.graph import admissions_graph
+from agents.admissions.services import AdmissionsDataService
 from agents.classwork.graphs import (
     faculty_timetable_enquiry_graph,
     report_generation_graph
@@ -32,7 +34,16 @@ async def admissions_chat(
     }
     
     config = {"configurable": {"thread_id": req.thread_id}}
-    result = await admissions_graph.ainvoke(initial_state, config=config)
+    try:
+        result = await admissions_graph.ainvoke(initial_state, config=config)
+    except LLMServiceError:
+        fallback = AdmissionsDataService.build_fallback_response(req.message)
+        return ChatResponse(
+            reply=fallback["reply"],
+            route=fallback["route"],
+            metadata={**(req.metadata or {}), "fallback": "local_admissions_data"},
+        )
+
     reply = result.get("reply")
 
     if reply and not await check_output_guardrail(reply, req.message):
