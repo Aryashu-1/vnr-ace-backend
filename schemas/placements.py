@@ -10,6 +10,7 @@ class ShortlistingRequest(BaseModel):
     no_of_students: Optional[int] = 5
     min_cgpa: Optional[float] = None
     branch: Optional[str] = None
+    company: Optional[str] = None
 
 class InterviewStartRequest(BaseModel):
     company: str

@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from datetime import datetime
 
@@ -13,6 +14,7 @@ from routes.v1.api import api_v1_router
 
 from core.deps import role_required
 from core.db import engine, Base
+from core.llm import LLMServiceError
 
 # IMPORTANT: import models so metadata registers
 from models.user import User
@@ -41,6 +43,19 @@ app = FastAPI(
     title="VNR-ACE Backend",
     lifespan=lifespan
 )
+
+
+@app.exception_handler(LLMServiceError)
+async def llm_service_error_handler(request: Request, exc: LLMServiceError):
+    headers = {}
+    if exc.retry_after is not None:
+        headers["Retry-After"] = str(exc.retry_after)
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=headers,
+    )
 
 # ---------------------------
 # 🚀 CORS

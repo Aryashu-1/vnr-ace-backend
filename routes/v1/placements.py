@@ -94,11 +94,13 @@ async def run_shortlisting(
     req: Optional[ShortlistingRequest] = Body(None),
     jd_text: Optional[str] = Form(None),
     no_of_students: Optional[int] = Form(5),
+    company: Optional[str] = Form(None),
     db: AsyncSession = Depends(get_db),
 ):
     try:
         effective_jd_text = req.jd_text if req else jd_text
         effective_top_k = req.no_of_students if req else no_of_students
+        effective_company = req.company if req else company
 
         if not effective_jd_text:
             raise HTTPException(status_code=400, detail="jd_text is required")
@@ -110,7 +112,17 @@ async def run_shortlisting(
         results = service.shortlist(jd_text=effective_jd_text, top_k=effective_top_k or 5)
         if results:
             results = await service.explain_matches(effective_jd_text, results)
-        return {"matches": results, "count": len(results)}
+
+        company_data = load_company_data(effective_company) if effective_company else {}
+
+        return {
+            "matches": results,
+            "count": len(results),
+            "company": effective_company,
+            "experiences": company_data.get("experiences", []),
+            "questions": company_data.get("questions", []),
+            "summary": company_data.get("summary"),
+        }
     except HTTPException:
         raise
     except Exception as e:

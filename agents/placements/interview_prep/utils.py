@@ -6,12 +6,36 @@ def load_company_data(company_name: str) -> dict:
     """
     Loads company-specific interview data from JSON.
     """
-    file_path = os.path.join(DATA_BASE_PATH, f"{company_name.lower()}.json")
-    if not os.path.exists(file_path):
-        return {"company": company_name, "questions": []}
-    
-    with open(file_path, "r") as f:
-        return json.load(f)
+    normalized_name = (company_name or "").strip()
+    if not normalized_name:
+        return {"company": company_name, "experiences": [], "questions": []}
+
+    file_path = os.path.join(DATA_BASE_PATH, f"{normalized_name.lower()}.json")
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    shared_file_path = os.path.join("data", "placements", "interview_experiences.json")
+    if os.path.exists(shared_file_path):
+        with open(shared_file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        for company in data.get("companies", []):
+            if company.get("name", "").strip().lower() == normalized_name.lower():
+                questions = []
+                for experience in company.get("experiences", []):
+                    for round_info in experience.get("rounds", []):
+                        questions.extend(round_info.get("questions", []))
+
+                return {
+                    "company": company.get("name", normalized_name),
+                    "experiences": company.get("experiences", []),
+                    "questions": questions,
+                    "summary": company.get("summary", {}),
+                    "global_patterns": data.get("global_patterns", {}),
+                }
+
+    return {"company": company_name, "experiences": [], "questions": []}
 
 def filter_questions_by_keyword(questions: list, user_query: str, topics: list = None) -> list:
     """
