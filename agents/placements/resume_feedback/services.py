@@ -193,8 +193,15 @@ class ResumeRAGService:
         """
         Return structured analysis dict compatible with StructuredResumeAnalysis.
         """
+        if resume_path:
+            text = self.advisor._extract_text(resume_path)
+        else:
+            text = resume_text
+
         analysis = self.advisor.analyze(resume_path=resume_path, resume_text=resume_text)
-        return analysis.model_dump()
+        result = analysis.model_dump()
+        result["resume_text"] = text
+        return result
 
 
 class AuditLogRepository:

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "9faeba1d-e7c3-4dff-8417-9d3e5d7f425f",
+    "name": "CSE"
+  },
+  {
+    "id": "8c94a6f7-2010-4017-a333-a1796deb4a92",
+    "name": "CIVIL"
+  },
+  {
+    "id": "96d0a5bd-3565-4de9-9c36-82e58b31b5f1",
+    "name": "ECE"
+  },
+  {
+    "id": "83b99d83-76b6-47fd-97ec-cbcd9e62ec2e",
+    "name": "MECH"
+  },
+  {
+    "id": "0700d4c0-76f9-40d7-9b70-93869b5dc786",
+    "name": "IT"
+  },
+  {
+    "id": "243d74cc-a627-492f-89ba-cc850aabff18",
+    "name": "H&S"
+  },
+  {
+    "id": "04627488-8884-4d1a-a52a-04dfaf0dd886",
+    "name": "EEE"
+  }
+]

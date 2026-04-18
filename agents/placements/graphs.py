@@ -3,8 +3,10 @@
 from .chart_generator.graph import build_chart_generator_graph
 from .live_dashboard.graph import build_live_dashboard_graph
 from .resume_feedback.graph import build_resume_feedback_graph
+from .resume_editor.graph import build_resume_editor_graph
 from .shortlisting.graph import build_shortlisting_graph
 from .interview_prep.graph import build_interview_prep_graph
+from .resume_editor.services import ResumeEditorService
 
 from agents.core_modules import (
     LLMService, 
@@ -20,6 +22,7 @@ audit_repo = AuditRepo()
 analytics_repo = AnalyticsRepo()
 dashboard_repo = DashboardRepo()
 resume_cache_repo = ResumeCacheRepo()
+resume_editor_service = ResumeEditorService()
 
 # Build graphs
 chart_generator_graph = build_chart_generator_graph(
@@ -38,6 +41,11 @@ resume_feedback_graph = build_resume_feedback_graph(
     llm_service=llm_service,
     cache_repo=resume_cache_repo,
     audit_repo=audit_repo
+)
+
+resume_editor_graph = build_resume_editor_graph(
+    llm_service=llm_service,
+    editor_service=resume_editor_service,
 )
 
 shortlisting_graph = build_shortlisting_graph(

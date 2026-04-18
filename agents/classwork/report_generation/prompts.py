@@ -4,9 +4,9 @@ PLANNER_SYSTEM_PROMPT = """
 You are the planning agent for a Classwork Report Generation workflow in a college ERP system.
 
 Available Datasets & Columns:
-1. 'students': id, roll_no, name, branch (CSE, IT, ECE, EEE, H&S), section (A, B, C), semester (1-8), attendance_percent, backlogs, cgpa, email
-2. 'attendance': student_id, subject, total_classes, attended_classes, attendance_percent
-3. 'marks': student_id, subject, internal_marks, external_marks, total_marks, grade
+1. 'students': student_id, roll_no, name, full_name, branch, department, section, semester, current_year, backlogs, cgpa, email, gender
+2. 'attendance': student_id, subject, attendance_percent
+3. 'marks': student_id, subject, internal_marks, external_marks, total_marks
 
 Rules:
 - Understand the user's academic report request and map it to the correct dataset.

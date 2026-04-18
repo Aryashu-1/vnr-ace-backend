@@ -26,7 +26,7 @@ from .nodes import (
 )
 
 
-def build_report_generation_graph(llm_service: Any = None, audit_repo: Any = None):
+def build_report_generation_graph(llm_service: Any = None, audit_repo: Any = None, data_repo: Any = None):
     builder = StateGraph(ReportGenerationState)
 
     builder.add_node("access_control", access_control_node)
@@ -40,7 +40,7 @@ def build_report_generation_graph(llm_service: Any = None, audit_repo: Any = Non
         lambda state: planner_node(state, llm_service=llm_service),
     )
     builder.add_node("clarification", clarification_node)
-    builder.add_node("load_data", load_data_node)
+    builder.add_node("load_data", lambda state: load_data_node(state, data_repo=data_repo))
     builder.add_node("strict_column_validation", strict_column_validation_node)
     builder.add_node("analysis", analysis_node)
     builder.add_node("validation", validation_node)

@@ -1,7 +1,5 @@
 # agents/classwork/report_generation/constants.py
 
-from pathlib import Path
-
 AGENT_NAME = "classwork_report_generation"
 
 ALLOWED_ROLES = {"faculty", "hod"}
@@ -21,41 +19,40 @@ DEFAULT_EXPORT_FORMAT = "xlsx"
 DEFAULT_PREVIEW_LIMIT = 20
 
 DATASET_REGISTRY = {
-    "students": str(Path("data/classwork/students.csv")),
-    "attendance": str(Path("data/classwork/attendance.csv")),
-    "marks": str(Path("data/classwork/marks.csv")),
+    "students": "db.students",
+    "attendance": "db.attendance",
+    "marks": "db.marks",
 }
 
 DATASET_ALLOWED_COLUMNS = {
     "students": {
         "student_id",
+        "roll_no",
         "name",
+        "full_name",
+        "branch",
         "department",
         "section",
         "semester",
+        "current_year",
         "regulation",
         "batch",
         "gender",
+        "cgpa",
+        "backlogs",
+        "email",
     },
     "attendance": {
         "student_id",
-        "subject_code",
-        "subject_name",
+        "subject",
         "attendance_percent",
-        "classes_conducted",
-        "classes_attended",
-        "faculty_name",
     },
     "marks": {
         "student_id",
-        "subject_code",
-        "subject_name",
-        "internal_1",
-        "internal_2",
-        "assignment_marks",
-        "avg_marks",
-        "grade",
-        "faculty_name",
+        "subject",
+        "internal_marks",
+        "external_marks",
+        "total_marks",
     },
 }
 

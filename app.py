@@ -17,8 +17,8 @@ from core.db import engine, Base
 from core.llm import LLMServiceError
 
 # IMPORTANT: import models so metadata registers
-from models.user import User
-from models.role import Role
+from models.profile import Profile
+from models.user_role import UserRole
 from models.student import Student
 from models.company import Company
 from models.placement import Placement

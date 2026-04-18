@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from functools import partial
 from langgraph.graph import StateGraph, END
 
 from .state import LiveDashboardState
@@ -40,11 +41,11 @@ def build_live_dashboard_graph(
     builder.add_node("clarification", clarification_node)
     builder.add_node(
         "load_dashboard",
-        lambda state: load_dashboard_node(state, dashboard_repo=dashboard_repo),
+        partial(load_dashboard_node, dashboard_repo=dashboard_repo),
     )
     builder.add_node(
         "refresh_dashboard",
-        lambda state: refresh_dashboard_node(state, dashboard_repo=dashboard_repo),
+        partial(refresh_dashboard_node, dashboard_repo=dashboard_repo),
     )
     builder.add_node(
         "dashboard_qa",

@@ -1,0 +1,290 @@
+[
+  {
+    "id": "eb585330-8652-4806-944c-1d9a0682b9b1",
+    "full_name": "Aarav Sharma",
+    "email": "aarav.s@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "53784abf-a22f-4e48-81ee-d10930cf2915",
+    "full_name": "Ananya Reddy",
+    "email": "ananya.r@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "73400f8a-de27-47a6-9747-249796d3c9db",
+    "full_name": "Arjun Rao",
+    "email": "arjun.r@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "4ea91a76-ab3b-459b-accc-68ac8456a5be",
+    "full_name": "Isha Verma",
+    "email": "isha.v@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "b7eba1ab-205d-4b10-8ec3-8a76a5eed990",
+    "full_name": "Rohan Das",
+    "email": "rohan.d@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "9d0a69ad-e1cb-4c3e-ba33-e8374e4255df",
+    "full_name": "Priya Gupta",
+    "email": "priya.g@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "98feb75c-2b91-436d-a2a7-ff51eb82be4a",
+    "full_name": "Arjun Rao",
+    "email": "20bd1a0301@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "ced243ec-6d9c-4529-8eae-650430049958",
+    "full_name": "Isha Verma",
+    "email": "20bd1a0302@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "f9cb2b67-b0bb-4a16-9d80-23a011c385be",
+    "full_name": "Karthik Jayram",
+    "email": "karthik.j@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "51e650cd-7196-4bf6-946f-33dcd6bce809",
+    "full_name": "Meera Nair",
+    "email": "meera.n@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "e54bb26d-7368-437c-9df9-a7de4b5a337f",
+    "full_name": "Vikram Singh",
+    "email": "vikram.s@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "cbbf7dc3-2a85-4284-b03c-a1f7814e85e0",
+    "full_name": "Sanya Malhotra",
+    "email": "sanya.m@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "a15a0869-efdd-4b6a-9f2d-b9a65e3aeb85",
+    "full_name": "Aarav Sharma",
+    "email": "21r01a0501@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "984ad480-8e3b-4a03-b27f-3d3213b95dfd",
+    "full_name": "Vivaan Patel",
+    "email": "21r01a0502@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "2e1f8104-9b08-465f-8a6c-20f86a2cd795",
+    "full_name": "Aditya Kumar",
+    "email": "21r01a0503@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "8aa6811f-b517-45a9-9371-328e0ef36480",
+    "full_name": "Vihaan Singh",
+    "email": "21r01a0504@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "c14a25a8-8f0a-4398-80e1-92970439b5ae",
+    "full_name": "Arjun Reddy",
+    "email": "21r01a0505@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "929d29bd-ccd9-4336-827d-466bc87d5ff7",
+    "full_name": "Sai Krishna",
+    "email": "21r01a0506@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "efa6a39d-0264-49bb-9bb0-0a851f3821e9",
+    "full_name": "Reyansh Gupta",
+    "email": "21r01a0507@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "ff6931c9-47ef-4ce3-9fbc-b6aa45d01d9b",
+    "full_name": "Ayaan Khan",
+    "email": "21r01a0508@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "5626be64-4a7c-4180-b655-a0e55b1fbefb",
+    "full_name": "Krishna Rao",
+    "email": "21r01a0509@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "d2fe34ef-ea7a-4630-9425-92598ba40866",
+    "full_name": "Ishaan Verma",
+    "email": "21r01a0510@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "3711ca71-670c-46a8-9e34-b7fa459b40fa",
+    "full_name": "Shaurya Nair",
+    "email": "21r01a0511@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "7eb7ea83-b5af-4526-98e0-c8db55db560f",
+    "full_name": "Atharv Joshi",
+    "email": "21r01a0512@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "326e055f-be10-4592-bdfa-8482ada59aa5",
+    "full_name": "Advait Desai",
+    "email": "21r01a0513@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "680c303f-6108-4701-bd3a-930c4f1e6a4c",
+    "full_name": "Pranav Iyer",
+    "email": "21r01a0514@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "4475333f-aefc-4f31-b526-6575814175f3",
+    "full_name": "Dhruv Menon",
+    "email": "21r01a0515@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "e10ebb76-d588-4ab0-a001-171349ea2dc7",
+    "full_name": "Kabir Malhotra",
+    "email": "21r01a0516@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "9a4bb844-d891-4a8b-a0ee-4341c2cdcb78",
+    "full_name": "Kiaan Chopra",
+    "email": "21r01a0517@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "ac1ebb06-f235-452b-899e-857a2493a5f4",
+    "full_name": "Arnav Bhat",
+    "email": "21r01a0518@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "1e8dfbbd-7332-49d7-84db-4c13b606dec0",
+    "full_name": "Veer Agarwal",
+    "email": "21r01a0519@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "f2fd069d-0d00-4002-be7a-e53bd9e54fff",
+    "full_name": "Rudra Pillai",
+    "email": "21r01a0520@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "1ef223ca-bc1e-4bb7-93fd-bec4e3a39094",
+    "full_name": "Ananya Sharma",
+    "email": "21r01a0521@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "b83d1de0-ed8e-42f6-8b03-a6e548fd9918",
+    "full_name": "Diya Patel",
+    "email": "21r01a0522@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "4289c154-8672-47c7-9601-21d7c7c6ddae",
+    "full_name": "Isha Kumar",
+    "email": "21r01a0523@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "97013931-9dfe-4537-9e1b-63701d42a302",
+    "full_name": "Anvi Singh",
+    "email": "21r01a0524@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "32e897e0-b10f-4568-a5a8-3d4d436bdcaa",
+    "full_name": "Saanvi Reddy",
+    "email": "21r01a0525@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "6c2942f3-186c-4c07-853f-0dd6d1c0c200",
+    "full_name": "Navya Krishna",
+    "email": "21r01a0526@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "e051077f-f2de-418f-9a59-44d6031e3b02",
+    "full_name": "Aanya Gupta",
+    "email": "21r01a0527@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "7205f295-f47b-4319-9d1b-a55d80ad7944",
+    "full_name": "Pari Khan",
+    "email": "21r01a0528@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "674fbf36-e23e-4979-bada-279cb320fb56",
+    "full_name": "Myra Rao",
+    "email": "21r01a0529@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "b69fcf13-8f17-42e1-ac40-26fb7a52ec4a",
+    "full_name": "Sara Verma",
+    "email": "21r01a0530@vnr.edu.in",
+    "user_type": "student"
+  },
+  {
+    "id": "c5b8cd0d-c040-455a-b617-7a9b917bab9a",
+    "full_name": "Dr. Ravi Kumar",
+    "email": "dr..ravi.kumar@faculty.vnr.edu.in",
+    "user_type": "faculty"
+  },
+  {
+    "id": "f4be6919-613d-4d18-a4b6-7d7668f7b77a",
+    "full_name": "Mrs. Priya Sharma",
+    "email": "mrs..priya.sharma@faculty.vnr.edu.in",
+    "user_type": "faculty"
+  },
+  {
+    "id": "cb49f127-7176-40a8-81da-31f88238b517",
+    "full_name": "Mr. Suresh Reddy",
+    "email": "mr..suresh.reddy@faculty.vnr.edu.in",
+    "user_type": "faculty"
+  },
+  {
+    "id": "058cf5b8-47da-4dff-8c61-c72024565d74",
+    "full_name": "Prof. Anita Das",
+    "email": "prof..anita.das@faculty.vnr.edu.in",
+    "user_type": "faculty"
+  },
+  {
+    "id": "99b32efd-e877-4ad2-965f-fa1ccdbccc62",
+    "full_name": "Dr. K. Venkatesh",
+    "email": "dr..k..venkatesh@faculty.vnr.edu.in",
+    "user_type": "faculty"
+  },
+  {
+    "id": "e88259b1-5184-4c3d-be0a-0a6aef473acc",
+    "full_name": "Mrs. Sneha Kumari",
+    "email": "mrs..sneha.kumari@faculty.vnr.edu.in",
+    "user_type": "faculty"
+  }
+]

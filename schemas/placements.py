@@ -1,5 +1,7 @@
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from datetime import datetime
+from typing import Any, Dict, List, Literal, Optional
+
+from pydantic import BaseModel, Field
 
 class ResumeAnalysisRequest(BaseModel):
     resume_text: Optional[str] = None
@@ -34,3 +36,60 @@ class RecentPlacement(BaseModel):
 class DashboardResponse(BaseModel):
     stats: List[PlacementStats]
     recent_placements: List[RecentPlacement]
+
+
+class ResumeVersionSummary(BaseModel):
+    id: int
+    version_number: int
+    change_summary: Optional[str] = None
+    created_at: Optional[datetime] = None
+
+
+class ResumeUploadResponse(BaseModel):
+    resume_id: str
+    structured_json: Dict[str, Any]
+    version: ResumeVersionSummary
+    analysis: Optional[Dict[str, Any]] = None
+
+
+class ResumeDetailResponse(BaseModel):
+    resume_id: str
+    user_id: Optional[str] = None
+    current_version_id: Optional[int] = None
+    raw_text: Optional[str] = None
+    structured_json: Dict[str, Any]
+    versions: List[ResumeVersionSummary] = Field(default_factory=list)
+    latest_analysis: Optional[Dict[str, Any]] = None
+    updated_at: Optional[datetime] = None
+
+
+class ResumeEditRequest(BaseModel):
+    section: Literal["personal_info", "education", "skills", "projects", "experience", "achievements"]
+    payload: Any
+    subsection_index: Optional[int] = Field(default=None, ge=0)
+    change_summary: Optional[str] = None
+    reanalyze: bool = False
+    user_instruction: Optional[str] = None
+
+
+class ResumeImproveRequest(BaseModel):
+    section: Literal["personal_info", "education", "skills", "projects", "experience", "achievements"]
+    action: Literal["improve_section", "regenerate_bullets", "apply_suggestion"] = "improve_section"
+    subsection_index: Optional[int] = Field(default=None, ge=0)
+    suggestion_text: Optional[str] = None
+    user_instruction: Optional[str] = None
+    reanalyze: bool = False
+
+
+class ResumeReanalyzeResponse(BaseModel):
+    resume_id: str
+    analysis: Dict[str, Any]
+    latest_version: Optional[ResumeVersionSummary] = None
+
+
+class ResumeMutationResponse(BaseModel):
+    message: str
+    resume_id: str
+    structured_json: Dict[str, Any]
+    version: Optional[ResumeVersionSummary] = None
+    analysis: Optional[Dict[str, Any]] = None

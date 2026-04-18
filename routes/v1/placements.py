@@ -1,39 +1,47 @@
 import os
-import uuid
 import traceback
-from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Body
+import uuid
+from typing import Optional
+
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile, status, Request
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.db import get_db
-from core.deps import role_required, get_current_user
-from core.guardrails import check_input_guardrail, check_output_guardrail
-from schemas.placements import (
-    ResumeAnalysisRequest, 
-    ShortlistingRequest, 
-    InterviewStartRequest, 
-    InterviewChatRequest,
-    DashboardResponse,
-    PlacementStats,
-    RecentPlacement
-)
-from schemas.agents import ChatRequest, ChatResponse
-
-# Agent Graphs
 from ace_graphs.tp_admin_graph import tp_admin_agent
-from agents.placements.graphs import (
-    resume_feedback_graph,
-    shortlisting_graph,
-    interview_prep_graph
-)
+from agents.placements.graphs import interview_prep_graph, resume_editor_graph, shortlisting_graph
 from agents.placements.interview_prep.utils import load_company_data
-from agents.placements.resume_feedback.services import ResumeRAGService
+from agents.placements.resume_editor.services import ResumeEditorService
 from agents.placements.resume_feedback.nodes import resume_chat_node
+from agents.placements.resume_feedback.services import ResumeRAGService
 from agents.placements.shortlisting.services import ShortlistingService
+from core.db import get_db
+from core.deps import get_current_user, role_required
+from models.company import Company
+from models.dashboard_snapshot import DashboardSnapshot
+from models.placement_drive import PlacementDrive
+from models.placement_offer_v2 import PlacementOfferV2
+from models.profile import Profile
+from models.student import Student
+from schemas.agents import ChatResponse
+from schemas.placements import (
+    DashboardResponse,
+    InterviewChatRequest,
+    InterviewStartRequest,
+    PlacementStats,
+    RecentPlacement,
+    ResumeAnalysisRequest,
+    ResumeDetailResponse,
+    ResumeEditRequest,
+    ResumeImproveRequest,
+    ResumeMutationResponse,
+    ResumeReanalyzeResponse,
+    ResumeUploadResponse,
+    ShortlistingRequest,
+)
 
 router = APIRouter(prefix="/placements", tags=["Placements"])
+resume_editor_service = ResumeEditorService()
 
 
 class ResumeChatRequest(BaseModel):
@@ -41,42 +49,282 @@ class ResumeChatRequest(BaseModel):
     structured_analysis: dict
     conversation_history: list[dict] = []
 
+
+def _user_role_name(current_user) -> str:
+    role = getattr(current_user, "role", None)
+    if role is not None and getattr(role, "name", None):
+        return role.name
+    return "student"
+
+
+async def _profile_id_for_current_user(db: AsyncSession, current_user) -> Optional[str]:
+    profile_id = await resume_editor_service.resolve_or_create_profile_id(db, current_user)
+    return str(profile_id) if profile_id else None
+
+
+async def _assert_resume_access(db: AsyncSession, current_user, resume_id: str) -> None:
+    role_name = _user_role_name(current_user)
+    if role_name in {"admin", "tpo", "placement_coordinator"}:
+        return
+
+    profile_id = await db.scalar(select(Profile.id).where(Profile.email == current_user.email))
+    resume = await resume_editor_service.fetch_resume(db, resume_id)
+    if profile_id is None or (resume.user_id and str(resume.user_id) != str(profile_id)):
+        raise HTTPException(status_code=403, detail="You are not allowed to access this resume.")
+
+
 @router.get("/stats", response_model=DashboardResponse)
-async def get_dashboard_stats():
-    """
-    Returns live stats for the placement dashboard.
-    Falls back to mock data for now.
-    """
+async def get_dashboard_stats(db: AsyncSession = Depends(get_db)):
+    snapshot = await db.scalar(
+        select(DashboardSnapshot).order_by(DashboardSnapshot.updated_at.desc()).limit(1)
+    )
+    from models.department import Department
+    recent_rows = (
+        await db.execute(
+            select(Profile.full_name, Department.name, Company.name, PlacementOfferV2.offered_ctc)
+            .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
+            .join(PlacementDrive, PlacementDrive.id == PlacementOfferV2.drive_id)
+            .join(Company, Company.id == PlacementDrive.company_id)
+            .outerjoin(Profile, Profile.id == Student.profile_id)
+            .outerjoin(Department, Department.id == Student.department_id)
+            .order_by(PlacementOfferV2.created_at.desc())
+            .limit(5)
+        )
+    ).all()
+
+    if snapshot:
+        stats = [
+            PlacementStats(label="Total Placements", value=str(snapshot.placed_students)),
+            PlacementStats(label="Avg Package", value=f"{snapshot.avg_package:.1f} LPA"),
+            PlacementStats(label="Placement Rate", value=f"{snapshot.placement_rate:.1f}%"),
+            PlacementStats(label="Total Students", value=str(snapshot.total_students)),
+        ]
+        recent_placements = [
+            RecentPlacement(
+                name=name or "Unknown",
+                branch=branch or "Unknown",
+                company=company or "Unknown",
+                package=f"{(package or 0):.1f} LPA",
+            )
+            for name, branch, company, package in recent_rows
+        ]
+        return DashboardResponse(stats=stats, recent_placements=recent_placements)
+
     return DashboardResponse(
         stats=[
-            PlacementStats(label="Total Placements", value="156", trend=18),
-            PlacementStats(label="Avg Package", value="10.5 LPA", trend=5),
-            PlacementStats(label="Active Offers", value="34", trend=-2),
-            PlacementStats(label="Placement Rate", value="92%", trend=1),
+            PlacementStats(label="Total Placements", value="0"),
+            PlacementStats(label="Avg Package", value="0.0 LPA"),
+            PlacementStats(label="Placement Rate", value="0.0%"),
+            PlacementStats(label="Total Students", value="0"),
         ],
-        recent_placements=[
-            RecentPlacement(name="Aarav Sharma", branch="CSE", company="Google", package="12.5 LPA"),
-            RecentPlacement(name="Ananya Reddy", branch="CSE", company="Amazon", package="14.0 LPA"),
-            RecentPlacement(name="Vikram Singh", branch="ECE", company="Microsoft", package="11.0 LPA"),
-        ]
+        recent_placements=[],
     )
+
+
+@router.post("/resume/upload", response_model=ResumeUploadResponse, status_code=status.HTTP_201_CREATED)
+async def upload_resume(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        content = await file.read()
+        profile_id = await resume_editor_service.resolve_or_create_profile_id(db, current_user)
+        resume = await resume_editor_service.create_resume(
+            db,
+            user_id=profile_id,
+            filename=file.filename or "resume.pdf",
+            content=content,
+        )
+        analysis = await resume_editor_service.reanalyze_resume(db, resume=resume)
+        await db.commit()
+
+        detail = await resume_editor_service.build_resume_detail_payload(db, resume.id)
+        return ResumeUploadResponse(
+            resume_id=detail["resume_id"],
+            structured_json=detail["structured_json"],
+            version=detail["versions"][0],
+            analysis=analysis,
+        )
+    except Exception as exc:
+        await db.rollback()
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/resume/{resume_id}", response_model=ResumeDetailResponse)
+async def get_resume(
+    resume_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        await _assert_resume_access(db, current_user, resume_id)
+        detail = await resume_editor_service.build_resume_detail_payload(db, resume_id)
+        return ResumeDetailResponse(**detail)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/resume/{resume_id}/edit", response_model=ResumeMutationResponse)
+async def edit_resume(
+    resume_id: str,
+    body: ResumeEditRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        await _assert_resume_access(db, current_user, resume_id)
+        state = {
+            "user_id": await _profile_id_for_current_user(db, current_user) or str(current_user.id),
+            "user_role": _user_role_name(current_user),
+            "user_query": body.user_instruction or f"Edit the {body.section} section truthfully.",
+            "requested_action": "edit_section",
+            "resume_id": resume_id,
+            "section": body.section,
+            "subsection_index": body.subsection_index,
+            "payload": body.payload,
+            "reanalyze": body.reanalyze,
+            "change_summary": body.change_summary,
+            "db_session": db,
+            "audit_events": [],
+        }
+        result = await resume_editor_graph.ainvoke(state)
+
+        if not result.get("validation_passed", True):
+            await db.rollback()
+            raise HTTPException(status_code=400, detail=result.get("validation_issues"))
+
+        payload = result["response_payload"]
+        return ResumeMutationResponse(
+            message=result["final_response"],
+            resume_id=payload["resume_id"],
+            structured_json=payload["structured_json"],
+            version=payload.get("version"),
+            analysis=payload.get("analysis"),
+        )
+    except HTTPException:
+        raise
+    except ValueError as exc:
+        await db.rollback()
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        await db.rollback()
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/resume/{resume_id}/improve", response_model=ResumeMutationResponse)
+async def improve_resume(
+    resume_id: str,
+    body: ResumeImproveRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        await _assert_resume_access(db, current_user, resume_id)
+        instruction = body.user_instruction
+        if body.action == "apply_suggestion":
+            instruction = body.suggestion_text or body.user_instruction or "Apply this suggestion truthfully."
+        elif not instruction:
+            instruction = f"{body.action.replace('_', ' ')} for the {body.section} section without changing facts."
+
+        state = {
+            "user_id": await _profile_id_for_current_user(db, current_user) or str(current_user.id),
+            "user_role": _user_role_name(current_user),
+            "user_query": instruction,
+            "requested_action": body.action,
+            "resume_id": resume_id,
+            "section": body.section,
+            "subsection_index": body.subsection_index,
+            "suggestion_text": body.suggestion_text,
+            "reanalyze": body.reanalyze,
+            "db_session": db,
+            "audit_events": [],
+        }
+        result = await resume_editor_graph.ainvoke(state)
+
+        if not result.get("validation_passed", True):
+            await db.rollback()
+            raise HTTPException(status_code=400, detail=result.get("validation_issues"))
+
+        payload = result["response_payload"]
+        return ResumeMutationResponse(
+            message=result["final_response"],
+            resume_id=payload["resume_id"],
+            structured_json=payload["structured_json"],
+            version=payload.get("version"),
+            analysis=payload.get("analysis"),
+        )
+    except HTTPException:
+        raise
+    except ValueError as exc:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        await db.rollback()
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/resume/{resume_id}/reanalyze", response_model=ResumeReanalyzeResponse)
+async def reanalyze_resume(
+    resume_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        await _assert_resume_access(db, current_user, resume_id)
+        state = {
+            "user_id": await _profile_id_for_current_user(db, current_user) or str(current_user.id),
+            "user_role": _user_role_name(current_user),
+            "user_query": "Reanalyze this resume.",
+            "requested_action": "reanalyze_resume",
+            "resume_id": resume_id,
+            "reanalyze": True,
+            "db_session": db,
+            "audit_events": [],
+        }
+        result = await resume_editor_graph.ainvoke(state)
+        payload = result["response_payload"]
+        latest_version = payload.get("versions", [None])[0]
+        return ResumeReanalyzeResponse(
+            resume_id=payload["resume_id"],
+            analysis=payload["analysis"],
+            latest_version=latest_version,
+        )
+    except ValueError as exc:
+        await db.rollback()
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        await db.rollback()
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
+
 
 @router.post("/resume/analyze")
 async def analyze_resume(
+    request: Request,
     file: Optional[UploadFile] = File(None),
     resume_text: Optional[str] = Form(None),
-    body: Optional[ResumeAnalysisRequest] = Body(None),
 ):
     service = ResumeRAGService()
     try:
-        text_input = resume_text or (body.resume_text if body else None)
+        body = {}
+        if request.headers.get("content-type") == "application/json":
+            body = await request.json()
+            
+        text_input = resume_text or body.get("resume_text")
 
         if file:
             os.makedirs("tmp", exist_ok=True)
             temp_path = f"tmp/{file.filename}"
             content = await file.read()
-            with open(temp_path, "wb") as f:
-                f.write(content)
+            with open(temp_path, "wb") as temp_file:
+                temp_file.write(content)
             analysis = service.analyze_resume(resume_path=temp_path)
         elif text_input:
             analysis = service.analyze_resume(resume_text=text_input)
@@ -85,9 +333,10 @@ async def analyze_resume(
         return analysis
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception as exc:
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(exc))
+
 
 @router.post("/shortlist/run")
 async def run_shortlisting(
@@ -106,10 +355,19 @@ async def run_shortlisting(
             raise HTTPException(status_code=400, detail="jd_text is required")
 
         from agents.core_modules import LLMService
+
         llm = LLMService()
         service = ShortlistingService(llm=llm)
 
-        results = service.shortlist(jd_text=effective_jd_text, top_k=effective_top_k or 5)
+        results = await service.shortlist_from_db(
+            db=db,
+            jd_text=effective_jd_text,
+            top_k=effective_top_k or 5,
+            branch=req.branch if req else None,
+            min_cgpa=req.min_cgpa if req else None,
+        )
+        if not results:
+            results = service.shortlist(jd_text=effective_jd_text, top_k=effective_top_k or 5)
         if results:
             results = await service.explain_matches(effective_jd_text, results)
 
@@ -125,31 +383,31 @@ async def run_shortlisting(
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception as exc:
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(exc))
+
 
 @router.post("/prep/start")
 async def prep_start(req: InterviewStartRequest):
     session_id = str(uuid.uuid4())
     company_data = load_company_data(req.company)
-    # Note: In a real app, you'd store this in Redis or a DB.
-    # For now, we'll return the rich data to the client to hold.
     return {
         "session_id": session_id,
         "company": req.company,
         "experiences": company_data.get("experiences", []),
         "questions": company_data.get("questions", []),
-        "role": company_data.get("role", "Software Engineer")
+        "role": company_data.get("role", "Software Engineer"),
     }
+
 
 @router.post("/prep/chat", response_model=ChatResponse)
 async def prep_chat(req: InterviewChatRequest):
     initial_state = {
-        "company": "Company", # Placeholder, ideally load from session
+        "company": "Company",
         "user_query": req.message,
         "session_id": req.session_id,
-        "audit_events": []
+        "audit_events": [],
     }
     result = await interview_prep_graph.ainvoke(initial_state)
     return ChatResponse(reply=result.get("response"))
@@ -172,12 +430,13 @@ async def resume_chat(body: ResumeChatRequest):
             "reply": result.get("final_response"),
             "conversation_history": result.get("conversation_history", []),
         }
-    except Exception as e:
+    except Exception as exc:
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(exc))
+
 
 @router.post("/admin/process-emails")
-async def process_emails(current_user = Depends(role_required("admin"))):
+async def process_emails(current_user=Depends(role_required("admin"))):
     initial_state = {"messages": []}
     result = await tp_admin_agent.ainvoke(initial_state)
     final_message = result.get("messages", [])[-1].content if result.get("messages") else "No result."

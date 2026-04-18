@@ -1,83 +1,60 @@
-import os
-import json
-from pathlib import Path
 from datetime import datetime
+from sqlalchemy import select, func, extract
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from langchain_core.prompts import PromptTemplate
 from core.db import get_db
 from core.llm import get_llm
-
-DATA_DIR = Path("data")
-STUDENTS_FILE = DATA_DIR / "students_sample.json"
-PLACEMENTS_FILE = DATA_DIR / "placements_sample.json"
-COMPANIES_FILE = DATA_DIR / "companies_sample.json"
-
-def load_local_data(file_path):
-    if not file_path.exists():
-        return []
-    with open(file_path, "r") as f:
-        return json.load(f)
+from models.company import Company
+from models.placement_drive import PlacementDrive
+from models.placement_offer_v2 import PlacementOfferV2
+from models.student import Student
 
 router = APIRouter(prefix="/charts", tags=["Charts API"])
 
 @router.get("/placement-trend")
 async def get_placement_trend(db: AsyncSession = Depends(get_db)):
-    placements = load_local_data(PLACEMENTS_FILE)
-    trends = {}
-    for p in placements:
-        p_date_str = p.get("placement_date")
-        if p_date_str:
-            try:
-                # Handle ISO format
-                dt = datetime.fromisoformat(p_date_str.replace('Z', '+00:00'))
-                year = dt.year
-                trends[year] = trends.get(year, 0) + 1
-            except:
-                continue
-            
-    result = [{"name": str(y), "value": count} for y, count in sorted(trends.items())]
-    return result
+    rows = (
+        await db.execute(
+            select(extract("year", PlacementDrive.drive_date).label("year"), func.count(PlacementOfferV2.id))
+            .join(PlacementOfferV2, PlacementOfferV2.drive_id == PlacementDrive.id)
+            .where(PlacementDrive.drive_date.is_not(None))
+            .group_by("year")
+            .order_by("year")
+        )
+    ).all()
+    return [{"name": str(int(year)), "value": count} for year, count in rows if year is not None]
 
 @router.get("/branch-wise")
 async def get_branch_wise_stats(db: AsyncSession = Depends(get_db)):
-    students = load_local_data(STUDENTS_FILE)
-    placements = load_local_data(PLACEMENTS_FILE)
-    
-    # Map student_id to whether they are placed
-    placed_student_ids = {p["student_id"] for p in placements}
-    
-    branch_stats = {}
-    for s in students:
-        branch = s.get("branch", "UNKNOWN")
-        if branch not in branch_stats:
-            branch_stats[branch] = {"total": 0, "placed": 0}
-        
-        branch_stats[branch]["total"] += 1
-        if s["id"] in placed_student_ids:
-            branch_stats[branch]["placed"] += 1
-            
+    total_rows = (
+        await db.execute(select(Student.branch, func.count(Student.id)).group_by(Student.branch))
+    ).all()
+    placed_rows = (
+        await db.execute(
+            select(Student.branch, func.count(func.distinct(Student.id)))
+            .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
+            .group_by(Student.branch)
+        )
+    ).all()
+    placed_map = {branch: count for branch, count in placed_rows}
     result = []
-    for branch, stats in branch_stats.items():
-        total = stats["total"]
-        placed = stats["placed"]
-        percentage = round((placed / total * 100), 2) if total > 0 else 0
+    for branch, total in total_rows:
+        placed = placed_map.get(branch, 0)
         result.append({
-            "name": branch,
+            "name": branch or "UNKNOWN",
             "value": placed,
             "total": total,
-            "percentage": percentage
+            "percentage": round((placed / total * 100), 2) if total else 0,
         })
     return result
 
 @router.get("/salary-distribution")
 async def get_salary_distribution(db: AsyncSession = Depends(get_db)):
-    placements = load_local_data(PLACEMENTS_FILE)
     buckets = {"< 5 LPA": 0, "5 - 10 LPA": 0, "10 - 15 LPA": 0, "> 15 LPA": 0}
-    
-    for p in placements:
-        s = p.get("ctc_lpa")
+    rows = (await db.execute(select(PlacementOfferV2.offered_ctc))).scalars().all()
+    for s in rows:
         if s is None: continue
         if s < 5: buckets["< 5 LPA"] += 1
         elif s < 10: buckets["5 - 10 LPA"] += 1
@@ -88,48 +65,50 @@ async def get_salary_distribution(db: AsyncSession = Depends(get_db)):
 
 @router.get("/company-wise")
 async def get_company_wise_stats(db: AsyncSession = Depends(get_db)):
-    placements = load_local_data(PLACEMENTS_FILE)
-    companies = load_local_data(COMPANIES_FILE)
-    
-    comp_map = {c["id"]: c["name"] for c in companies}
-    hires = {}
-    for p in placements:
-        cid = p.get("company_id")
-        name = comp_map.get(cid, "Unknown")
-        hires[name] = hires.get(name, 0) + 1
-        
-    sorted_hires = sorted(hires.items(), key=lambda x: x[1], reverse=True)[:10]
-    return [{"name": name, "value": count} for name, count in sorted_hires]
+    rows = (
+        await db.execute(
+            select(Company.name, func.count(PlacementOfferV2.id))
+            .join(PlacementDrive, PlacementDrive.company_id == Company.id)
+            .join(PlacementOfferV2, PlacementOfferV2.drive_id == PlacementDrive.id)
+            .group_by(Company.name)
+            .order_by(func.count(PlacementOfferV2.id).desc())
+            .limit(10)
+        )
+    ).all()
+    return [{"name": name, "value": count} for name, count in rows]
 
 @router.get("/minor-degree")
 async def get_minor_degree_stats(db: AsyncSession = Depends(get_db)):
-    students = load_local_data(STUDENTS_FILE)
-    placements = load_local_data(PLACEMENTS_FILE)
-    placed_ids = {p["student_id"] for p in placements}
-    
-    with_minor = [s for s in students if s.get("minor_degree")]
-    without_minor = [s for s in students if not s.get("minor_degree")]
-    
-    with_minor_placed = len([s for s in with_minor if s["id"] in placed_ids])
-    without_minor_placed = len([s for s in without_minor if s["id"] in placed_ids])
-    
+    with_minor = (await db.execute(select(func.count(Student.id)).where(Student.minor_degree.is_not(None)))).scalar() or 0
+    without_minor = (await db.execute(select(func.count(Student.id)).where(Student.minor_degree.is_(None)))).scalar() or 0
+    with_minor_placed = (
+        await db.execute(
+            select(func.count(func.distinct(Student.id)))
+            .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
+            .where(Student.minor_degree.is_not(None))
+        )
+    ).scalar() or 0
+    without_minor_placed = (
+        await db.execute(
+            select(func.count(func.distinct(Student.id)))
+            .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
+            .where(Student.minor_degree.is_(None))
+        )
+    ).scalar() or 0
     return [
-        {"name": "With Minor", "value": with_minor_placed, "total": len(with_minor)},
-        {"name": "Without Minor", "value": without_minor_placed, "total": len(without_minor)}
+        {"name": "With Minor", "value": with_minor_placed, "total": with_minor},
+        {"name": "Without Minor", "value": without_minor_placed, "total": without_minor}
     ]
 
 @router.get("/multiple-offers")
 async def get_multiple_offers(db: AsyncSession = Depends(get_db)):
-    placements = load_local_data(PLACEMENTS_FILE)
-    
-    student_counts = {}
-    for p in placements:
-        sid = p["student_id"]
-        student_counts[sid] = student_counts.get(sid, 0) + 1
-        
-    multiple = len([sid for sid, count in student_counts.items() if count > 1])
-    single = len([sid for sid, count in student_counts.items() if count == 1])
-    
+    rows = (
+        await db.execute(
+            select(PlacementOfferV2.student_id, func.count(PlacementOfferV2.id)).group_by(PlacementOfferV2.student_id)
+        )
+    ).all()
+    multiple = len([student_id for student_id, count in rows if count > 1])
+    single = len([student_id for student_id, count in rows if count == 1])
     return [
         {"name": "Multiple Offers", "value": multiple},
         {"name": "Single Offer", "value": single}

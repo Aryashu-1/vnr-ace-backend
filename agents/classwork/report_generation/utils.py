@@ -82,6 +82,9 @@ def apply_dataframe_filters(df: pd.DataFrame, filters: Dict[str, Any]) -> pd.Dat
             raise ValueError(f"Invalid filter column: {column}")
         if value is None:
             continue
+        if isinstance(value, str) and pd.api.types.is_object_dtype(result[column]):
+            result = result[result[column].astype(str).str.lower() == value.lower()]
+            continue
         result = result[result[column] == value]
     return result
 

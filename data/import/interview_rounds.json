@@ -1,0 +1,104 @@
+[
+  {
+    "id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "experience_id": "ac028863-8f47-43a6-ad16-4f7ebc46b904",
+    "round_type": "Technical Round 1",
+    "round_order": 1
+  },
+  {
+    "id": "a350e564-05ba-4b6f-b04d-8e172f454370",
+    "experience_id": "ac028863-8f47-43a6-ad16-4f7ebc46b904",
+    "round_type": "Technical Round 2",
+    "round_order": 2
+  },
+  {
+    "id": "8872d27b-04a3-45e9-82fd-5b96e553cef6",
+    "experience_id": "ac028863-8f47-43a6-ad16-4f7ebc46b904",
+    "round_type": "Technical Round 3",
+    "round_order": 3
+  },
+  {
+    "id": "cc391a17-62ca-4f83-8ef6-a89679d4aa70",
+    "experience_id": "40bf3680-c9b5-46dc-8962-efe6073e6861",
+    "round_type": "Online Test",
+    "round_order": 1
+  },
+  {
+    "id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "experience_id": "40bf3680-c9b5-46dc-8962-efe6073e6861",
+    "round_type": "TR1",
+    "round_order": 2
+  },
+  {
+    "id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "experience_id": "852456f5-d368-4a4d-81e3-741d4283d397",
+    "round_type": "Round 1",
+    "round_order": 1
+  },
+  {
+    "id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "experience_id": "852456f5-d368-4a4d-81e3-741d4283d397",
+    "round_type": "Round 2",
+    "round_order": 2
+  },
+  {
+    "id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "experience_id": "852456f5-d368-4a4d-81e3-741d4283d397",
+    "round_type": "Round 3",
+    "round_order": 3
+  },
+  {
+    "id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "experience_id": "1d2bfc89-69f5-47ac-b183-8e102eec942f",
+    "round_type": "Technical",
+    "round_order": 1
+  },
+  {
+    "id": "b2e348b3-a1f4-4130-b781-1658538bf4d7",
+    "experience_id": "1d2bfc89-69f5-47ac-b183-8e102eec942f",
+    "round_type": "HR",
+    "round_order": 2
+  },
+  {
+    "id": "206e298f-89de-43a7-a0d5-2046bdf15d8c",
+    "experience_id": "6dff3148-98b5-4c23-9ba8-9f9331890af1",
+    "round_type": "Technical",
+    "round_order": 1
+  },
+  {
+    "id": "25b59298-a2cd-4c73-aa0e-a4e0cf39063c",
+    "experience_id": "6dff3148-98b5-4c23-9ba8-9f9331890af1",
+    "round_type": "HR",
+    "round_order": 2
+  },
+  {
+    "id": "351894ae-44bf-46e8-a4f5-b44a13df0105",
+    "experience_id": "5238418d-cd97-4ccc-918a-cf81d3cd7311",
+    "round_type": "Coding",
+    "round_order": 1
+  },
+  {
+    "id": "88c3efde-8ac5-4ddb-b6d3-b2ae2c46d2ec",
+    "experience_id": "5238418d-cd97-4ccc-918a-cf81d3cd7311",
+    "round_type": "Technical",
+    "round_order": 2
+  },
+  {
+    "id": "d46ff47b-6b95-4be4-9450-249e2b7cd1c5",
+    "experience_id": "61a1d460-2eb6-489d-9593-c0632814bdf5",
+    "round_type": "Technical",
+    "round_order": 1
+  },
+  {
+    "id": "1cd418e3-4ff1-46b0-bef2-6904dd387c7b",
+    "experience_id": "61a1d460-2eb6-489d-9593-c0632814bdf5",
+    "round_type": "HR",
+    "round_order": 2
+  },
+  {
+    "id": "1949050c-42df-464b-a21b-e1b544948761",
+    "experience_id": "d80eefda-6f12-4650-90f8-29d81c068e7e",
+    "round_type": "Technical",
+    "round_order": 1
+  }
+]

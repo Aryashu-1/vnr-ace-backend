@@ -1,4 +1,5 @@
 import os
+from uuid import uuid4
 from dotenv import load_dotenv
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
@@ -23,6 +24,7 @@ engine = create_async_engine(
         "command_timeout": 60,
         "statement_cache_size": 0,
         "prepared_statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"__asyncpg_{uuid4().hex}__",
     }
 )
 

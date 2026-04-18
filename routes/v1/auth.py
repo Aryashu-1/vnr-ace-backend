@@ -7,8 +7,7 @@ from datetime import timedelta
 from core.db import get_db
 from core.auth_utils import verify_password, create_access_token
 from core.config import settings
-from models.user import User
-from models.role import Role
+from models.profile import Profile
 from schemas.auth import LoginResponse, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -18,31 +17,24 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
 ):
+    print(f"🚀 Login request received for: {form_data.username}")
     # Find user by email (username field in form_data)
     result = await db.execute(
-        select(User).where(User.email == form_data.username)
+        select(Profile).where(Profile.email == form_data.username)
     )
-    user = result.scalar_one_or_none()
+    profile = result.scalar_one_or_none()
 
-    if not user:
+    if not profile:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
         )
 
     # Verify password
-    if not verify_password(form_data.password, user.password):
+    if not profile.hashed_password or not verify_password(form_data.password, profile.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
-        )
-
-    # Get role name
-    role = await db.get(Role, user.role_id)
-    if not role:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="User role configuration error"
         )
 
     # Token expiry
@@ -51,9 +43,9 @@ async def login(
     # Create JWT token
     token = create_access_token(
         data={
-            "sub": user.email,
-            "role": role.name,
-            "user_id": user.id
+            "sub": profile.email,
+            "role": profile.user_type, # Using user_type as role for simplicity
+            "user_id": str(profile.id) # Convert UUID to string
         },
         expires_delta=expires,
     )
@@ -62,9 +54,9 @@ async def login(
         access_token=token,
         token_type="bearer",
         user=UserResponse(
-            id=user.id,
-            email=user.email,
-            role=role.name
+            id=str(profile.id),
+            email=profile.email,
+            role=profile.user_type
         )
     )
 

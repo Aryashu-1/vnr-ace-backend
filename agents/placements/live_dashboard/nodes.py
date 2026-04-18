@@ -90,7 +90,7 @@ def clarification_node(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def load_dashboard_node(state: Dict[str, Any], dashboard_repo: Any = None) -> Dict[str, Any]:
+async def load_dashboard_node(state: Dict[str, Any], dashboard_repo: Any = None) -> Dict[str, Any]:
     if dashboard_repo is None:
         snapshot = {
             "kpis": {
@@ -134,7 +134,7 @@ def load_dashboard_node(state: Dict[str, Any], dashboard_repo: Any = None) -> Di
             },
         }
     else:
-        snapshot = dashboard_repo.load_dashboard_snapshot()
+        snapshot = await dashboard_repo.load_dashboard_snapshot()
 
     state["dashboard_snapshot"] = snapshot
     state["kpis"] = snapshot.get("kpis", {})
@@ -150,8 +150,8 @@ def load_dashboard_node(state: Dict[str, Any], dashboard_repo: Any = None) -> Di
     return state
 
 
-def refresh_dashboard_node(state: Dict[str, Any], dashboard_repo: Any = None) -> Dict[str, Any]:
-    state = load_dashboard_node(state, dashboard_repo=dashboard_repo)
+async def refresh_dashboard_node(state: Dict[str, Any], dashboard_repo: Any = None) -> Dict[str, Any]:
+    state = await load_dashboard_node(state, dashboard_repo=dashboard_repo)
     state["final_response"] = (
         f"{STANDARD_MESSAGES['dashboard_refreshed']}\n"
         f"Last refreshed at: {state.get('last_refreshed_at')}\n"

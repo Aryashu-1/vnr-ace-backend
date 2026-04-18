@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from typing import Optional
 from core.db import get_db
 from models.student import Student
-from models.placement import Placement
-from models.offer import Offer
+from models.placement_drive import PlacementDrive
+from models.placement_offer_v2 import PlacementOfferV2
 
 router = APIRouter(prefix="/students", tags=["Students API"])
 
@@ -28,26 +27,25 @@ async def get_students(
         )
 
     if branch:
-        query = query.filter(Student.branch == branch.upper())
+        query = query.filter(func.upper(Student.branch) == branch.upper())
     
-    # Needs a join if checking placements 
     if placed is not None or salary_min is not None:
-        query = query.join(Placement, Placement.student_id == Student.id, isouter=True)
+        query = query.join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id, isouter=True)
+        query = query.join(PlacementDrive, PlacementDrive.id == PlacementOfferV2.drive_id, isouter=True)
         
         if placed is True:
-            # Placed if there is a placement record
-            query = query.filter(Placement.id != None)
+            query = query.filter(PlacementOfferV2.id.is_not(None))
         elif placed is False:
-            query = query.filter(Placement.id == None)
+            query = query.filter(PlacementOfferV2.id.is_(None))
             
         if salary_min is not None:
-            query = query.filter(Placement.ctc_lpa >= salary_min)
+            query = query.filter(PlacementOfferV2.offered_ctc >= salary_min)
 
     result = (await db.execute(query)).scalars().all()
     return result
 
 @router.get("/{student_id}")
-async def get_student(student_id: int, db: AsyncSession = Depends(get_db)):
+async def get_student(student_id: str, db: AsyncSession = Depends(get_db)):
     student = (await db.execute(select(Student).filter(Student.id == student_id))).scalar()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")

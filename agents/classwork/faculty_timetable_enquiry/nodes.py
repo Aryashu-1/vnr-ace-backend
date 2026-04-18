@@ -191,10 +191,21 @@ def clarification_node(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def faculty_data_loader_node(state: Dict[str, Any]) -> Dict[str, Any]:
+async def faculty_data_loader_node(state: Dict[str, Any], sql_repo: Any = None) -> Dict[str, Any]:
     """
-    Loads raw faculty data from JSON file.
+    Loads faculty directory data from the database, with JSON fallback only if needed.
     """
+    if sql_repo is not None:
+        try:
+            state["query_result_rows"] = await sql_repo.load_faculty_directory(
+                interpreted_entities=state.get("interpreted_entities", {}),
+                intent=state.get("intent"),
+                user_query=state.get("user_query", ""),
+            )
+            return state
+        except Exception as e:
+            print(f"Error loading faculty data from DB: {e}")
+
     json_path = os.path.join(os.path.dirname(__file__), "../../../data/faculty_data.json")
     try:
         if os.path.exists(json_path):

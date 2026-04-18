@@ -12,7 +12,7 @@ class StudentBase(BaseModel):
     intern_status: Optional[bool] = False
 
 class StudentResponse(StudentBase):
-    id: int
+    id: str
     created_at: Optional[datetime] = None
 
     class Config:
@@ -23,7 +23,7 @@ class CompanyBase(BaseModel):
     sector: Optional[str] = None
 
 class CompanyResponse(CompanyBase):
-    id: int
+    id: str
 
     class Config:
         from_attributes = True

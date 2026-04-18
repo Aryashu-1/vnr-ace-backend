@@ -14,13 +14,7 @@ from core.config import settings
 
 
 from core.db import Base
-from models.user import User
-from models.role import Role
-from models.student import Student
-from models.company import Company
-from models.placement import Placement
-from models.offer import Offer
-from models.minor_degree import MinorDegree
+import models  # noqa: F401
 
 # Access Alembic Config
 config = context.config

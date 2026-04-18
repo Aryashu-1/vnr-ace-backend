@@ -2,15 +2,12 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import joinedload
 
 from core.auth_utils import decode_access_token
 from core.db import get_db
-from models.user import User
-from models.role import Role
+from models.profile import Profile
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -25,37 +22,30 @@ async def get_current_user(
     if not user_id:
         raise HTTPException(status_code=401, detail="Token missing user ID")
 
-    # Fetch user with role
+    # Fetch profile
     result = await db.execute(
-        select(User).options(joinedload(User.role)).where(User.id == user_id)
+        select(Profile).where(Profile.id == user_id)
     )
-    user = result.scalar_one_or_none()
+    profile = result.scalar_one_or_none()
 
-    if not user:
+    if not profile:
         raise HTTPException(status_code=401, detail="User not found")
 
-    return user
-
+    return profile
 
 # ROLE CHECKER
 def role_required(required_role: str):
     async def role_checker(
-        user: User = Depends(get_current_user),
+        profile: Profile = Depends(get_current_user),
         db: AsyncSession = Depends(get_db),
     ):
-        # Load role name for the user
-        result = await db.execute(select(Role).where(Role.id == user.role_id))
-        role = result.scalar_one_or_none()
-
-        if not role:
-            raise HTTPException(status_code=403, detail="Role not found")
-
-        if role.name != required_role:
+        if profile.user_type != required_role:
             raise HTTPException(
                 status_code=403,
-                detail=f"Requires '{required_role}' role. Current: '{role.name}'",
+                detail=f"Requires '{required_role}' role. Current: '{profile.user_type}'",
             )
 
-        return user
+        return profile
 
     return role_checker
+

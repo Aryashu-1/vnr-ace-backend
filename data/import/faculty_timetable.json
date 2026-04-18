@@ -1,0 +1,422 @@
+[
+  {
+    "id": "41d3f7ef-dc2b-4819-9a6f-d71a1ffefd0a",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Monday",
+    "time_range": "09:00-10:00",
+    "subject": "CSE-A"
+  },
+  {
+    "id": "450b8225-ceab-4ff7-a6c3-9909ef4d14b7",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Monday",
+    "time_range": "11:00-12:00",
+    "subject": "CSE-B Lab"
+  },
+  {
+    "id": "988c21c6-9567-44f5-a279-39f746570c62",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Tuesday",
+    "time_range": "10:00-11:00",
+    "subject": "CSE-C"
+  },
+  {
+    "id": "4da43f5b-2c1a-4e8f-836f-cf9478224428",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Tuesday",
+    "time_range": "14:00-16:00",
+    "subject": "Project Review"
+  },
+  {
+    "id": "6e75f76b-f4c4-4c6d-b274-a150d5f1bc6c",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Wednesday",
+    "time_range": "09:00-11:00",
+    "subject": "Research Work"
+  },
+  {
+    "id": "da15c03d-e703-470b-ae19-2cecb56b5765",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Wednesday",
+    "time_range": "12:00-13:00",
+    "subject": "Lunch"
+  },
+  {
+    "id": "98846671-3e54-405a-94ba-c3a4cb173998",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Thursday",
+    "time_range": "10:00-12:00",
+    "subject": "CSE-A Lab"
+  },
+  {
+    "id": "7513cb8d-525e-4f74-afbb-d48820169774",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Thursday",
+    "time_range": "15:00-16:00",
+    "subject": "Counseling"
+  },
+  {
+    "id": "7df50aa1-99b4-473b-abba-6f9211e1043c",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Friday",
+    "time_range": "11:00-12:00",
+    "subject": "CSE-B"
+  },
+  {
+    "id": "60cfae53-1ca9-4509-b5e1-aab61fb43d74",
+    "faculty_id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "day": "Friday",
+    "time_range": "14:00-15:00",
+    "subject": "Meeting"
+  },
+  {
+    "id": "990b2840-a118-458e-9377-895427ec79d4",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Monday",
+    "time_range": "10:00-11:00",
+    "subject": "IT-A"
+  },
+  {
+    "id": "f140590a-2299-4b55-b984-11928047aa59",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Monday",
+    "time_range": "14:00-16:00",
+    "subject": "IT-B Lab"
+  },
+  {
+    "id": "c89c7549-dbac-4cc8-8cd2-58f1676e559e",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Tuesday",
+    "time_range": "09:00-10:00",
+    "subject": "IT-B"
+  },
+  {
+    "id": "ff59af83-2150-421d-86a3-f54c47230c41",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Tuesday",
+    "time_range": "11:00-12:00",
+    "subject": "Mentoring"
+  },
+  {
+    "id": "dd92db46-4516-491e-b17c-9f29ffea36af",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Wednesday",
+    "time_range": "10:00-12:00",
+    "subject": "IT-A Lab"
+  },
+  {
+    "id": "e44a0139-aeec-4f73-aed9-0d0ce7a9a98f",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Wednesday",
+    "time_range": "14:00-15:00",
+    "subject": "IT-C"
+  },
+  {
+    "id": "7446b174-04e9-45fe-a196-626dd042f5eb",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Thursday",
+    "time_range": "09:00-10:00",
+    "subject": "Free"
+  },
+  {
+    "id": "1e5a21f4-d665-4413-94ef-b0a95d9f988e",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Thursday",
+    "time_range": "11:00-13:00",
+    "subject": "Project Guidance"
+  },
+  {
+    "id": "84ee1485-fd34-47d4-b54b-ae328ee3cd07",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Friday",
+    "time_range": "10:00-11:00",
+    "subject": "IT-B"
+  },
+  {
+    "id": "04b25084-482e-4cad-b98a-c1a3ac8538da",
+    "faculty_id": "360037fd-121c-4660-890f-4707693f1c76",
+    "day": "Friday",
+    "time_range": "15:00-16:00",
+    "subject": "Department Meeting"
+  },
+  {
+    "id": "0b0e65be-1871-4ed7-994a-3a07c8ac76c3",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Monday",
+    "time_range": "09:00-11:00",
+    "subject": "ECE-A Lab"
+  },
+  {
+    "id": "ef0fcb3c-23c3-4646-bf93-7a270c6d446a",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Monday",
+    "time_range": "14:00-15:00",
+    "subject": "ECE-B"
+  },
+  {
+    "id": "626db4de-9532-48c9-8bd7-b2cbed9dbe8d",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Tuesday",
+    "time_range": "11:00-12:00",
+    "subject": "ECE-C"
+  },
+  {
+    "id": "7a26c271-8109-4823-be7d-4a53751051f3",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Tuesday",
+    "time_range": "15:00-16:00",
+    "subject": "Free"
+  },
+  {
+    "id": "b6281de1-7a5c-438e-8283-cfd325f6de74",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Wednesday",
+    "time_range": "10:00-11:00",
+    "subject": "ECE-A"
+  },
+  {
+    "id": "4c282f10-260f-443e-ad34-78eb03878f4e",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Wednesday",
+    "time_range": "12:00-13:00",
+    "subject": "Lunch"
+  },
+  {
+    "id": "e39d81b1-cb27-4a6d-a671-a9b112a57006",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Thursday",
+    "time_range": "09:00-10:00",
+    "subject": "ECE-B"
+  },
+  {
+    "id": "02f3679f-70f9-4f8d-bbf8-e97ef7b0777a",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Thursday",
+    "time_range": "14:00-16:00",
+    "subject": "ECE-C Lab"
+  },
+  {
+    "id": "cdc5b7ac-3247-41cf-8d33-7d80b272720b",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Friday",
+    "time_range": "11:00-12:00",
+    "subject": "Staff Meeting"
+  },
+  {
+    "id": "3de7ea66-9332-4e91-b266-4dd7de94343e",
+    "faculty_id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "day": "Friday",
+    "time_range": "14:00-15:00",
+    "subject": "Project Review"
+  },
+  {
+    "id": "62c687c9-ebc0-4fe3-8035-ac461dd71b74",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Monday",
+    "time_range": "10:00-12:00",
+    "subject": "Admin Work"
+  },
+  {
+    "id": "86766790-e3e6-4a43-88a5-0ba6079883f6",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Monday",
+    "time_range": "14:00-15:00",
+    "subject": "Class 1-A"
+  },
+  {
+    "id": "7b645a1c-d1f9-47c5-89b8-a2d78543704d",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Tuesday",
+    "time_range": "11:00-12:00",
+    "subject": "Class 1-B"
+  },
+  {
+    "id": "20862a63-b77c-49fd-9ead-8c99c251e36f",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Tuesday",
+    "time_range": "15:00-16:00",
+    "subject": "Meeting"
+  },
+  {
+    "id": "019436cb-20ae-40ec-b535-f0298120bf49",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Wednesday",
+    "time_range": "09:00-10:00",
+    "subject": "Class 1-C"
+  },
+  {
+    "id": "ce1e708b-fa4e-42ee-86cc-c58ef849bdbe",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Wednesday",
+    "time_range": "11:00-13:00",
+    "subject": "Admin Work"
+  },
+  {
+    "id": "c3456fad-e3b5-4765-b417-4073baf3978c",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Thursday",
+    "time_range": "10:00-11:00",
+    "subject": "Guest Lecture"
+  },
+  {
+    "id": "a8b615bb-f8e3-4393-8576-c45de53afdcb",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Thursday",
+    "time_range": "14:00-15:00",
+    "subject": "Free"
+  },
+  {
+    "id": "d4c3808b-7d95-47a0-be77-32a5e2894b9c",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Friday",
+    "time_range": "09:00-11:00",
+    "subject": "Admin Work"
+  },
+  {
+    "id": "fa10d8a5-4fef-46a6-9663-e9abafc6364a",
+    "faculty_id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "day": "Friday",
+    "time_range": "15:00-16:00",
+    "subject": "Weekly Review"
+  },
+  {
+    "id": "2fa464de-9a29-419c-969f-39b0ac1685a6",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Monday",
+    "time_range": "10:00-11:00",
+    "subject": "CSE-C"
+  },
+  {
+    "id": "8097b275-b952-4702-afc6-8a5f609a56c2",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Monday",
+    "time_range": "14:00-16:00",
+    "subject": "Lab 2"
+  },
+  {
+    "id": "09b67b35-9745-43c9-b0e5-1e6c12511350",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Tuesday",
+    "time_range": "09:00-10:00",
+    "subject": "CSE-A"
+  },
+  {
+    "id": "92e4a956-d11b-414f-8636-d8b6455249a1",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Tuesday",
+    "time_range": "11:00-13:00",
+    "subject": "Meeting"
+  },
+  {
+    "id": "2dda0352-b621-4e34-9d41-2d6b3c08443f",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Wednesday",
+    "time_range": "14:00-15:00",
+    "subject": "CSE-B"
+  },
+  {
+    "id": "97b2386c-2f30-474f-bb07-214083c3fad9",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Wednesday",
+    "time_range": "15:00-16:00",
+    "subject": "Free"
+  },
+  {
+    "id": "0693919b-8d45-45fc-adf1-fb78c5f06f45",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Thursday",
+    "time_range": "11:00-12:00",
+    "subject": "CSE-C Lab"
+  },
+  {
+    "id": "e94fef61-cb52-4d0d-93c4-e3e59513980b",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Thursday",
+    "time_range": "14:00-15:00",
+    "subject": "Consultation"
+  },
+  {
+    "id": "08783840-3802-4b69-b6a5-fb2e6e2fed73",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Friday",
+    "time_range": "09:00-10:00",
+    "subject": "CSE-A"
+  },
+  {
+    "id": "80c97c89-54f9-4207-853b-88e3987e0ca0",
+    "faculty_id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "day": "Friday",
+    "time_range": "12:00-13:00",
+    "subject": "Lunch"
+  },
+  {
+    "id": "b0ba8ca3-9d1f-4111-853f-3b7bb61a769c",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Monday",
+    "time_range": "09:00-10:00",
+    "subject": "IT-C"
+  },
+  {
+    "id": "291e15f6-ef7d-4165-b722-560489fea8df",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Monday",
+    "time_range": "11:00-12:00",
+    "subject": "Free"
+  },
+  {
+    "id": "fb2096bf-fea8-4e0a-8be4-20bf68f896f7",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Tuesday",
+    "time_range": "14:00-16:00",
+    "subject": "IT-A Lab"
+  },
+  {
+    "id": "a06e85ea-55ab-4510-ba1e-ceb5147d04c7",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Tuesday",
+    "time_range": "16:00-17:00",
+    "subject": "Seminar"
+  },
+  {
+    "id": "fa303db3-6ddd-4d1b-995b-35f6cf483242",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Wednesday",
+    "time_range": "11:00-13:00",
+    "subject": "IT-B Lab"
+  },
+  {
+    "id": "9cf58f5e-78ce-4c47-9ea5-b685b83fa73c",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Wednesday",
+    "time_range": "14:00-15:00",
+    "subject": "IT-A"
+  },
+  {
+    "id": "ad583d6a-8792-438d-9f1a-69eca37c5f83",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Thursday",
+    "time_range": "10:00-11:00",
+    "subject": "IT-C"
+  },
+  {
+    "id": "04c322aa-fdf6-4b01-8813-f6dc88705549",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Thursday",
+    "time_range": "15:00-16:00",
+    "subject": "Mentoring"
+  },
+  {
+    "id": "c5013e05-7199-4421-b565-94f4df936be1",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Friday",
+    "time_range": "09:00-11:00",
+    "subject": "Research Lab"
+  },
+  {
+    "id": "ddb25bb2-d49d-4f43-ac59-255c459299a6",
+    "faculty_id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "day": "Friday",
+    "time_range": "14:00-15:00",
+    "subject": "IT-B"
+  }
+]

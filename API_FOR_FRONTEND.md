@@ -16,7 +16,7 @@
 **Request Body:**
 | Field | Type | Description |
 | :--- | :--- | :--- |
-| `username` | string | User email (e.g., `admin@vnr.edu.in`) |
+| `username` | string | User email (e.g., `admin@vnr.com`) |
 | `password` | string | User password |
 
 **Response:**
@@ -26,7 +26,7 @@
   "token_type": "bearer",
   "user": {
     "id": 1,
-    "email": "admin@vnr.edu.in",
+    "email": "admin@vnr.com",
     "role": "admin"
   }
 }
@@ -254,7 +254,7 @@ These endpoints provide direct access to the logic without going through the gra
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| **Admin** | `admin@vnr.edu.in` | `admin` |
+| **Admin** | `admin@vnr.com` | `admin123` |
 | **Faculty** | `faculty@vnr.edu.in` | `faculty123` |
 | **Student** | `student@vnr.edu.in` | `student123` |
 | **Placement Officer** | `po@vnr.edu.in` | `po123` |

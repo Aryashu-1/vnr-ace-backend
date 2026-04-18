@@ -3,6 +3,13 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
+import pandas as pd
+from sqlalchemy import select
+
+from core.db import AsyncSessionLocal
+from models.attendance import Attendance
+from models.mark import Mark
+from models.student import Student
 
 from .constants import AGENT_NAME
 from .schemas import PlannerOutput, ScopeClassifierOutput
@@ -56,3 +63,62 @@ class AuditLogRepository:
         # self.db_client.table("audit_logs").insert(events).execute()
         # or using psycopg/sqlalchemy
         pass
+
+
+class ClassworkDataRepository:
+    async def load_datasets(self, dataset_names: List[str]) -> Dict[str, pd.DataFrame]:
+        loaded: Dict[str, pd.DataFrame] = {}
+        async with AsyncSessionLocal() as session:
+            if "students" in dataset_names:
+                from models.profile import Profile
+                from models.department import Department
+                
+                result = await session.execute(
+                    select(
+                        Student.id.label("student_id"),
+                        Student.roll_no,
+                        Profile.full_name.label("name"),
+                        Profile.full_name,
+                        Department.name.label("branch"),
+                        Department.name.label("department"),
+                        Student.section,
+                        (Student.current_year * 2).label("semester"),
+                        Student.current_year,
+                        Student.gender,
+                        Student.cgpa,
+                        Student.backlogs,
+                        Profile.email,
+                    ).outerjoin(Profile, Profile.id == Student.profile_id).outerjoin(Department, Department.id == Student.department_id)
+                )
+                loaded["students"] = pd.DataFrame(result.mappings().all())
+
+            if "attendance" in dataset_names:
+                result = await session.execute(
+                    select(
+                        Attendance.student_id.label("student_id"),
+                        Attendance.subject,
+                        Attendance.attendance_percentage.label("attendance_percent"),
+                    )
+                )
+                rows = result.mappings().all()
+                loaded["attendance"] = pd.DataFrame(rows, columns=["student_id", "subject", "attendance_percent"])
+
+            if "marks" in dataset_names:
+                result = await session.execute(
+                    select(
+                        Mark.student_id.label("student_id"),
+                        Mark.subject,
+                        Mark.internal.label("internal_marks"),
+                        Mark.external.label("external_marks"),
+                        Mark.total.label("total_marks"),
+                    )
+                )
+                rows = result.mappings().all()
+                loaded["marks"] = pd.DataFrame(
+                    rows,
+                    columns=["student_id", "subject", "internal_marks", "external_marks", "total_marks"],
+                )
+
+        for name in dataset_names:
+            loaded.setdefault(name, pd.DataFrame())
+        return loaded

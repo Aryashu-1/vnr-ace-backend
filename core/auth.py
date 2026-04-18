@@ -8,8 +8,7 @@ from datetime import timedelta
 from core.db import get_db
 from core.auth_utils import verify_password, create_access_token
 from core.config import settings
-from models.user import User
-from models.role import Role
+from models.profile import Profile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from core.auth_utils import decode_access_token
@@ -26,21 +25,16 @@ async def login(
 ):
     # Find user by email
     result = await db.execute(
-        select(User).where(User.email == form_data.username)
+        select(Profile).where(Profile.email == form_data.username)
     )
-    user = result.scalar_one_or_none()
+    profile = result.scalar_one_or_none()
 
-    if not user:
+    if not profile:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     # Verify password
-    if not verify_password(form_data.password, user.password):
+    if not profile.hashed_password or not verify_password(form_data.password, profile.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-
-    # Get role name
-    role = await db.get(Role, user.role_id)
-    if not role:
-        raise HTTPException(status_code=500, detail="Role not found")
 
     # Token expiry
     expires = timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
@@ -48,9 +42,9 @@ async def login(
     # Create JWT token with email & role name
     token = create_access_token(
         data={
-            "sub": user.email,
-            "role": role.name,
-            "user_id": user.id
+            "sub": profile.email,
+            "role": profile.user_type,
+            "user_id": str(profile.id)
         },
         expires_delta=expires,
     )
@@ -59,9 +53,9 @@ async def login(
         "access_token": token,
         "token_type": "bearer",
         "user": {
-            "id": user.id,
-            "email": user.email,
-            "role": role.name
+            "id": str(profile.id),
+            "email": profile.email,
+            "role": profile.user_type
         }
     }
 
@@ -80,19 +74,19 @@ async def get_current_user(
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    # Fetch user
-    result = await db.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
+    # Fetch profile
+    result = await db.execute(select(Profile).where(Profile.id == user_id))
+    profile = result.scalar_one_or_none()
 
-    if not user:
+    if not profile:
         raise HTTPException(status_code=404, detail="User not found")
 
-    return user
+    return profile
 
 # Role-based guard
 def require_role(*allowed_roles):
-    async def role_checker(current_user = Depends(get_current_user)):
-        user_role = current_user.role_id  # numeric role_id (1,2,3,4)
+    async def role_checker(current_user: Profile = Depends(get_current_user)):
+        user_role = current_user.user_type  # string role e.g. 'admin', 'faculty', 'student'
 
         if user_role not in allowed_roles:
             raise HTTPException(
@@ -101,4 +95,4 @@ def require_role(*allowed_roles):
             )
         return current_user
 
-    return role_checker
+    return role_checker

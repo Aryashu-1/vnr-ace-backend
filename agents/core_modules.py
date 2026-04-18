@@ -2,13 +2,15 @@
 
 from typing import Any, Dict, List, Optional
 from core.llm import groq_llm
-from core.db import engine
-from sqlalchemy import text
+from core.db import engine, AsyncSessionLocal
+from sqlalchemy import text, select
 import json
 import asyncio
-import sqlite3
-import os
 import re
+import uuid
+
+from models.dashboard_snapshot import DashboardSnapshot
+from models.resume_analysis_cache import ResumeAnalysisCache
 
 class LLMService:
     """
@@ -153,97 +155,89 @@ class EmailService:
 
 class SQLRepo:
     """
-    Executes SQL queries for the faculty_timetable_enquiry agent using JSON data.
-    Loads data/faculty_data.json into an in-memory SQLite database.
+    Executes read-only SQL queries and provides faculty directory data from Postgres.
     """
     def __init__(self):
-        self.db = sqlite3.connect(":memory:")
-        self.db.row_factory = sqlite3.Row
-        self._initialize_data()
-
-    def _initialize_data(self):
-        cursor = self.db.cursor()
-        
-        # Create Tables
-        cursor.execute("""
-            CREATE TABLE faculty (
-                id INTEGER PRIMARY KEY,
-                name TEXT COLLATE NOCASE,
-                department TEXT COLLATE NOCASE,
-                cabin TEXT,
-                designation TEXT
-            )
-        """)
-
-        cursor.execute("""
-            CREATE TABLE students (
-                id INTEGER PRIMARY KEY,
-                roll_no TEXT UNIQUE,
-                name TEXT COLLATE NOCASE,
-                branch TEXT COLLATE NOCASE,
-                section TEXT,
-                semester INTEGER,
-                attendance_percent REAL,
-                backlogs INTEGER,
-                cgpa REAL,
-                email TEXT
-            )
-        """)
-        
-        cursor.execute("""
-            CREATE TABLE timetable (
-                faculty_id INTEGER,
-                day TEXT,
-                time_range TEXT,
-                activity TEXT,
-                FOREIGN KEY (faculty_id) REFERENCES faculty(id)
-            )
-        """)
-        
-        # Load Faculty JSON
-        faculty_path = os.path.join(os.path.dirname(__file__), "../data/faculty_data.json")
-        if os.path.exists(faculty_path):
-            with open(faculty_path, "r") as f:
-                faculty_data = json.load(f)
-            for item in faculty_data:
-                cursor.execute(
-                    "INSERT INTO faculty (id, name, department, cabin, designation) VALUES (?, ?, ?, ?, ?)",
-                    (item["id"], item["name"], item["department"], item["cabin"], item["designation"])
-                )
-                schedule = item.get("schedule", {})
-                for day, slots in schedule.items():
-                    for slot in slots:
-                        cursor.execute(
-                            "INSERT INTO timetable (faculty_id, day, time_range, activity) VALUES (?, ?, ?, ?)",
-                            (item["id"], day, slot, slot)
-                        )
-
-        # Load Student JSON
-        student_path = os.path.join(os.path.dirname(__file__), "../data/classwork_students.json")
-        if os.path.exists(student_path):
-            with open(student_path, "r") as f:
-                student_data = json.load(f)
-            for item in student_data:
-                cursor.execute(
-                    "INSERT INTO students (id, roll_no, name, branch, section, semester, attendance_percent, backlogs, cgpa, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (item["id"], item["roll_no"], item["name"], item["branch"], item["section"], item["semester"], item["attendance_percent"], item["backlogs"], item["cgpa"], item["email"])
-                )
-        
-        self.db.commit()
+        self.engine = engine
 
     async def execute_read_only(self, sql_query: str, sql_params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        cursor = self.db.cursor()
+        if not sql_query.strip().lower().startswith("select"):
+            raise ValueError("Only SELECT statements are allowed.")
+
         try:
-            if sql_params:
-                cursor.execute(sql_query, sql_params)
-            else:
-                cursor.execute(sql_query)
-            
-            rows = cursor.fetchall()
-            return [dict(row) for row in rows]
+            async with self.engine.connect() as conn:
+                result = await conn.execute(text(sql_query), sql_params or {})
+                return [dict(row) for row in result.mappings().all()]
         except Exception as e:
-            print(f"Error executing in-memory SQL: {e}")
+            print(f"Error executing read-only SQL: {e}")
             return []
+
+    async def load_faculty_directory(
+        self,
+        *,
+        interpreted_entities: Optional[Dict[str, Any]] = None,
+        intent: Optional[str] = None,
+        user_query: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        interpreted_entities = interpreted_entities or {}
+        filters = []
+        params: Dict[str, Any] = {}
+
+        faculty_name = interpreted_entities.get("faculty_name")
+        if faculty_name:
+            filters.append("p.full_name ILIKE :faculty_name")
+            params["faculty_name"] = f"%{faculty_name}%"
+
+        department = interpreted_entities.get("department")
+        if department:
+            filters.append("f.department ILIKE :department")
+            params["department"] = f"%{department}%"
+
+        if not filters and user_query:
+            filters.append(
+                "(p.full_name ILIKE :q OR f.department ILIKE :q OR f.designation ILIKE :q OR f.cabin ILIKE :q OR s.activity ILIKE :q)"
+            )
+            params["q"] = f"%{user_query}%"
+
+        where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
+        rows = await self.execute_read_only(
+            f"""
+            SELECT
+                f.id,
+                p.full_name AS name,
+                f.department,
+                f.cabin,
+                f.designation,
+                s.day,
+                s.time_range,
+                s.activity
+            FROM faculty f
+            LEFT JOIN profiles p ON p.id = f.profile_id
+            LEFT JOIN faculty_schedule_entries s ON s.faculty_id = f.id
+            {where_clause}
+            ORDER BY name, s.day, s.time_range
+            """,
+            params,
+        )
+
+        grouped: Dict[str, Dict[str, Any]] = {}
+        for row in rows:
+            faculty_id = row["id"]
+            record = grouped.setdefault(
+                faculty_id,
+                {
+                    "id": faculty_id,
+                    "name": row.get("name"),
+                    "department": row.get("department"),
+                    "cabin": row.get("cabin"),
+                    "designation": row.get("designation"),
+                    "schedule": {},
+                },
+            )
+            if row.get("day") and row.get("activity"):
+                record["schedule"].setdefault(row["day"], []).append(row["activity"])
+
+        return list(grouped.values())
 
 class AnalyticsRepo:
     """
@@ -259,19 +253,72 @@ class AnalyticsRepo:
 
 class DashboardRepo:
     """
-    Placeholder for live_dashboard data.
+    DB-backed repository for live_dashboard data.
     """
-    def get_dashboard_data(self) -> Dict[str, Any]:
-        return {
-            "stats": {"total_placements": 156, "avg_package": 12.5},
-            "recent_activity": []
-        }
+    async def load_dashboard_snapshot(self) -> Dict[str, Any]:
+        async with AsyncSessionLocal() as session:
+            snapshot = await session.scalar(
+                select(DashboardSnapshot).order_by(DashboardSnapshot.updated_at.desc()).limit(1)
+            )
+            if snapshot is None:
+                return {"kpis": {}, "charts": {}}
+
+            data = snapshot.data or {}
+            return {
+                "kpis": {
+                    "total_students": snapshot.total_students,
+                    "placed_students": snapshot.placed_students,
+                    "placement_rate": snapshot.placement_rate,
+                    "average_package": snapshot.avg_package,
+                },
+                "charts": {
+                    "department_wise_placements": {
+                        "title": "Department-wise Placements",
+                        "rows": [
+                            {"department": dept, "placed_students": count}
+                            for dept, count in (data.get("dept_wise") or {}).items()
+                        ],
+                    },
+                    "month_wise_offers": {
+                        "title": "Month-wise Offers",
+                        "rows": [
+                            {"month": month, "offers": count}
+                            for month, count in (data.get("monthly_offers") or {}).items()
+                        ],
+                    },
+                    "company_wise_hires": {
+                        "title": "Company-wise Hires",
+                        "rows": [
+                            {"company": company, "students": count}
+                            for company, count in (data.get("company_hires") or {}).items()
+                        ],
+                    },
+                },
+            }
 
 class ResumeCacheRepo:
     """
-    Placeholder for resume_feedback caching.
+    DB-backed cache for resume feedback.
     """
-    def get(self, key: str) -> Optional[Dict[str, Any]]:
-        return None
-    def put(self, key: str, analysis: Dict[str, Any], metadata: Dict[str, Any]) -> None:
-        pass
+    async def get(self, resume_id: str) -> Optional[Dict[str, Any]]:
+        async with AsyncSessionLocal() as session:
+            record = await session.scalar(
+                select(ResumeAnalysisCache).where(ResumeAnalysisCache.resume_id == resume_id)
+            )
+            return record.analysis if record else None
+
+    async def put(self, resume_id: str, analysis: Dict[str, Any], metadata: Dict[str, Any]) -> None:
+        async with AsyncSessionLocal() as session:
+            record = await session.scalar(
+                select(ResumeAnalysisCache).where(ResumeAnalysisCache.resume_id == resume_id)
+            )
+            if record is None:
+                record = ResumeAnalysisCache(
+                    id=metadata.get("cache_id") or metadata.get("id") or str(uuid.uuid4()),
+                    resume_id=resume_id,
+                    analysis=analysis,
+                )
+                session.add(record)
+            else:
+                record.analysis = analysis
+            await session.commit()

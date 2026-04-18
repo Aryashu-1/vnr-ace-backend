@@ -1,0 +1,40 @@
+[
+  {
+    "id": "e2dfac27-6130-47cf-adb2-d9121609a17d",
+    "name": "Google",
+    "sector": "Tech"
+  },
+  {
+    "id": "57b248fd-187a-4f65-b3c2-0341a3e92c82",
+    "name": "Amazon",
+    "sector": "E-Commerce"
+  },
+  {
+    "id": "513c3a53-eafe-4253-8555-a35db340fb40",
+    "name": "Microsoft",
+    "sector": "Tech"
+  },
+  {
+    "id": "c15cb52c-1add-496f-9d90-64c05d9bba80",
+    "name": "Goldman Sachs",
+    "sector": "Finance"
+  },
+  {
+    "id": "f70977b9-799a-434f-8f73-4b82ffa2f9d1",
+    "name": "TCS",
+    "sector": "Service"
+  },
+  {
+    "id": "94ce6395-e62d-4d8f-a818-b60f2b998266",
+    "name": "Oracle",
+    "sector": "Tech"
+  },
+  {
+    "id": "464f0a09-feff-41f1-958a-ae73c724960c",
+    "name": "Infosys"
+  },
+  {
+    "id": "82f27c89-0982-4fea-96be-80462c2ddc68",
+    "name": "F5 Networks"
+  }
+]

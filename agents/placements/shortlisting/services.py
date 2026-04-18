@@ -1,10 +1,12 @@
 # agents/placements/shortlisting/services.py
 
 from typing import List, Dict, Any
+import re
 import faiss
 import numpy as np
 import pickle
 from collections import defaultdict
+from sqlalchemy import select
 from sentence_transformers import SentenceTransformer
 import fitz
 import spacy
@@ -12,6 +14,8 @@ from pathlib import Path
 import os
 from agents.core_modules import LLMService
 import asyncio
+from models.resume import Resume
+from models.student import Student
 
 class ResumeShortlister:
     # Path to the FAISS index relative to the project root
@@ -142,6 +146,64 @@ class ShortlistingService:
 
     def shortlist(self, jd_text: str, top_k: int = 5, allowed_roll_nos: List[str] = None) -> List[Dict[str, Any]]:
         return self.shortlister.run(jd_text, top_k=top_k, allowed_roll_nos=allowed_roll_nos)
+
+    async def shortlist_from_db(
+        self,
+        db,
+        jd_text: str,
+        top_k: int = 5,
+        branch: str | None = None,
+        min_cgpa: float | None = None,
+        allowed_roll_nos: List[str] | None = None,
+    ) -> List[Dict[str, Any]]:
+        from models.profile import Profile
+        from models.department import Department
+        
+        stmt = (
+            select(Resume, Student, Profile)
+            .join(Student, Student.id == Resume.student_id)
+            .outerjoin(Profile, Profile.id == Student.profile_id)
+            .outerjoin(Department, Department.id == Student.department_id)
+            .where(Resume.extracted_text.is_not(None))
+        )
+        if branch:
+            stmt = stmt.where(Department.name == branch)
+        if min_cgpa is not None:
+            stmt = stmt.where(Student.cgpa >= min_cgpa)
+        if allowed_roll_nos:
+            stmt = stmt.where(Student.roll_no.in_(allowed_roll_nos))
+
+        rows = (await db.execute(stmt)).all()
+        if not rows:
+            return []
+
+        jd_tokens = {token for token in re.findall(r"[a-zA-Z][a-zA-Z0-9+#.-]+", jd_text.lower()) if len(token) > 2}
+        ranked = []
+        for resume, student, profile in rows:
+            text = (resume.extracted_text or "").lower()
+            if not text:
+                continue
+            matched = [token for token in jd_tokens if token in text]
+            if not matched:
+                continue
+            snippet_start = max(text.find(matched[0]) - 120, 0)
+            snippet = (resume.extracted_text or "")[snippet_start: snippet_start + 280].strip()
+            score = round(len(matched) / max(len(jd_tokens), 1), 4)
+            
+            student_name = profile.full_name if profile else student.roll_no
+            
+            ranked.append(
+                {
+                    "resume_id": resume.id,
+                    "roll_no": student.roll_no,
+                    "student_name": student_name,
+                    "score": score,
+                    "matched_chunks": [{"text": snippet, "matched_keywords": matched[:8]}],
+                }
+            )
+
+        ranked.sort(key=lambda item: item["score"], reverse=True)
+        return ranked[:top_k]
 
     async def explain_matches(self, jd_text: str, candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         if not self.llm:

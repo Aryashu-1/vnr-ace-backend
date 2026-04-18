@@ -27,7 +27,6 @@ from .utils import (
     join_students_with_attendance,
     join_students_with_marks,
     limit_preview_rows,
-    load_datasets_from_registry,
     make_audit_event,
     validate_filter_columns_against_datasets,
 )
@@ -175,9 +174,11 @@ def clarification_node(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def load_data_node(state: Dict[str, Any]) -> Dict[str, Any]:
+async def load_data_node(state: Dict[str, Any], data_repo: Any = None) -> Dict[str, Any]:
     required = state.get("required_datasets", [])
-    state["loaded_data"] = load_datasets_from_registry(required, DATASET_REGISTRY)
+    if data_repo is None:
+        raise ValueError("load_data_node requires data_repo for production use.")
+    state["loaded_data"] = await data_repo.load_datasets(required)
     return state
 
 

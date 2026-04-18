@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ff326ec0-6bfb-4c64-b438-2e321565b1c3",
+    "profile_id": "c5b8cd0d-c040-455a-b617-7a9b917bab9a",
+    "department_id": "9faeba1d-e7c3-4dff-8417-9d3e5d7f425f",
+    "designation": "Professor",
+    "cabin": "C-201"
+  },
+  {
+    "id": "360037fd-121c-4660-890f-4707693f1c76",
+    "profile_id": "f4be6919-613d-4d18-a4b6-7d7668f7b77a",
+    "department_id": "0700d4c0-76f9-40d7-9b70-93869b5dc786",
+    "designation": "Assistant Professor",
+    "cabin": "IT-104"
+  },
+  {
+    "id": "c501045e-53a9-4278-b0bb-dbb3655a3801",
+    "profile_id": "cb49f127-7176-40a8-81da-31f88238b517",
+    "department_id": "96d0a5bd-3565-4de9-9c36-82e58b31b5f1",
+    "designation": "Associate Professor",
+    "cabin": "E-305"
+  },
+  {
+    "id": "20620214-ea52-4b5a-9b8a-8f713dedb219",
+    "profile_id": "058cf5b8-47da-4dff-8c61-c72024565d74",
+    "department_id": "243d74cc-a627-492f-89ba-cc850aabff18",
+    "designation": "HOD",
+    "cabin": "H-102"
+  },
+  {
+    "id": "72ee3fb0-9a62-4b1c-ae2f-e21915a74119",
+    "profile_id": "99b32efd-e877-4ad2-965f-fa1ccdbccc62",
+    "department_id": "9faeba1d-e7c3-4dff-8417-9d3e5d7f425f",
+    "designation": "Assistant Professor",
+    "cabin": "C-302"
+  },
+  {
+    "id": "b8fa7e08-4b8c-4e5d-b064-7ac7f1db6028",
+    "profile_id": "e88259b1-5184-4c3d-be0a-0a6aef473acc",
+    "department_id": "0700d4c0-76f9-40d7-9b70-93869b5dc786",
+    "designation": "Assistant Professor",
+    "cabin": "IT-201"
+  }
+]

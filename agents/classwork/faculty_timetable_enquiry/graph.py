@@ -39,7 +39,10 @@ def build_faculty_timetable_enquiry_graph(
         partial(intent_classifier_node, llm_service=llm_service),
     )
     builder.add_node("clarification", clarification_node)
-    builder.add_node("data_loader", faculty_data_loader_node)
+    builder.add_node(
+        "data_loader",
+        partial(faculty_data_loader_node, sql_repo=sql_repo),
+    )
     builder.add_node(
         "answer_formatter",
         partial(answer_formatter_node, llm_service=llm_service),

@@ -1,0 +1,602 @@
+[
+  {
+    "id": "a1b1d196-c6b2-4ad7-b848-cf71cfe0adc0",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Write code for binary search",
+    "topic": "DSA, array, searching"
+  },
+  {
+    "id": "1f9c2ed6-64a4-4814-a36f-e5578cf254ba",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Rearrange array such that even numbers come first and odd numbers later (start with brute force, then optimize, without extra space)",
+    "topic": "DSA, array, two-pointer"
+  },
+  {
+    "id": "174fa95b-8407-450d-a6aa-81b6b64e15dc",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Reverse a linked list (iterative and recursive)",
+    "topic": "DSA, linked_list"
+  },
+  {
+    "id": "1c5623a4-5b4e-4e95-a57c-ec264f27e7e7",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Explain primary and secondary memory",
+    "topic": "CS Fundamentals"
+  },
+  {
+    "id": "d813f3ee-b5f4-4beb-ac3e-7ba4a9a12907",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Explain ACID properties",
+    "topic": "DBMS"
+  },
+  {
+    "id": "f05febf1-d2ef-48b4-aad8-2a602c034f6d",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Explain normalization and its forms with examples",
+    "topic": "DBMS"
+  },
+  {
+    "id": "2f8b34b5-5873-40b9-b048-cd1450333cbf",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Difference between var and let",
+    "topic": "JavaScript"
+  },
+  {
+    "id": "39308787-5187-41e5-9413-09633f97f0a6",
+    "round_id": "3a0c6543-ed3b-4b30-b8f5-eebc2830119a",
+    "question_text": "Difference between == and ===",
+    "topic": "JavaScript"
+  },
+  {
+    "id": "7d010969-f668-4cf6-9dea-e7733cb35b27",
+    "round_id": "a350e564-05ba-4b6f-b04d-8e172f454370",
+    "question_text": "Explain your project and show demo",
+    "topic": "Projects"
+  },
+  {
+    "id": "9b9c44d1-9d5b-4b19-a70e-815d2750a4c9",
+    "round_id": "a350e564-05ba-4b6f-b04d-8e172f454370",
+    "question_text": "Probability question (based on favorite subject)",
+    "topic": "Math"
+  },
+  {
+    "id": "1fd6c34a-0b2e-46e2-8ebd-dfd27a2bf7a6",
+    "round_id": "a350e564-05ba-4b6f-b04d-8e172f454370",
+    "question_text": "Second largest element in array and count occurrences (optimized)",
+    "topic": "DSA, array"
+  },
+  {
+    "id": "27375e95-6067-4176-83f2-f295426d09ee",
+    "round_id": "8872d27b-04a3-45e9-82fd-5b96e553cef6",
+    "question_text": "JavaScript problem",
+    "topic": "JavaScript"
+  },
+  {
+    "id": "9a4cc975-a96d-4c68-a79e-590eac87cc4b",
+    "round_id": "8872d27b-04a3-45e9-82fd-5b96e553cef6",
+    "question_text": "Minimum hops to reach end of array (DP and Greedy)",
+    "topic": "DSA, greedy, dp"
+  },
+  {
+    "id": "64c76eae-081c-4c52-a8e3-1c6dd04d9311",
+    "round_id": "8872d27b-04a3-45e9-82fd-5b96e553cef6",
+    "question_text": "Factorial using recursion with edge cases",
+    "topic": "DSA, recursion"
+  },
+  {
+    "id": "7d6e68e1-6e66-4465-9eff-800925181496",
+    "round_id": "8872d27b-04a3-45e9-82fd-5b96e553cef6",
+    "question_text": "Handle factorial overflow (large numbers)",
+    "topic": "DSA, edge_cases"
+  },
+  {
+    "id": "bb71394f-ec77-4b72-a521-8e244937a8c2",
+    "round_id": "8872d27b-04a3-45e9-82fd-5b96e553cef6",
+    "question_text": "Views about PG in India",
+    "topic": "HR"
+  },
+  {
+    "id": "9d06d012-e1ca-4605-8ec9-3e1eccae82f4",
+    "round_id": "cc391a17-62ca-4f83-8ef6-a89679d4aa70",
+    "question_text": "Longest Increasing Subsequence",
+    "topic": "DP"
+  },
+  {
+    "id": "7bdc67d2-41b8-45c9-8577-0a0bf1dede21",
+    "round_id": "cc391a17-62ca-4f83-8ef6-a89679d4aa70",
+    "question_text": "REST API problem",
+    "topic": "API"
+  },
+  {
+    "id": "3d00b801-551b-4806-90ce-e7c4d6b21521",
+    "round_id": "cc391a17-62ca-4f83-8ef6-a89679d4aa70",
+    "question_text": "10 Aptitude questions",
+    "topic": "Aptitude"
+  },
+  {
+    "id": "51aa6217-8285-4fda-aee7-54977f2ab747",
+    "round_id": "cc391a17-62ca-4f83-8ef6-a89679d4aa70",
+    "question_text": "10 English questions",
+    "topic": "English"
+  },
+  {
+    "id": "9a22b0f0-f6ab-4e43-8562-6e152999e290",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Trailing zeroes in factorial",
+    "topic": "Math, DSA"
+  },
+  {
+    "id": "86b80da7-0fbd-4e46-a405-6228e0627085",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Count occurrences of digit in number",
+    "topic": "DSA"
+  },
+  {
+    "id": "868d445e-afba-4bbf-82eb-9f3a61dce6a2",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "SQL queries with joins and conditions",
+    "topic": "SQL"
+  },
+  {
+    "id": "6ff4ea43-f95f-4d9e-ae94-57830e8eb430",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Explain types of joins",
+    "topic": "DBMS"
+  },
+  {
+    "id": "4ff3509d-3743-4280-921f-3938427ce166",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Merge join vs hash join",
+    "topic": "DBMS"
+  },
+  {
+    "id": "9ebf5f62-35c8-4670-85b3-338a0ffe4257",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Binary search vs linear search with complexity",
+    "topic": "DSA"
+  },
+  {
+    "id": "d9f6e377-b6e8-420d-a847-300829bfa7ef",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Why binary search is O(log n)",
+    "topic": "DSA"
+  },
+  {
+    "id": "adaf4cdd-ce62-4a53-bb02-fc392d0a6186",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Explain merge sort",
+    "topic": "DSA"
+  },
+  {
+    "id": "0b4d7b78-0742-4e80-88bc-15ebb7023c0a",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Explain Dijkstra algorithm",
+    "topic": "Graph"
+  },
+  {
+    "id": "faad4f8d-f185-4fd0-abc0-84ff7cba8b52",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Explain BFS with pseudocode",
+    "topic": "Graph"
+  },
+  {
+    "id": "03f09f19-5597-4e91-bb69-06408607be64",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "Normalization",
+    "topic": "DBMS"
+  },
+  {
+    "id": "a6b264c8-c970-4bcc-9763-c709403b59b6",
+    "round_id": "ed7e6232-56a1-4f90-9645-d8b22274513c",
+    "question_text": "OS concepts: kernel, paging, thrashing, virtual memory, LRU",
+    "topic": "OS"
+  },
+  {
+    "id": "68b87bc7-504c-4edb-9ef6-439c2e6b90ab",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "What are promises in JavaScript",
+    "topic": "JavaScript"
+  },
+  {
+    "id": "eeb54335-e1fe-4ec2-b216-02fd34fe8c30",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "What is synchronized block",
+    "topic": "Java"
+  },
+  {
+    "id": "e7a01648-4227-46a0-8b08-ea83d3270427",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "Merge sort vs quick sort (dry run)",
+    "topic": "DSA"
+  },
+  {
+    "id": "2fd21f1b-9cfc-41cd-9431-553087fea914",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "Merge sort implementation",
+    "topic": "DSA"
+  },
+  {
+    "id": "aa7f459b-615b-4957-9471-aee826451185",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "Merge 3 unsorted arrays into sorted array",
+    "topic": "DSA"
+  },
+  {
+    "id": "f69c5053-93ee-4d87-8c51-c9054bd00e16",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "Runtime vs compile time polymorphism",
+    "topic": "OOPS"
+  },
+  {
+    "id": "0f3fc582-f88c-4f2e-8116-d05d557e2be6",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "SQL query",
+    "topic": "SQL"
+  },
+  {
+    "id": "a3257a9a-c49e-4da1-acbe-14ded01aacd6",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "Serializability",
+    "topic": "DBMS"
+  },
+  {
+    "id": "425c617e-5767-4929-ab9e-5cae95e67c5f",
+    "round_id": "7a47ea2b-e3b4-4e67-9f15-f5ccb38d2baa",
+    "question_text": "Left view of binary tree",
+    "topic": "Tree"
+  },
+  {
+    "id": "9e7ded99-8d3a-49a7-8be3-55211ebc8fb3",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Explain internship experience",
+    "topic": "Projects"
+  },
+  {
+    "id": "b3f12a53-0c5f-4d2c-8d30-dc516ea7123a",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Round robin scheduling",
+    "topic": "OS"
+  },
+  {
+    "id": "c69b2c48-9ea9-46b4-8217-2bb77f1ff5c9",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "yield() in Python",
+    "topic": "Python"
+  },
+  {
+    "id": "3afb3155-9cc5-43fc-967f-3ab80d4ddb41",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Reverse each word in string",
+    "topic": "String"
+  },
+  {
+    "id": "379d0ed3-e80d-4c07-b494-9ecf40fc2bd8",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Level order traversal",
+    "topic": "Tree"
+  },
+  {
+    "id": "291d231f-58f2-4242-af76-b4b16d85b8a6",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Least common ancestor",
+    "topic": "Tree"
+  },
+  {
+    "id": "6a1d6ba6-1454-4c00-b4bf-8426a3716869",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Word wrap problem",
+    "topic": "DP"
+  },
+  {
+    "id": "85ccf19b-9464-4748-b89c-7c2b648c2bdf",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Remove duplicates in string maintaining order",
+    "topic": "String"
+  },
+  {
+    "id": "5292fa0c-85f6-4488-b9c4-e993f88cb6c2",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Interchange keys and values in dictionary",
+    "topic": "Python"
+  },
+  {
+    "id": "d2edbd4a-5822-42ae-ad19-fd4617d6e6e8",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "String constant pool in Java",
+    "topic": "Java"
+  },
+  {
+    "id": "d0326d08-300b-4af7-8379-c246de31c6b0",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Virtual keyword in C++",
+    "topic": "OOPS"
+  },
+  {
+    "id": "edce6537-32e6-46bd-9cca-1639d0e9137b",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Closest pair sum in sorted array",
+    "topic": "DSA"
+  },
+  {
+    "id": "c0ddb0dc-94e3-4b9f-9030-45fa25ad5690",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Split circular linked list",
+    "topic": "LinkedList"
+  },
+  {
+    "id": "04e606f8-777d-435a-87dd-9f269057213e",
+    "round_id": "5b39a823-3cb6-4052-88be-acc1eecb5312",
+    "question_text": "Merge two sorted linked lists",
+    "topic": "LinkedList"
+  },
+  {
+    "id": "1dafbc17-614f-49b1-8b13-dfef9962cc8a",
+    "round_id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "question_text": "Explain previous code decisions",
+    "topic": "Coding"
+  },
+  {
+    "id": "b2a25b7a-fcf8-4e16-8141-b5f3d7efa260",
+    "round_id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "question_text": "Write unit test cases",
+    "topic": "Testing"
+  },
+  {
+    "id": "3e2738e2-7add-4aed-b1cd-01e6c2803238",
+    "round_id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "question_text": "Explain inheritance with example",
+    "topic": "OOPS"
+  },
+  {
+    "id": "a7bac912-ab11-43ab-9d79-30d62b02f746",
+    "round_id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "question_text": "Why Oracle",
+    "topic": "HR"
+  },
+  {
+    "id": "57a2ceaf-e2b3-408d-8dce-35c11834a60e",
+    "round_id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "question_text": "Where do you see yourself in 5 years",
+    "topic": "HR"
+  },
+  {
+    "id": "b830880d-2646-4e19-9b1d-946bd22a8435",
+    "round_id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "question_text": "Min heap vs max heap",
+    "topic": "Heap"
+  },
+  {
+    "id": "861a0d1d-e768-47e9-9d7a-d9ef41f3a718",
+    "round_id": "1f3c21a5-32c1-4b5f-9d5f-4689d92a65a2",
+    "question_text": "Heapify process",
+    "topic": "Heap"
+  },
+  {
+    "id": "ac9183f4-c488-4acf-a509-1ae410c20d39",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "Explain OOPS concepts",
+    "topic": "OOPS"
+  },
+  {
+    "id": "f9b694f3-7d06-4315-bde1-12cc54557fd0",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "Deadlock",
+    "topic": "OS"
+  },
+  {
+    "id": "3f469d95-9492-4cca-8472-db2e95d3c043",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "SQL queries",
+    "topic": "SQL"
+  },
+  {
+    "id": "360a8f14-319f-46f5-a72f-84136e5ec96c",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "Exception handling in Java",
+    "topic": "Java"
+  },
+  {
+    "id": "2ce47a8f-5e02-42f8-bbef-70a9e739230e",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "SDLC",
+    "topic": "Software Engineering"
+  },
+  {
+    "id": "ba8f7b53-0a15-490f-8c29-26e1d4e0c679",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "Polymorphism",
+    "topic": "OOPS"
+  },
+  {
+    "id": "1a9ae812-b5d2-4562-a7fe-f7f381205af9",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "StringBuffer",
+    "topic": "Java"
+  },
+  {
+    "id": "5a5b55cb-7295-40cf-86b9-b43d79839bcf",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "HTML questions",
+    "topic": "Web"
+  },
+  {
+    "id": "cb441331-da51-4a2d-9930-09de8017a6bb",
+    "round_id": "e7f422a5-02dd-40b0-abed-9c2beff65599",
+    "question_text": "Recent trends in tech",
+    "topic": "General"
+  },
+  {
+    "id": "1c0dc777-ad78-4708-83c8-9d11e62fa30b",
+    "round_id": "b2e348b3-a1f4-4130-b781-1658538bf4d7",
+    "question_text": "Tell me about yourself",
+    "topic": "HR"
+  },
+  {
+    "id": "b5897e7e-7e4e-4003-87d4-18adb8aac326",
+    "round_id": "b2e348b3-a1f4-4130-b781-1658538bf4d7",
+    "question_text": "Strengths and weaknesses",
+    "topic": "HR"
+  },
+  {
+    "id": "0d183b30-64c7-41f4-8c07-8937087b1bfa",
+    "round_id": "b2e348b3-a1f4-4130-b781-1658538bf4d7",
+    "question_text": "Why should we hire you",
+    "topic": "HR"
+  },
+  {
+    "id": "8f4af02e-209a-4838-a30e-80d3edbdd662",
+    "round_id": "b2e348b3-a1f4-4130-b781-1658538bf4d7",
+    "question_text": "Team conflict handling",
+    "topic": "HR"
+  },
+  {
+    "id": "374c6092-b9a6-4cca-9b6f-a46d327343d2",
+    "round_id": "b2e348b3-a1f4-4130-b781-1658538bf4d7",
+    "question_text": "Are you willing to learn new technologies",
+    "topic": "HR"
+  },
+  {
+    "id": "d5501888-3dc7-42e2-9a27-253b77f2fa8b",
+    "round_id": "206e298f-89de-43a7-a0d5-2046bdf15d8c",
+    "question_text": "Reverse string without built-in function",
+    "topic": "String"
+  },
+  {
+    "id": "61941635-f711-43d6-a4ca-0ee86eb49e37",
+    "round_id": "206e298f-89de-43a7-a0d5-2046bdf15d8c",
+    "question_text": "Pascal triangle",
+    "topic": "Pattern"
+  },
+  {
+    "id": "f9005452-f01a-4941-807b-c107e019c84d",
+    "round_id": "206e298f-89de-43a7-a0d5-2046bdf15d8c",
+    "question_text": "Bubble sort",
+    "topic": "Sorting"
+  },
+  {
+    "id": "757ab481-f865-4f3d-b412-a0a0a6ddb47a",
+    "round_id": "206e298f-89de-43a7-a0d5-2046bdf15d8c",
+    "question_text": "SQL joins and constraints",
+    "topic": "SQL"
+  },
+  {
+    "id": "91d0c8e7-fc7a-412f-9f29-c8aa4660f679",
+    "round_id": "206e298f-89de-43a7-a0d5-2046bdf15d8c",
+    "question_text": "Explain OOPS with examples",
+    "topic": "OOPS"
+  },
+  {
+    "id": "ed0cdf75-9a61-40fd-a504-2d5d16960a47",
+    "round_id": "25b59298-a2cd-4c73-aa0e-a4e0cf39063c",
+    "question_text": "Why TCS",
+    "topic": "HR"
+  },
+  {
+    "id": "26d5092f-257b-436e-be11-3abafd029829",
+    "round_id": "25b59298-a2cd-4c73-aa0e-a4e0cf39063c",
+    "question_text": "Why not selected previously",
+    "topic": "HR"
+  },
+  {
+    "id": "b763f24a-cb69-4c1e-937b-2eb2b2e7bdb0",
+    "round_id": "25b59298-a2cd-4c73-aa0e-a4e0cf39063c",
+    "question_text": "Night shifts and relocation",
+    "topic": "HR"
+  },
+  {
+    "id": "11f9eca6-18f0-4cdb-b6a9-3039558a243f",
+    "round_id": "351894ae-44bf-46e8-a4f5-b44a13df0105",
+    "question_text": "Two sum problem",
+    "topic": "Array"
+  },
+  {
+    "id": "6453f648-54ef-4dfd-a2c2-e0a21f2a9245",
+    "round_id": "351894ae-44bf-46e8-a4f5-b44a13df0105",
+    "question_text": "Tree traversal (level order)",
+    "topic": "Tree"
+  },
+  {
+    "id": "dbf1a884-21c1-42b3-ab91-a7cd0e4add50",
+    "round_id": "88c3efde-8ac5-4ddb-b6d3-b2ae2c46d2ec",
+    "question_text": "OS concepts",
+    "topic": "OS"
+  },
+  {
+    "id": "c2e51e36-ff19-4404-aca4-15272d7ae694",
+    "round_id": "88c3efde-8ac5-4ddb-b6d3-b2ae2c46d2ec",
+    "question_text": "Networking basics",
+    "topic": "CN"
+  },
+  {
+    "id": "e15f34a7-460e-4095-a9f0-795ba57681a7",
+    "round_id": "88c3efde-8ac5-4ddb-b6d3-b2ae2c46d2ec",
+    "question_text": "SQL queries",
+    "topic": "SQL"
+  },
+  {
+    "id": "64e766d9-71a5-427d-aecc-eadb2c1ec647",
+    "round_id": "d46ff47b-6b95-4be4-9450-249e2b7cd1c5",
+    "question_text": "Two sum optimized",
+    "topic": "Array"
+  },
+  {
+    "id": "6bd1bca7-33fc-4002-92a2-c730e3f78c9c",
+    "round_id": "d46ff47b-6b95-4be4-9450-249e2b7cd1c5",
+    "question_text": "Sliding window problem",
+    "topic": "DSA"
+  },
+  {
+    "id": "33417bb0-a132-43df-8fde-fa00294ce579",
+    "round_id": "d46ff47b-6b95-4be4-9450-249e2b7cd1c5",
+    "question_text": "LRU cache implementation",
+    "topic": "Design"
+  },
+  {
+    "id": "bb292645-a577-4aed-86a3-acafa895e915",
+    "round_id": "d46ff47b-6b95-4be4-9450-249e2b7cd1c5",
+    "question_text": "Graph traversal",
+    "topic": "Graph"
+  },
+  {
+    "id": "bd48d871-e600-43aa-ab1f-d2e1e4e40888",
+    "round_id": "d46ff47b-6b95-4be4-9450-249e2b7cd1c5",
+    "question_text": "Design URL shortener",
+    "topic": "System Design"
+  },
+  {
+    "id": "5b0db55e-45ac-4591-b41f-154b41bced1c",
+    "round_id": "1cd418e3-4ff1-46b0-bef2-6904dd387c7b",
+    "question_text": "Leadership principles questions",
+    "topic": "HR"
+  },
+  {
+    "id": "2a9898d3-b745-420e-b2be-3d58aff34749",
+    "round_id": "1cd418e3-4ff1-46b0-bef2-6904dd387c7b",
+    "question_text": "Conflict resolution",
+    "topic": "HR"
+  },
+  {
+    "id": "15d04c1f-de89-4bfa-ad77-338abe34a089",
+    "round_id": "1949050c-42df-464b-a21b-e1b544948761",
+    "question_text": "Binary search variations",
+    "topic": "DSA"
+  },
+  {
+    "id": "ac1c8c1d-b958-4e26-8d8e-2be8948702a7",
+    "round_id": "1949050c-42df-464b-a21b-e1b544948761",
+    "question_text": "Dynamic programming problem",
+    "topic": "DP"
+  },
+  {
+    "id": "f4da7f42-30d4-45a2-9e65-ab66c17d0ab4",
+    "round_id": "1949050c-42df-464b-a21b-e1b544948761",
+    "question_text": "Graph shortest path",
+    "topic": "Graph"
+  },
+  {
+    "id": "6e8f2934-bea0-4b84-bce6-f801884607dc",
+    "round_id": "1949050c-42df-464b-a21b-e1b544948761",
+    "question_text": "Design autocomplete system",
+    "topic": "System Design"
+  }
+]

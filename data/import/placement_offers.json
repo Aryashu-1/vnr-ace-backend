@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1c2b37f3-fd1e-42ee-b7c3-e647cde0cf59",
+    "student_id": "9b95a4bd-1ec1-4c09-b8ec-19a0c0813c47",
+    "drive_id": "bfccd9c9-fbee-4e9a-b43a-a32857887bea",
+    "offered_ctc": 12.5,
+    "accepted": true
+  },
+  {
+    "id": "4d1e827a-dda1-4a92-8d6a-837e4c784ace",
+    "student_id": "20c9bb5f-772d-4e13-8b86-461cf51bb6c8",
+    "drive_id": "387c0ef3-6e12-46fe-b0ce-567e5822b272",
+    "offered_ctc": 14.0,
+    "accepted": true
+  },
+  {
+    "id": "29ae435e-5e07-4332-addd-111f53a1f4f7",
+    "student_id": "fd3ec74d-ce6e-489c-974f-12433c57d0d5",
+    "drive_id": "5633523c-ce68-4f07-b41e-f261538b9c68",
+    "offered_ctc": 11.0,
+    "accepted": true
+  },
+  {
+    "id": "70c657b4-c3cb-47a0-b8b9-b937ffc7c823",
+    "student_id": "7aa92a7b-dfdf-4625-8a5b-ab3a1fcad2fa",
+    "drive_id": "525326f5-f6f7-4d6d-a04d-f126905b89a0",
+    "offered_ctc": 15.5,
+    "accepted": true
+  },
+  {
+    "id": "83515303-d15a-4631-a4d4-4117ae4be5dd",
+    "student_id": "a7878a08-b9b5-4da8-93fc-0ac8223af96d",
+    "drive_id": "687c6a8c-e2d4-4ad9-a402-d2986448d5ec",
+    "offered_ctc": 9.5,
+    "accepted": true
+  },
+  {
+    "id": "b2c0116b-f773-4338-8660-926841c2df64",
+    "student_id": "1391e3f4-9125-4b91-84de-0c611cdff8aa",
+    "drive_id": "dc44b58c-d4c7-4a0d-aae8-a3c86f02e0c6",
+    "offered_ctc": 4.5,
+    "accepted": true
+  },
+  {
+    "id": "ddfd7f11-42dc-4d72-8a86-be67221e93ec",
+    "student_id": "9b95a4bd-1ec1-4c09-b8ec-19a0c0813c47",
+    "drive_id": "13ea371e-a009-4fda-a8c9-8d6516192fc4",
+    "offered_ctc": 13.0,
+    "accepted": true
+  },
+  {
+    "id": "92670db4-b288-4dbe-8c94-bd35381fce3a",
+    "student_id": "6a819d04-c438-4c3a-89b6-56d0c849b0f5",
+    "drive_id": "663ec19f-3d44-4b97-abcb-6d37cc895216",
+    "offered_ctc": 18.0,
+    "accepted": true
+  }
+]
