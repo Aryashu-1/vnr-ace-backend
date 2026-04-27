@@ -54,11 +54,12 @@ class AdmissionsDataService:
             dept_name = info["name"].lower()
             key_parts = set(key.split("_"))
 
-            if dept_name in message_lower:
+            if dept_name in message_lower or (dept_name.replace("department", "branch") in message_lower):
                 score += 5
-            if key.replace("_", " ") in message_lower:
+            if key.replace("_", " ") in message_lower or (key.replace("_", " ").replace("department", "branch") in message_lower):
                 score += 4
             score += len(tokens & key_parts) * 2
+
 
             if score > best_score:
                 best_score = score

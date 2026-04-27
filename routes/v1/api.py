@@ -5,6 +5,8 @@ from routes.v1.agents import router as agents_router
 from routes.v1.classwork import router as classwork_router
 from routes.v1.data import router as data_router
 from routes.v1.placements import router as placements_router
+from routes.v1.profile import router as profile_router
+from routes.v1.admin import admin_api_router
 from routes.api.charts import router as charts_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
@@ -15,4 +17,6 @@ api_v1_router.include_router(agents_router)
 api_v1_router.include_router(classwork_router)
 api_v1_router.include_router(data_router)
 api_v1_router.include_router(placements_router)
+api_v1_router.include_router(profile_router)
+api_v1_router.include_router(admin_api_router)
 api_v1_router.include_router(charts_router)

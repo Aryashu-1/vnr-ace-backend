@@ -38,6 +38,10 @@ from schemas.placements import (
     ResumeReanalyzeResponse,
     ResumeUploadResponse,
     ShortlistingRequest,
+    JobDetailResponse,
+    ExternalRegistrationVerifyRequest,
+    PolicyResponse,
+    PolicyCategory,
 )
 
 router = APIRouter(prefix="/placements", tags=["Placements"])
@@ -441,3 +445,156 @@ async def process_emails(current_user=Depends(role_required("admin"))):
     result = await tp_admin_agent.ainvoke(initial_state)
     final_message = result.get("messages", [])[-1].content if result.get("messages") else "No result."
     return {"status": "success", "summary": final_message}
+
+
+@router.get("/jobs/{job_id}", response_model=JobDetailResponse)
+async def get_job_detail(
+    job_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    drive = await db.get(PlacementDrive, job_id)
+    if not drive:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    company = await db.get(Company, drive.company_id)
+    company_name = company.name if company else "Unknown"
+
+    # Check if user has already registered externally
+    profile_id = await _profile_id_for_current_user(db, current_user)
+    student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    
+    is_registered_externally = False
+    if student:
+        application = await db.scalar(
+            select(PlacementApplication).where(
+                PlacementApplication.student_id == student.id,
+                PlacementApplication.drive_id == job_id
+            )
+        )
+        if application:
+            is_registered_externally = application.is_registered_externally
+
+    return JobDetailResponse(
+        id=str(drive.id),
+        role=drive.role,
+        ctc=drive.ctc,
+        company_name=company_name,
+        external_registration_url=drive.external_registration_url,
+        requires_external_registration=drive.requires_external_registration,
+        is_registered_externally=is_registered_externally,
+    )
+
+
+@router.post("/jobs/{job_id}/verify-external-registration")
+async def verify_external_registration(
+    job_id: uuid.UUID,
+    body: ExternalRegistrationVerifyRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    profile_id = await _profile_id_for_current_user(db, current_user)
+    student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    if not student:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+
+    application = await db.scalar(
+        select(PlacementApplication).where(
+            PlacementApplication.student_id == student.id,
+            PlacementApplication.drive_id == job_id
+        )
+    )
+
+    if not application:
+        application = PlacementApplication(
+            id=str(uuid.uuid4()),
+            student_id=student.id,
+            drive_id=job_id,
+            status="external_pending",
+            is_registered_externally=True,
+            external_registration_id=body.external_registration_id,
+            confirmation_screenshot_url=body.confirmation_screenshot_url,
+        )
+        db.add(application)
+    else:
+        application.is_registered_externally = True
+        application.external_registration_id = body.external_registration_id
+        application.confirmation_screenshot_url = body.confirmation_screenshot_url
+        application.status = "external_pending"
+
+    await db.commit()
+    return {"status": "success", "message": "External registration recorded for verification"}
+
+
+@router.post("/apply/{job_id}")
+async def apply_for_job(
+    job_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    drive = await db.get(PlacementDrive, job_id)
+    if not drive:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    profile_id = await _profile_id_for_current_user(db, current_user)
+    student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    if not student:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+
+    application = await db.scalar(
+        select(PlacementApplication).where(
+            PlacementApplication.student_id == student.id,
+            PlacementApplication.drive_id == job_id
+        )
+    )
+
+    if drive.requires_external_registration:
+        if not application or not application.is_registered_externally:
+            raise HTTPException(status_code=403, detail="External registration required first")
+
+    if not application:
+        application = PlacementApplication(
+            id=str(uuid.uuid4()),
+            student_id=student.id,
+            drive_id=job_id,
+            status="applied",
+        )
+        db.add(application)
+    else:
+        application.status = "applied"
+
+    await db.commit()
+    return {"status": "success", "message": "Application submitted successfully"}
+
+
+@router.get("/policies", response_model=PolicyResponse)
+async def get_placement_policies():
+    # In a real app, these might come from a DB table 'placement_policies'
+    # For now, we'll return the standard VNR policies
+    return PolicyResponse(
+        policies=[
+            PolicyCategory(
+                category="General Eligibility",
+                items=[
+                    "Minimum 6.5 CGPA with no active backlogs.",
+                    "10th and 12th/Diploma score must be above 60%.",
+                    "Students should have 75% attendance in training sessions."
+                ]
+            ),
+            PolicyCategory(
+                category="One Job Policy",
+                items=[
+                    "Once a student is placed in a company, they are not eligible for other companies unless the package difference is > 2 LPA.",
+                    "Dream offer policy applies for packages above 10 LPA."
+                ]
+            ),
+            PolicyCategory(
+                category="Code of Conduct",
+                items=[
+                    "Professional attire is mandatory for all interview rounds.",
+                    "Misconduct during interviews will lead to permanent debarment from placements."
+                ]
+            )
+        ],
+        last_updated=datetime.now()
+    )

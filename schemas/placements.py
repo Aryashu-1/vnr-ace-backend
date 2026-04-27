@@ -93,3 +93,24 @@ class ResumeMutationResponse(BaseModel):
     structured_json: Dict[str, Any]
     version: Optional[ResumeVersionSummary] = None
     analysis: Optional[Dict[str, Any]] = None
+
+class JobDetailResponse(BaseModel):
+    id: str
+    role: str
+    ctc: Optional[float] = None
+    company_name: str
+    external_registration_url: Optional[str] = None
+    requires_external_registration: bool = False
+    is_registered_externally: bool = False
+
+class ExternalRegistrationVerifyRequest(BaseModel):
+    external_registration_id: Optional[str] = None
+    confirmation_screenshot_url: Optional[str] = None
+
+class PolicyCategory(BaseModel):
+    category: str
+    items: List[str]
+
+class PolicyResponse(BaseModel):
+    policies: List[PolicyCategory]
+    last_updated: datetime

@@ -39,8 +39,10 @@ def compile_admissions_graph():
             "application_tracking": "application_tracking",
             "department_query": "department_router",
             "admin_action": "admin_action",
+            "direct_response": END,
         },
     )
+
 
     # Department routing logic
     dept_routing_map = {key: f"dept_{key}" for key in departments_data.keys()}

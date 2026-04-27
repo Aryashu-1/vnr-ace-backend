@@ -14,7 +14,10 @@ class Settings(BaseSettings):
     GROQ_MODEL: str = "llama-3.1-8b-instant"
     GEMINI_API_KEY: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
+    GEMINI_API_KEYS: Optional[str] = None # Comma-separated list of keys
+    ENABLE_KEY_ROTATION: bool = False
     GEMINI_MODEL: str = "gemini-2.0-flash"
+
 
     class Config:
         env_file = ".env"

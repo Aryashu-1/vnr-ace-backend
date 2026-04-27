@@ -9,6 +9,7 @@ from models.student import Student
 from models.company import Company
 from models.placement_drive import PlacementDrive
 from models.placement_offer_v2 import PlacementOfferV2
+from models.department import Department
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -26,12 +27,18 @@ async def get_placement_trend(db: AsyncSession = Depends(get_db)):
 
 @router.get("/branch-wise", response_model=BranchWiseResponse)
 async def get_branch_wise_stats(db: AsyncSession = Depends(get_db)):
-    totals = (await db.execute(select(Student.branch, func.count(Student.id)).group_by(Student.branch))).all()
+    totals = (await db.execute(
+        select(Department.name, func.count(Student.id))
+        .join(Student, Student.department_id == Department.id)
+        .group_by(Department.name)
+    )).all()
+    
     placed = (
         await db.execute(
-            select(Student.branch, func.count(func.distinct(Student.id)))
+            select(Department.name, func.count(func.distinct(Student.id)))
+            .join(Student, Student.department_id == Department.id)
             .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
-            .group_by(Student.branch)
+            .group_by(Department.name)
         )
     ).all()
     placed_map = {branch: count for branch, count in placed}

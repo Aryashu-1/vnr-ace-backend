@@ -248,18 +248,48 @@ def rag_analysis_node(state: Dict[str, Any], rag_service: Any = None, cache_repo
 
 def initial_analysis_response_node(state: Dict[str, Any]) -> Dict[str, Any]:
     analysis = state.get("structured_analysis", {})
-
     prefix = STANDARD_MESSAGES["cached_used"] if state.get("cached_analysis_found") else STANDARD_MESSAGES["analysis_complete"]
+
+    # Safely handle the response which could come from the mock or the actual Gemini call
+    summary_parts = analysis.get("summary", [])
+    if isinstance(summary_parts, list):
+        summary = "\n".join(f"- {s}" for s in summary_parts)
+    else:
+        summary = summary_parts
+
+    overall_score = analysis.get("overall_score") or analysis.get("score_breakdown", {}).get("overall", "N/A")
+    
+    ats_issues = analysis.get("ats_issues", []) or analysis.get("ats_notes", [])
+    ats_issues_str = "\n".join(f"- {i}" for i in ats_issues) if ats_issues else "None"
+    
+    priority_fixes = analysis.get("priority_fixes", []) or analysis.get("improvement_suggestions", [])
+    priority_fixes_str = "\n".join(f"- {f}" for f in priority_fixes) if priority_fixes else "None"
+
+    section_feedback = analysis.get("section_feedback", {})
+    section_feedback_str = ""
+    for section, feedback in section_feedback.items():
+        section_feedback_str += f"\n#### {section.replace('_', ' ').capitalize()}\n"
+        if isinstance(feedback, dict):
+            issues = feedback.get("issues", [])
+            if issues:
+                section_feedback_str += "**Issues:**\n" + "\n".join(f"- {i}" for i in issues) + "\n"
+            suggestions = feedback.get("suggestions", [])
+            if suggestions:
+                section_feedback_str += "**Suggestions:**\n" + "\n".join(f"- {s}" for s in suggestions) + "\n"
+            examples = feedback.get("example_rewrites", [])
+            if examples:
+                section_feedback_str += "**Example Rewrites:**\n" + "\n".join(f"- {e}" for e in examples) + "\n"
+        elif isinstance(feedback, str):
+            section_feedback_str += f"{feedback}\n"
 
     state["final_response"] = (
         f"{prefix}\n\n"
-        f"Summary: {analysis.get('summary', '')}\n"
-        f"Strengths: {analysis.get('strengths', [])}\n"
-        f"Weaknesses: {analysis.get('weaknesses', [])}\n"
-        f"Missing elements: {analysis.get('missing_elements', [])}\n"
-        f"Suggestions: {analysis.get('improvement_suggestions', [])}\n"
-        f"ATS notes: {analysis.get('ats_notes', [])}\n"
-        f"Score breakdown: {analysis.get('score_breakdown', {})}"
+        f"### Resume Analysis Overview\n"
+        f"**Overall Score:** {overall_score}/100\n\n"
+        f"#### Summary\n{summary}\n\n"
+        f"#### Priority Fixes\n{priority_fixes_str}\n\n"
+        f"#### ATS Optimization\n{ats_issues_str}\n\n"
+        f"### Section-by-Section Feedback\n{section_feedback_str}"
     )
     return state
 

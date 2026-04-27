@@ -11,28 +11,31 @@ from sqlalchemy.pool import NullPool
 load_dotenv()
 Base = declarative_base()
 DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
+# Fallback to a local SQLite database for development if env var is not set
+if not DATABASE_URL:
+    DATABASE_URL = "sqlite+aiosqlite:///./dev.db"
+elif DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
-# Async engine for PostgreSQL using NullPool since Supabase has PgBouncer
+# Async engine for PostgreSQL or SQLite
 engine = create_async_engine(
-    DATABASE_URL,  # Update with your database URL
-    echo=True,  # shows SQL queries in terminal, helpful for debugging
-    poolclass=NullPool,
+    DATABASE_URL,
+    echo=True,
+    poolclass=NullPool if DATABASE_URL.startswith("postgresql") else None,
     connect_args={
-        "ssl": "require",
+        "ssl": "require" if DATABASE_URL.startswith("postgresql") else None,
         "command_timeout": 60,
         "statement_cache_size": 0,
         "prepared_statement_cache_size": 0,
         "prepared_statement_name_func": lambda: f"__asyncpg_{uuid4().hex}__",
-    }
+    } if DATABASE_URL.startswith("postgresql") else {}
 )
 
 # Async session factory
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
     expire_on_commit=False,
-)   
+)
 
 # Dependency for FastAPI routes
 async def get_db():

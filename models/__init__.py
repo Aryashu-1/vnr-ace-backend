@@ -27,3 +27,5 @@ from models.resume_version import ResumeVersion
 from models.profile import Profile
 from models.user_role import UserRole
 from models.student import Student
+from models.resume_rule import ResumeRule
+from models.placement_policy import PlacementPolicy

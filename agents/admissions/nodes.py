@@ -31,12 +31,18 @@ async def public_supervisor_agent(state: AdmissionsState):
         message=state['message'],
         history=history
     )
-    route = (await call_llm(prompt)).strip().lower()
+    response = (await call_llm(prompt)).strip()
 
+    if response.startswith("direct_response:"):
+        reply = response.replace("direct_response:", "").strip()
+        return {"route": "direct_response", "reply": reply, "messages": [("assistant", reply)]}
+
+    route = response.lower()
     if route not in ["faq", "application_tracking", "department_query", "admin_action"]:
         route = "faq"
 
     return {"route": route}
+
 
 
 async def faq_agent(state: AdmissionsState):
@@ -44,13 +50,28 @@ async def faq_agent(state: AdmissionsState):
     Handles general admissions FAQs.
     """
     departments_data = AdmissionsDataService.load_departments_data()
+    
+    # Context for admissions FAQ
     admissions_context = ""
     if "admissions" in departments_data:
-        admissions_context = f"\nUse this background context if relevant:\n{departments_data['admissions']['content']}\n"
+        admissions_context = departments_data['admissions']['content']
+    
+    # Summary of all departments for comparison
+    dept_summaries = []
+    for d_key, d_info in departments_data.items():
+        if d_key != "admissions":
+            # Just take the first few lines as summary
+            content_lines = d_info['content'].split('\n')[:5]
+            summary = " ".join(content_lines)
+            dept_summaries.append(f"- {d_info['name']}: {summary}")
+    
+    dept_context = "\nDepartment Overviews:\n" + "\n".join(dept_summaries)
+    
+    full_context = f"Admissions Context:\n{admissions_context}\n{dept_context}"
 
     history = format_history(state.get("messages", []))
     prompt = FAQ_PROMPT.format(
-        admissions_context=admissions_context, 
+        admissions_context=full_context, 
         message=state['message'],
         history=history
     )
