@@ -1,0 +1,231 @@
+{
+    "metadata": {
+        "branch": "CE",
+        "year": 1,
+        "semester": 2,
+        "regulation": "R25",
+        "section": "A",
+        "room_no": "D-113"
+    },
+    "subjects": {
+        "ODEVC": {
+            "code": "25BS1MT105",
+            "name": "Ordinary Differential Equations and Vector Calculus",
+            "faculty": [
+                "Dr. R. Srilatha"
+            ]
+        },
+        "EC": {
+            "code": "25BS1CH102",
+            "name": "Engineering Chemistry",
+            "faculty": [
+                "Dr. S. Appa Rao"
+            ]
+        },
+        "SUV": {
+            "code": "25PC1CE102",
+            "name": "Surveying",
+            "faculty": [
+                "Dr. T. Naga Teja"
+            ]
+        },
+        "AM": {
+            "code": "25ES1CE101",
+            "name": "Applied Mechanics",
+            "faculty": [
+                "Dr. A. Mallika"
+            ]
+        },
+        "BPC": {
+            "code": "25PC1CE103",
+            "name": "Building Planning and Construction",
+            "faculty": [
+                "Dr. P. Rama Rao"
+            ]
+        },
+        "CAEG": {
+            "code": "25ES3CE101",
+            "name": "Computer Aided Engineering Graphics",
+            "faculty": [
+                "Dr. K. Veerendra Gopi",
+                "Mrs. R. Harika",
+                "Dr. T. Srinivasa Rao"
+            ]
+        },
+        "ES": {
+            "code": "25MN6HS102",
+            "name": "Environmental Science",
+            "faculty": [
+                "Dr. G. Lalitha"
+            ]
+        },
+        "EC Lab": {
+            "code": "25BS2CH101",
+            "name": "Engineering Chemistry Laboratory",
+            "faculty": [
+                "Dr. S. Appa Rao",
+                "Dr. Archana Kushwaha"
+            ]
+        },
+        "SUV Lab": {
+            "code": "25PC2CE102",
+            "name": "Surveying Laboratory",
+            "faculty": [
+                "Dr. T. Naga Teja",
+                "Mr. G. Samba Siva Rao",
+                "Dr. D. Harinder"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "ES"
+                },
+                {
+                    "slot": 2,
+                    "subject": "AM"
+                },
+                {
+                    "slot": 3,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 4,
+                    "subject": "SUV"
+                },
+                {
+                    "slot": 5,
+                    "subject": "LIBRARY",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "CCA",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "SUV Lab",
+                        "EC Lab"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "BPC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "SUV"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "CAEG"
+                },
+                {
+                    "slot": 4,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "BPC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "AM"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 2,
+                    "subject": "SUV"
+                },
+                {
+                    "slot": 3,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "CAEG"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "EC Lab",
+                        "SUV Lab"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "AM"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MTP",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 2,
+                    "subject": "AM"
+                },
+                {
+                    "slot": 3,
+                    "subject": "BPC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "SUV"
+                },
+                {
+                    "slot": 6,
+                    "subject": "ES"
+                }
+            ]
+        }
+    ]
+}

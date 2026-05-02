@@ -4,15 +4,20 @@ from langgraph.graph.message import AnyMessage
 from core.llm import call_llm
 from agents.admissions.state import AdmissionsState
 from agents.admissions.prompts import (
-    SUPERVISOR_PROMPT, FAQ_PROMPT, TRACKING_PROMPT, 
-    DEPT_ROUTING_PROMPT, ADMIN_PROMPT, DEPT_HEAD_PROMPT
+    SUPERVISOR_PROMPT, FAQ_PROMPT, 
+    DEPT_ROUTING_PROMPT, DEPT_HEAD_PROMPT
 )
 from agents.admissions.services import AdmissionsDataService
 
-def format_history(messages: List[AnyMessage]) -> str:
-    """Formats the list of messages into a readable string for the prompt."""
+def format_history(messages: List[AnyMessage], limit: int = 6) -> str:
+    """
+    Formats the list of messages into a readable string for the prompt.
+    Limit defaults to 6 messages (3 turns of Human/Assistant).
+    """
     history_str = ""
-    for msg in messages[:-1]: # Exclude the very last message which is usually the current query
+    # Only take the last 'limit' messages, excluding the current one if it's already there
+    relevant_messages = messages[:-1] if len(messages) > 0 else []
+    for msg in relevant_messages[-limit:]:
         role = "User" if msg.type == "human" else "Assistant"
         content = msg.content
         history_str += f"{role}: {content}\n"
@@ -24,7 +29,7 @@ async def public_supervisor_agent(state: AdmissionsState):
     """
     departments_data = AdmissionsDataService.load_departments_data()
     dept_list = ", ".join([info['name'] for info in departments_data.values()])
-    history = format_history(state.get("messages", []))
+    history = format_history(state.get("messages", []), limit=6)
 
     prompt = SUPERVISOR_PROMPT.format(
         dept_list=dept_list, 
@@ -38,7 +43,11 @@ async def public_supervisor_agent(state: AdmissionsState):
         return {"route": "direct_response", "reply": reply, "messages": [("assistant", reply)]}
 
     route = response.lower()
-    if route not in ["faq", "application_tracking", "department_query", "admin_action"]:
+    if "faq" in route:
+        route = "faq"
+    elif "department" in route or "branch" in route:
+        route = "department_query"
+    else:
         route = "faq"
 
     return {"route": route}
@@ -49,6 +58,7 @@ async def faq_agent(state: AdmissionsState):
     """
     Handles general admissions FAQs.
     """
+    # Fetch fresh data from cache
     departments_data = AdmissionsDataService.load_departments_data()
     
     # Context for admissions FAQ
@@ -69,7 +79,7 @@ async def faq_agent(state: AdmissionsState):
     
     full_context = f"Admissions Context:\n{admissions_context}\n{dept_context}"
 
-    history = format_history(state.get("messages", []))
+    history = format_history(state.get("messages", []), limit=6)
     prompt = FAQ_PROMPT.format(
         admissions_context=full_context, 
         message=state['message'],
@@ -79,14 +89,6 @@ async def faq_agent(state: AdmissionsState):
     return {"reply": answer, "messages": [("assistant", answer)]}
 
 
-async def tracking_agent(state: AdmissionsState):
-    """
-    Handles tracking queries.
-    """
-    history = format_history(state.get("messages", []))
-    prompt = TRACKING_PROMPT.format(message=state['message'], history=history)
-    answer = await call_llm(prompt)
-    return {"reply": answer, "messages": [("assistant", answer)]}
 
 
 async def department_router_agent(state: AdmissionsState):
@@ -96,7 +98,7 @@ async def department_router_agent(state: AdmissionsState):
     departments_data = AdmissionsDataService.load_departments_data()
     dept_options = "\n".join([f"- {key}: {info['name']}" for key, info in departments_data.items()])
     
-    history = format_history(state.get("messages", []))
+    history = format_history(state.get("messages", []), limit=6)
     prompt = DEPT_ROUTING_PROMPT.format(
         dept_options=dept_options, 
         message=state['message'],
@@ -105,52 +107,57 @@ async def department_router_agent(state: AdmissionsState):
     dept_key = (await call_llm(prompt)).strip().lower()
     
     matched_key = "not_department"
+    
+    # Precise matching
     if dept_key in departments_data or dept_key == "placements":
         matched_key = dept_key
     else:
-        words = re.split(r'[^a-zA-Z0-9_]', dept_key)
-        for key in list(departments_data.keys()) + ["placements"]:
-            if key in words or key in dept_key:
+        # LLM inferred a key, let's see if it's close to any of our keys
+        clean_keys = list(departments_data.keys()) + ["placements"]
+        for key in clean_keys:
+            if key in dept_key or dept_key in key:
                 matched_key = key
                 break
-    
+        
+        # If still not matched, check for common abbreviations in dept_key
+        if matched_key == "not_department":
+            words = re.split(r'[^a-zA-Z0-9_]', dept_key)
+            for word in words:
+                if word in clean_keys:
+                    matched_key = word
+                    break
+
     if matched_key == "placements":
         return {"dept_route": "placements"} 
     
     if matched_key in departments_data:
         return {"dept_route": matched_key}
     
-    if dept_key == "ambiguous":
+    if "ambiguous" in dept_key:
         return {
             "dept_route": "not_department", 
-            "reply": "I'm sorry, I'm not sure which department or branch you're referring to. Could you please specify? (e.g., CSE, IT, ECE, EEE, etc.)"
+            "reply": "I'm sorry, I'm not sure which department or branch you're referring to. Could you please specify? (e.g., CSE, IT, ECE, EEE, ME, etc.)"
         }
     
     return {
         "dept_route": "not_department", 
-        "reply": "I'm sorry, I couldn't identify a specific department for your query. Could you please specify which branch you are interested in?"
+        "reply": "I'm sorry, I couldn't identify a specific department for your query. Could you please specify which branch you are interested in (e.g., CSE, ECE, etc.)?"
     }
 
 
-async def admin_agent(state: AdmissionsState):
-    """
-    Handles admin actions.
-    """
-    history = format_history(state.get("messages", []))
-    prompt = ADMIN_PROMPT.format(message=state['message'], history=history)
-    answer = await call_llm(prompt)
-    return {"reply": answer, "messages": [("assistant", answer)]}
 
 
-def create_department_agent(dept_key: str, departments_data: Dict[str, Any]):
+def create_department_agent(dept_key: str):
     """
     Factory function to create a node function for a specific department.
+    Fetches content from cache at runtime.
     """
-    dept_info = departments_data[dept_key]
-    dept_content = dept_info['content']
-    dept_name = dept_info['name']
-
     async def department_agent(state: AdmissionsState):
+        departments_data = AdmissionsDataService.load_departments_data()
+        dept_info = departments_data.get(dept_key, {"name": dept_key, "content": "Information currently unavailable."})
+        dept_content = dept_info['content']
+        dept_name = dept_info['name']
+
         history = format_history(state.get("messages", []))
         prompt = DEPT_HEAD_PROMPT.format(
             dept_name=dept_name, 

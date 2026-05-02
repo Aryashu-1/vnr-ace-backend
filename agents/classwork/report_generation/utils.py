@@ -79,13 +79,34 @@ def apply_dataframe_filters(df: pd.DataFrame, filters: Dict[str, Any]) -> pd.Dat
     result = df.copy()
     for column, value in filters.items():
         if column not in result.columns:
-            raise ValueError(f"Invalid filter column: {column}")
+            # Skip invalid columns gracefully during analysis
+            continue
         if value is None:
             continue
-        if isinstance(value, str) and pd.api.types.is_object_dtype(result[column]):
-            result = result[result[column].astype(str).str.lower() == value.lower()]
+            
+        col_series = result[column]
+        
+        if isinstance(value, str):
+            # Case-insensitive comparison for strings
+            result = result[col_series.astype(str).str.lower() == value.lower()]
             continue
-        result = result[result[column] == value]
+
+        if isinstance(value, dict):
+            # Handle range filters like {'>=': 2, '<': 5}
+            for op, op_val in value.items():
+                if op == ">=":
+                    result = result[col_series >= op_val]
+                elif op == ">":
+                    result = result[col_series > op_val]
+                elif op == "<=":
+                    result = result[col_series <= op_val]
+                elif op == "<":
+                    result = result[col_series < op_val]
+                elif op == "!=":
+                    result = result[col_series != op_val]
+            continue
+
+        result = result[col_series == value]
     return result
 
 

@@ -2,7 +2,7 @@
 
 AGENT_NAME = "classwork_mail_automation"
 
-ALLOWED_ROLES = {"faculty", "hod"}
+ALLOWED_ROLES = {"faculty", "hod", "admin"}
 
 ALLOWED_INTENTS = {
     "compose_email",

@@ -1,6 +1,6 @@
 import uuid
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from pydantic import BaseModel, Field
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -68,7 +68,7 @@ async def update_resume_rule(
 
 @router.patch("/settings")
 async def update_shortlisting_settings(
-    threshold: int = Field(..., ge=0, le=100),
+    threshold: int = Body(..., ge=0, le=100, embed=True),
     db: AsyncSession = Depends(get_db),
     admin = Depends(role_required("admin"))
 ):
@@ -76,3 +76,17 @@ async def update_shortlisting_settings(
     # For now, let's just return a success since we don't have a settings table yet.
     # We can implement a simple key-value store for settings if needed.
     return {"status": "success", "threshold": threshold}
+
+@router.delete("/{id}")
+async def delete_resume_rule(
+    id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    admin = Depends(role_required("admin"))
+):
+    rule = await db.get(ResumeRule, id)
+    if not rule:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    
+    await db.delete(rule)
+    await db.commit()
+    return {"status": "success"}

@@ -55,6 +55,7 @@ async def login(
         "user": {
             "id": str(profile.id),
             "email": profile.email,
+            "name": profile.full_name,
             "role": profile.user_type
         }
     }

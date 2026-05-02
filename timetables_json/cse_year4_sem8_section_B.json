@@ -1,0 +1,249 @@
+{
+    "metadata": {
+        "branch": "CSE",
+        "year": 4,
+        "semester": 8,
+        "regulation": "R22",
+        "section": "B",
+        "room_no": "E-012"
+    },
+    "subjects": {
+        "PE-V": {
+            "code": "MULTIPLE",
+            "name": "Professional Elective V (Cognitive Engineering / Blockchain Technology / Adverse Machine Learning)",
+            "faculty": [
+                "Mr. K. Akhil",
+                "Dr. Deepak Sukheja",
+                "Mrs. N. Lakshmi Kalyani"
+            ]
+        },
+        "PE-VI": {
+            "code": "MULTIPLE",
+            "name": "Professional Elective VI (Time Series Analysis / Quantum Computing / Ethical Hacking)",
+            "faculty": [
+                "Dr. M. Ravikanth",
+                "Mrs. Ch. Sandhya Rani",
+                "Dr. N. Sandeep Chaitanya"
+            ]
+        },
+        "OE-IV": {
+            "code": "MULTIPLE",
+            "name": "Open Elective IV (Multiple options across departments)",
+            "faculty": [
+                "Multiple Faculty"
+            ]
+        },
+        "MAJOR PROJECT": {
+            "code": "22PW4CS402",
+            "name": "Major Project Phase II",
+            "faculty": [
+                "Dr. V. Baby",
+                "Dr. A. Brahmananda Reddy",
+                "Dr. P. Anjusha"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "PE-VI"
+                },
+                {
+                    "slot": 2,
+                    "subject": "OE-IV"
+                },
+                {
+                    "slot": 3,
+                    "subject": null
+                },
+                {
+                    "slot": 4,
+                    "subject": "MENTORING",
+                    "type": "activity"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ECA/CCA",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MENTORING",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "PE-VI"
+                },
+                {
+                    "slot": 2,
+                    "subject": "PE-V"
+                },
+                {
+                    "slot": 3,
+                    "subject": null
+                },
+                {
+                    "slot": 4,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": "LIBRARY",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "SPORTS",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "PE-V"
+                },
+                {
+                    "slot": 2,
+                    "subject": "OE-IV"
+                },
+                {
+                    "slot": 3,
+                    "subject": null
+                },
+                {
+                    "slot": 4,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MAJOR PROJECT",
+                    "type": "lab"
+                }
+            ]
+        }
+    ]
+}

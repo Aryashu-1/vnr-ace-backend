@@ -1,0 +1,324 @@
+{
+    "metadata": {
+        "branch": "CSBS",
+        "year": 3,
+        "semester": 6,
+        "regulation": "R22",
+        "section": "A",
+        "room_no": "E-104"
+    },
+    "subjects": {
+        "OS": {
+            "code": "22PC1CB206",
+            "name": "Operating Systems",
+            "faculty": [
+                "Mr. I. Ravindra Kumar"
+            ]
+        },
+        "DAA": {
+            "code": "22PC1CB207",
+            "name": "Design and Analysis of Algorithms",
+            "faculty": [
+                "Dr. P. V. Siva Kumar"
+            ]
+        },
+        "SDUML": {
+            "code": "22PC1CB208",
+            "name": "Software Design with UML",
+            "faculty": [
+                "Mr. T. Gnana Prakash"
+            ]
+        },
+        "IIIP": {
+            "code": "22HS1IE201",
+            "name": "Innovation, IP Management and Entrepreneurship",
+            "faculty": [
+                "Dr. C. Kiran"
+            ]
+        },
+        "OR": {
+            "code": "22ES1ME210",
+            "name": "Operations Research",
+            "faculty": [
+                "Dr. V. V. Durga Sahithi"
+            ]
+        },
+        "OS LAB": {
+            "code": "22PC2CB206",
+            "name": "Operating Systems Laboratory",
+            "faculty": [
+                "Mr. I. Ravindra Kumar",
+                "Mr. N. Praveen"
+            ]
+        },
+        "DAA LAB": {
+            "code": "22PC2CB207",
+            "name": "Design and Analysis of Algorithms Laboratory",
+            "faculty": [
+                "Dr. A. Madhavi",
+                "Dr. S. Nagini"
+            ]
+        },
+        "OR LAB": {
+            "code": "22ES2ME210",
+            "name": "Operations Research Laboratory",
+            "faculty": [
+                "Dr. V. V. Durga Sahithi",
+                "Dr. S. V. Satya Prasad"
+            ]
+        },
+        "BCVS LAB": {
+            "code": "22HS2EN204",
+            "name": "Business Communication and Value Science Lab",
+            "faculty": [
+                "Dr. S. Kanchana"
+            ]
+        },
+        "INTERNSHIP": {
+            "code": "22PW4CB301",
+            "name": "Internship",
+            "faculty": [
+                "Mrs. K. Jhansi Lakshmi Bai",
+                "Dr. M. Madhubala"
+            ]
+        },
+        "IC": {
+            "code": "22MN6HS202",
+            "name": "Indian Constitution",
+            "faculty": [
+                "Mrs. K. Bhagya Rekha"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "DAA LAB",
+                        "BCVS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "DAA LAB",
+                        "BCVS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "DAA LAB",
+                        "BCVS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "SDUML"
+                },
+                {
+                    "slot": 5,
+                    "subject": "IIIP"
+                },
+                {
+                    "slot": 6,
+                    "subject": "IIIP"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "OR"
+                },
+                {
+                    "slot": 2,
+                    "subject": "OS"
+                },
+                {
+                    "slot": 3,
+                    "subject": "DAA"
+                },
+                {
+                    "slot": 4,
+                    "subject": [
+                        "BCVS LAB",
+                        "DAA LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": [
+                        "BCVS LAB",
+                        "DAA LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": [
+                        "BCVS LAB",
+                        "DAA LAB"
+                    ],
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "OS LAB",
+                        "OR LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "OS LAB",
+                        "OR LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "OS LAB",
+                        "OR LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                },
+                {
+                    "slot": 5,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "OS"
+                },
+                {
+                    "slot": 2,
+                    "subject": "DAA"
+                },
+                {
+                    "slot": 3,
+                    "subject": "SDUML"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ECA/CCA",
+                    "type": "activity"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MENTORING",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "LIBRARY",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "OR LAB",
+                        "OS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "OR LAB",
+                        "OS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "OR LAB",
+                        "OS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "OS"
+                },
+                {
+                    "slot": 5,
+                    "subject": "DAA"
+                },
+                {
+                    "slot": 6,
+                    "subject": "SDUML"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "SDUML"
+                },
+                {
+                    "slot": 2,
+                    "subject": "OR"
+                },
+                {
+                    "slot": 3,
+                    "subject": "IIIP"
+                },
+                {
+                    "slot": 4,
+                    "subject": "IC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "IC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                }
+            ]
+        }
+    ]
+}

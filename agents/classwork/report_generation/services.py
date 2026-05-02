@@ -66,53 +66,90 @@ class AuditLogRepository:
 
 
 class ClassworkDataRepository:
-    async def load_datasets(self, dataset_names: List[str]) -> Dict[str, pd.DataFrame]:
+    async def get_user_department_info(self, profile_id: str) -> Dict[str, Any]:
+        """Fetch the department ID for a faculty member's profile."""
+        from models.faculty import Faculty
+        from models.department import Department
+        async with AsyncSessionLocal() as session:
+            # First find faculty record
+            faculty_result = await session.execute(
+                select(Faculty.department).where(Faculty.profile_id == profile_id)
+            )
+            faculty_dept_name = faculty_result.scalar_one_or_none()
+            
+            if not faculty_dept_name:
+                return {"department_id": None, "department_name": None}
+            
+            # Now find department ID by name
+            dept_result = await session.execute(
+                select(Department.id, Department.name).where(Department.name == faculty_dept_name)
+            )
+            dept_info = dept_result.mappings().first()
+            if dept_info:
+                return {
+                    "department_id": str(dept_info["id"]),
+                    "department_name": dept_info["name"]
+                }
+            return {"department_id": None, "department_name": faculty_dept_name}
+
+    async def load_datasets(self, dataset_names: List[str], department_id: Optional[str] = None) -> Dict[str, pd.DataFrame]:
         loaded: Dict[str, pd.DataFrame] = {}
         async with AsyncSessionLocal() as session:
             if "students" in dataset_names:
                 from models.profile import Profile
                 from models.department import Department
                 
-                result = await session.execute(
-                    select(
-                        Student.id.label("student_id"),
-                        Student.roll_no,
-                        Profile.full_name.label("name"),
-                        Profile.full_name,
-                        Department.name.label("branch"),
-                        Department.name.label("department"),
-                        Student.section,
-                        (Student.current_year * 2).label("semester"),
-                        Student.current_year,
-                        Student.gender,
-                        Student.cgpa,
-                        Student.backlogs,
-                        Profile.email,
-                    ).outerjoin(Profile, Profile.id == Student.profile_id).outerjoin(Department, Department.id == Student.department_id)
-                )
+                stmt = select(
+                    Student.id.label("student_id"),
+                    Student.roll_no,
+                    Profile.full_name.label("name"),
+                    Profile.full_name,
+                    Department.name.label("branch"),
+                    Department.name.label("department"),
+                    Student.section,
+                    (Student.current_year * 2).label("semester"),
+                    Student.current_year,
+                    Student.gender,
+                    Student.cgpa,
+                    Student.backlogs,
+                    Profile.email,
+                ).outerjoin(Profile, Profile.id == Student.profile_id).outerjoin(Department, Department.id == Student.department_id)
+                
+                # Apply department filter if restricted
+                if department_id:
+                    stmt = stmt.where(Student.department_id == department_id)
+                
+                result = await session.execute(stmt)
                 loaded["students"] = pd.DataFrame(result.mappings().all())
 
             if "attendance" in dataset_names:
-                result = await session.execute(
-                    select(
-                        Attendance.student_id.label("student_id"),
-                        Attendance.subject,
-                        Attendance.attendance_percentage.label("attendance_percent"),
-                    )
+                stmt = select(
+                    Attendance.student_id.label("student_id"),
+                    Attendance.subject,
+                    Attendance.attendance_percentage.label("attendance_percent"),
                 )
+                
+                # If we have a department filter, we should ideally only load attendance for those students
+                if department_id:
+                    stmt = stmt.join(Student, Student.id == Attendance.student_id).where(Student.department_id == department_id)
+                
+                result = await session.execute(stmt)
                 rows = result.mappings().all()
                 loaded["attendance"] = pd.DataFrame(rows, columns=["student_id", "subject", "attendance_percent"])
 
             if "marks" in dataset_names:
-                result = await session.execute(
-                    select(
-                        Mark.student_id.label("student_id"),
-                        Mark.subject,
-                        Mark.internal.label("internal_marks"),
-                        Mark.external.label("external_marks"),
-                        Mark.total.label("total_marks"),
-                    )
+                stmt = select(
+                    Mark.student_id.label("student_id"),
+                    Mark.subject,
+                    Mark.internal.label("internal_marks"),
+                    Mark.external.label("external_marks"),
+                    Mark.total.label("total_marks"),
                 )
+                
+                if department_id:
+                    stmt = stmt.join(Student, Student.id == Mark.student_id).where(Student.department_id == department_id)
+                
+                result = await session.execute(stmt)
                 rows = result.mappings().all()
                 loaded["marks"] = pd.DataFrame(
                     rows,

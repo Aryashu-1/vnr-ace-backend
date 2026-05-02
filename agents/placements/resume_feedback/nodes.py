@@ -1,12 +1,13 @@
 # agents/placements/resume_feedback/nodes.py
 
 from __future__ import annotations
+from typing import Dict, Any
 
-import os
 import json
-from typing import Any, Dict
 import google.generativeai as genai
-from dotenv import load_dotenv
+from google.api_core import exceptions
+from core.llm import get_gemini_keys
+from core.config import settings
 
 from .constants import (
     AGENT_NAME,
@@ -32,8 +33,7 @@ from .utils import (
     build_cache_key,
 )
 
-# Load environment variables (needed for GEMINI_API_KEY)
-load_dotenv()
+
 
 
 def access_control_node(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -196,25 +196,21 @@ def rag_analysis_node(state: Dict[str, Any], rag_service: Any = None, cache_repo
     if rag_service is None:
         # placeholder / mock structured output
         analysis = {
-            "summary": "Mock resume analysis completed.",
+            "overall_score": 74.0,
+            "summary": ["Mock resume analysis completed."],
             "strengths": ["Good project exposure", "Relevant technical stack"],
             "weaknesses": ["Experience section needs stronger impact statements"],
-            "missing_elements": ["Links to portfolio or GitHub"],
-            "improvement_suggestions": [
-                "Add quantified achievements",
-                "Improve ATS keyword coverage for target roles",
-            ],
-            "ats_notes": ["Use role-specific keywords from job descriptions"],
+            "ats_issues": ["Use role-specific keywords from job descriptions"],
+            "priority_fixes": ["Add quantified achievements", "Add GitHub link"],
             "section_feedback": {
-                "projects": "Projects are relevant but need measurable outcomes.",
-                "skills": "Skills section is decent but can be grouped better.",
-            },
-            "score_breakdown": {
-                "overall": 7.4,
-                "ats": 7.0,
-                "clarity": 7.5,
-                "impact": 6.8,
-            },
+                "projects": {
+                    "score": 7.5,
+                    "strengths": ["Relevant projects"],
+                    "issues": ["Missing measurable outcomes"],
+                    "suggestions": ["Add metrics"],
+                    "example_rewrites": ["Increased X by Y%"]
+                }
+            }
         }
     else:
         analysis = rag_service.analyze_resume(
@@ -257,12 +253,12 @@ def initial_analysis_response_node(state: Dict[str, Any]) -> Dict[str, Any]:
     else:
         summary = summary_parts
 
-    overall_score = analysis.get("overall_score") or analysis.get("score_breakdown", {}).get("overall", "N/A")
+    overall_score = analysis.get("overall_score", "N/A")
     
-    ats_issues = analysis.get("ats_issues", []) or analysis.get("ats_notes", [])
+    ats_issues = analysis.get("ats_issues", [])
     ats_issues_str = "\n".join(f"- {i}" for i in ats_issues) if ats_issues else "None"
     
-    priority_fixes = analysis.get("priority_fixes", []) or analysis.get("improvement_suggestions", [])
+    priority_fixes = analysis.get("priority_fixes", [])
     priority_fixes_str = "\n".join(f"- {f}" for f in priority_fixes) if priority_fixes else "None"
 
     section_feedback = analysis.get("section_feedback", {})
@@ -382,18 +378,40 @@ def resume_chat_node(state: Dict[str, Any]) -> Dict[str, Any]:
     # Restore or initialise Gemini chat history
     history = state.get("conversation_history", [])
 
-    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-    model = genai.GenerativeModel(
-        model_name="models/gemini-2.5-flash",
-        system_instruction=system_prompt,
-    )
-    chat = model.start_chat(history=history)
+    keys = get_gemini_keys()
+    if not keys:
+        state["final_response"] = "System Error: Gemini API keys are not configured."
+        return state
 
-    response = chat.send_message(
-        user_query,
-        generation_config=genai.types.GenerationConfig(temperature=0.3),
-    )
-    reply_text = response.text
+    reply_text = ""
+    last_error = None
+    for key in keys:
+        try:
+            genai.configure(api_key=key)
+            model = genai.GenerativeModel(
+                model_name=settings.GEMINI_MODEL,
+                system_instruction=system_prompt,
+            )
+            chat = model.start_chat(history=history)
+
+            response = chat.send_message(
+                user_query,
+                generation_config=genai.types.GenerationConfig(temperature=0.3),
+            )
+            reply_text = response.text
+            break # Success
+        except exceptions.ResourceExhausted as e:
+            print(f"Gemini quota exceeded for a key in chat node. Trying next key... Error: {e}")
+            last_error = e
+            continue
+        except Exception as e:
+            print(f"Gemini chat failed: {e}")
+            last_error = e
+            continue
+    
+    if not reply_text:
+        state["final_response"] = "Error: Could not get a response from Gemini after trying multiple keys."
+        return state
 
     # Append the new turn to history so the caller can persist it
     updated_history = list(history) + [

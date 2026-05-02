@@ -12,10 +12,51 @@ class AdmissionsDataService:
         "you", "my", "we", "our", "do", "does",
     }
 
+    _cache = {}
+
+    @classmethod
+    async def fetch_departments_from_db(cls) -> Dict[str, Any]:
+        """
+        Fetches department info from the database and updates the local cache.
+        """
+        from core.db import AsyncSessionLocal
+        from sqlalchemy import text
+        from agents.admissions.utils import sanitize_key
+
+        new_data = {}
+        try:
+            async with AsyncSessionLocal() as session:
+                result = await session.execute(text("SELECT name, description FROM departments"))
+                rows = result.fetchall()
+                for name, description in rows:
+                    key = sanitize_key(name)
+                    new_data[key] = {
+                        "name": name,
+                        "content": description or ""
+                    }
+            cls._cache = new_data
+        except Exception as e:
+            print(f"Error fetching departments from DB: {e}")
+            # If DB fails, try to fallback to local files if any exist
+            if not cls._cache:
+                cls._cache = cls.load_departments_data_from_files()
+        
+        return cls._cache
+
     @classmethod
     def load_departments_data(cls) -> Dict[str, Any]:
         """
-        Loads department information from the data/departments directory.
+        Returns the current cache. If empty, it should have been initialized at startup.
+        If still empty, it falls back to local files for safety.
+        """
+        if not cls._cache:
+            return cls.load_departments_data_from_files()
+        return cls._cache
+
+    @classmethod
+    def load_departments_data_from_files(cls) -> Dict[str, Any]:
+        """
+        Fallback: Loads department information from the data/departments directory.
         """
         departments_data = {}
         if os.path.exists(cls.DEPT_DIR):

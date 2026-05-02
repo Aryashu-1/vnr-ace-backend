@@ -1,4 +1,5 @@
 # agents/classwork/mail_automation/services.py
+from core.mail import email_service
 
 class LLMService:
     def invoke_structured(self, system_prompt, user_prompt, schema):
@@ -7,9 +8,9 @@ class LLMService:
 class EmailService:
     def send_email(self, recipients, subject, body):
         """
-        Implement using SMTP / SendGrid / AWS SES
+        Sends email using the core email service.
         """
-        raise NotImplementedError
+        return email_service.send_email(recipients, subject, body)
 
 class AuditRepo:
     def persist(self, events):

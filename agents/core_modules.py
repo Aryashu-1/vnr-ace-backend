@@ -1,7 +1,7 @@
 # agents/core_modules.py
 
 from typing import Any, Dict, List, Optional
-from core.llm import groq_llm
+from core.llm import gemini_llm
 from core.db import engine, AsyncSessionLocal
 from sqlalchemy import text, select
 import json
@@ -17,7 +17,7 @@ class LLMService:
     Concrete implementation of the agent's LLM interface.
     """
     def __init__(self):
-        self.llm = groq_llm
+        self.llm = gemini_llm
 
     def invoke_structured(self, system_prompt: str, user_prompt: str, schema: Any) -> Any:
         """
@@ -101,6 +101,44 @@ class LLMService:
         ])
         return response.content
 
+    async def ainvoke_text(self, system_prompt: str, user_prompt: str) -> str:
+        """
+        Asynchronous version of invoke_text.
+        """
+        response = await self.llm.ainvoke([
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ])
+        return response.content
+
+    async def ainvoke_structured(self, system_prompt: str, user_prompt: str, schema: Any) -> Any:
+        """
+        Asynchronous version of invoke_structured.
+        """
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        try:
+            structured_llm = self.llm.with_structured_output(schema)
+            return await structured_llm.ainvoke(messages)
+        except Exception as e:
+            fallback_prompt = (
+                f"{user_prompt}\n\n"
+                "IMPORTANT: Return ONLY a valid JSON object that matches the required schema. "
+                "Do not wrap it in markdown/code fences and do not include extra text."
+            )
+            raw = await self.llm.ainvoke([
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": fallback_prompt},
+            ])
+            try:
+                payload = self._extract_json_payload(getattr(raw, "content", raw))
+                return self._coerce_schema(schema, payload)
+            except Exception:
+                raise e
+
 class AuditRepo:
     """
     Persists agent events to the audit_logs table.
@@ -120,11 +158,18 @@ class AuditRepo:
                         INSERT INTO audit_logs (event_type, user_id, agent_name, details)
                         VALUES (:event_type, :user_id, :agent_name, :details)
                     """)
+                    # Ensure details are JSON serializable (handle UUIDs)
+                    details = event.get("details", {})
+                    def serialize_special(obj):
+                        if isinstance(obj, uuid.UUID):
+                            return str(obj)
+                        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
                     await conn.execute(query, {
                         "event_type": event.get("event_type", "info"),
                         "user_id": event.get("user_id"),
                         "agent_name": event.get("agent_name", "unknown"),
-                        "details": json.dumps(event.get("details", {}))
+                        "details": json.dumps(details, default=serialize_special)
                     })
                 except Exception as e:
                     print(f"ERROR: Could not persist audit event to DB: {e}")
@@ -144,14 +189,14 @@ class AuditRepo:
         except Exception as e:
             print(f"Error persisting audit logs: {e}")
 
+from core.mail import email_service
+
 class EmailService:
     """
-    Mock email service for mail_automation agent.
+    Real email service for mail_automation agent.
     """
     def send_email(self, recipients: List[str], subject: str, body: str) -> bool:
-        print(f"DEBUG: Sending email to {recipients} | Subject: {subject}")
-        # In a real app, use smtplib or an API like SendGrid
-        return True
+        return email_service.send_email(recipients, subject, body)
 
 class SQLRepo:
     """
@@ -167,7 +212,7 @@ class SQLRepo:
         try:
             async with self.engine.connect() as conn:
                 result = await conn.execute(text(sql_query), sql_params or {})
-                return [dict(row) for row in result.mappings().all()]
+                return [dict(row._mapping) for row in result.all()]
         except Exception as e:
             print(f"Error executing read-only SQL: {e}")
             return []
@@ -190,12 +235,23 @@ class SQLRepo:
 
         department = interpreted_entities.get("department")
         if department:
-            filters.append("f.department ILIKE :department")
-            params["department"] = f"%{department}%"
+            filters.append("f.department_id = :department_id")
+            params["department_id"] = department # Assuming ID is passed or handled
+
+        subject = interpreted_entities.get("subject_name") or interpreted_entities.get("subject")
+        if subject:
+            filters.append("(s.activity ILIKE :subject OR s.activity ILIKE :subject_alt)")
+            params["subject"] = f"%{subject}%"
+            params["subject_alt"] = f"%{subject}%"
+
+        room = interpreted_entities.get("room_no") or interpreted_entities.get("room")
+        if room:
+            filters.append("f.cabin ILIKE :room")
+            params["room"] = f"%{room}%"
 
         if not filters and user_query:
             filters.append(
-                "(p.full_name ILIKE :q OR f.department ILIKE :q OR f.designation ILIKE :q OR f.cabin ILIKE :q OR s.activity ILIKE :q)"
+                "(p.full_name ILIKE :q OR f.designation ILIKE :q OR f.cabin ILIKE :q OR s.activity ILIKE :q)"
             )
             params["q"] = f"%{user_query}%"
 
@@ -205,7 +261,7 @@ class SQLRepo:
             SELECT
                 f.id,
                 p.full_name AS name,
-                f.department,
+                f.department_id,
                 f.cabin,
                 f.designation,
                 s.day,
@@ -222,20 +278,22 @@ class SQLRepo:
 
         grouped: Dict[str, Dict[str, Any]] = {}
         for row in rows:
-            faculty_id = row["id"]
+            faculty_id = str(row["id"])
             record = grouped.setdefault(
                 faculty_id,
                 {
                     "id": faculty_id,
                     "name": row.get("name"),
-                    "department": row.get("department"),
+                    "department": row.get("department_id"),
                     "cabin": row.get("cabin"),
                     "designation": row.get("designation"),
                     "schedule": {},
                 },
             )
             if row.get("day") and row.get("activity"):
-                record["schedule"].setdefault(row["day"], []).append(row["activity"])
+                record["schedule"].setdefault(row["day"], []).append(
+                    f"{row['time_range']}: {row['activity']}"
+                )
 
         return list(grouped.values())
 

@@ -11,10 +11,11 @@ class PlacementApplication(Base):
         UniqueConstraint("student_id", "drive_id", name="uq_placement_applications_student_drive"),
     )
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, server_default=text("gen_random_uuid()"))
     student_id = Column(UUID(as_uuid=True), ForeignKey("students.id"), nullable=False, index=True)
     drive_id = Column(UUID(as_uuid=True), ForeignKey("placement_drives.id"), nullable=False, index=True)
     status = Column(String, nullable=False, default="applied")
+    resume_url = Column(String, nullable=True)
     is_registered_externally = Column(Boolean, nullable=False, server_default=text("false"), default=False)
     external_registration_id = Column(String, nullable=True)
     confirmation_screenshot_url = Column(String, nullable=True)

@@ -1,0 +1,289 @@
+{
+    "metadata": {
+        "branch": "CSE",
+        "year": 1,
+        "semester": 2,
+        "regulation": "R25",
+        "section": "C",
+        "room_no": "E-103"
+    },
+    "subjects": {
+        "ODEVC": {
+            "code": "25BS1MT105",
+            "name": "Ordinary Differential Equations and Vector Calculus",
+            "faculty": [
+                "Dr. K. Shyamala"
+            ]
+        },
+        "EC": {
+            "code": "25BS1CH102",
+            "name": "Engineering Chemistry",
+            "faculty": [
+                "Dr. S. Appa Rao"
+            ]
+        },
+        "PPS": {
+            "code": "25PC1CS101",
+            "name": "Programming for Problem Solving",
+            "faculty": [
+                "Mr. N. Praveen"
+            ]
+        },
+        "DS": {
+            "code": "25PC1CS102",
+            "name": "Data Structures",
+            "faculty": [
+                "Dr. M. Madhubala"
+            ]
+        },
+        "CO": {
+            "code": "25PC1CS103",
+            "name": "Computer Organization",
+            "faculty": [
+                "Mr. P. Sudheer Benarjee"
+            ]
+        },
+        "ED": {
+            "code": "25ES1ME101",
+            "name": "Engineering Drawing",
+            "faculty": [
+                "Mr. M. Sandeep"
+            ]
+        },
+        "ES": {
+            "code": "25MN6HS102",
+            "name": "Environmental Science",
+            "faculty": [
+                "Dr. G. Lalitha"
+            ]
+        },
+        "PPS LAB": {
+            "code": "25PC2CS101",
+            "name": "Programming for Problem Solving Laboratory",
+            "faculty": [
+                "Mr. N. Praveen",
+                "Ms. A. Sandhya"
+            ]
+        },
+        "DS LAB": {
+            "code": "25PC2CS102",
+            "name": "Data Structures Laboratory",
+            "faculty": [
+                "Dr. M. Madhubala",
+                "Dr. Deepak Sukheja"
+            ]
+        },
+        "EC LAB": {
+            "code": "25BS2CH101",
+            "name": "Engineering Chemistry Laboratory",
+            "faculty": [
+                "Dr. S. Appa Rao",
+                "Dr. Archana Kushwaha"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "PPS"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 3,
+                    "subject": "DS"
+                },
+                {
+                    "slot": 4,
+                    "subject": [
+                        "DS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": [
+                        "DS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": [
+                        "DS LAB"
+                    ],
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "EC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "EC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "EC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "PPS"
+                },
+                {
+                    "slot": 6,
+                    "subject": "DS"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 2,
+                    "subject": "PPS"
+                },
+                {
+                    "slot": 3,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 4,
+                    "subject": "DS"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ED"
+                },
+                {
+                    "slot": 6,
+                    "subject": "ES"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "CO"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 3,
+                    "subject": "PPS"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ECA/CCA",
+                    "type": "activity"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MENTORING",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "LIBRARY",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "PPS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "PPS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "PPS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "PPS"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "SPORTS",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "ES"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ED"
+                },
+                {
+                    "slot": 3,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 4,
+                    "subject": "CO"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MTP",
+                    "type": "activity"
+                }
+            ]
+        }
+    ]
+}

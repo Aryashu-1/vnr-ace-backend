@@ -1,0 +1,306 @@
+{
+    "metadata": {
+        "branch": "CSE",
+        "year": 3,
+        "semester": 6,
+        "regulation": "R22",
+        "section": "C",
+        "room_no": "E007"
+    },
+    "subjects": {
+        "DE": {
+            "code": "22PC1AM202",
+            "name": "Data Engineering",
+            "faculty": [
+                "Mr. V. Rakesh"
+            ]
+        },
+        "ML": {
+            "code": "22PC1AM302",
+            "name": "Machine Learning",
+            "faculty": [
+                "Dr. S. Nagini"
+            ]
+        },
+        "WT": {
+            "code": "22PC1CS302",
+            "name": "Web Technologies",
+            "faculty": [
+                "Mr. N. Praveen"
+            ]
+        },
+        "PE-II": {
+            "code": "MULTIPLE",
+            "name": "Professional Elective II (Cyber Security / FDS / PR)",
+            "faculty": [
+                "Mr. P. Praveen",
+                "Dr. M. Srikanth",
+                "Mr. K. Akhil"
+            ]
+        },
+        "OE-II": {
+            "code": "MULTIPLE",
+            "name": "Open Elective II (Multiple Options)",
+            "faculty": [
+                "Multiple Faculty"
+            ]
+        },
+        "ML LAB": {
+            "code": "22PC2AM302",
+            "name": "Machine Learning Laboratory",
+            "faculty": [
+                "Dr. S. Nagini",
+                "Dr. P. Anjusha"
+            ]
+        },
+        "WT LAB": {
+            "code": "22PC2CS302",
+            "name": "Web Technologies Laboratory",
+            "faculty": [
+                "Mr. N. Praveen",
+                "Mr. M. Sandeep"
+            ]
+        },
+        "DE LAB": {
+            "code": "22PC2AM202",
+            "name": "Data Engineering Laboratory",
+            "faculty": [
+                "Mr. V. Rakesh",
+                "Dr. K. Sri Rama Murthy"
+            ]
+        },
+        "INTERNSHIP": {
+            "code": "22PW4CS301",
+            "name": "Internship",
+            "faculty": [
+                "Mrs. S. Sudeshna",
+                "Dr. P.V. Siva Kumar"
+            ]
+        },
+        "GS": {
+            "code": "22MN6HS302",
+            "name": "Gender Sensitization",
+            "faculty": [
+                "Mrs. K. Bhagya Rekha"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "WT"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ML"
+                },
+                {
+                    "slot": 3,
+                    "subject": "PE-II"
+                },
+                {
+                    "slot": 4,
+                    "subject": [
+                        "WT LAB",
+                        "ML LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": [
+                        "WT LAB",
+                        "ML LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": [
+                        "WT LAB",
+                        "ML LAB"
+                    ],
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "DE"
+                },
+                {
+                    "slot": 2,
+                    "subject": "OE-II"
+                },
+                {
+                    "slot": 3,
+                    "subject": "OE-II"
+                },
+                {
+                    "slot": 4,
+                    "subject": [
+                        "ML LAB",
+                        "DE LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": [
+                        "ML LAB",
+                        "DE LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": [
+                        "ML LAB",
+                        "DE LAB"
+                    ],
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "DE LAB",
+                        "WT LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "DE LAB",
+                        "WT LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "DE LAB",
+                        "WT LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                },
+                {
+                    "slot": 5,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "WT"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ML"
+                },
+                {
+                    "slot": 3,
+                    "subject": "DE"
+                },
+                {
+                    "slot": 4,
+                    "subject": "PE-II"
+                },
+                {
+                    "slot": 5,
+                    "subject": "PE-II"
+                },
+                {
+                    "slot": 6,
+                    "subject": "OE-II"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "WT"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ML"
+                },
+                {
+                    "slot": 3,
+                    "subject": "DE"
+                },
+                {
+                    "slot": 4,
+                    "subject": "INTERNSHIP",
+                    "type": "activity"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ECA/CCA",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "LIBRARY",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "DE"
+                },
+                {
+                    "slot": 2,
+                    "subject": "PE-II"
+                },
+                {
+                    "slot": 3,
+                    "subject": "ML"
+                },
+                {
+                    "slot": 4,
+                    "subject": "WT"
+                },
+                {
+                    "slot": 5,
+                    "subject": "GS"
+                },
+                {
+                    "slot": 6,
+                    "subject": "GS"
+                }
+            ]
+        }
+    ]
+}

@@ -11,6 +11,7 @@ ALLOWED_INTENTS = {
     "section_timetable_lookup",
     "room_timetable_lookup",
     "subject_timetable_lookup",
+    "faculty_details_lookup",
 }
 
 STANDARD_MESSAGES = {

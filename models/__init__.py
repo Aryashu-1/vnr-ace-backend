@@ -29,3 +29,5 @@ from models.user_role import UserRole
 from models.student import Student
 from models.resume_rule import ResumeRule
 from models.placement_policy import PlacementPolicy
+from models.faq import FAQ
+from models.timetable_entry import TimetableEntry

@@ -6,8 +6,8 @@ from datetime import datetime
 
 from core.auth import router as auth_router
 from routes.admissions import router as admissions_router
-from classwork.router import router as classwork_router
-from placements.router import router as placements_router
+from legacy.classwork.router import router as classwork_router
+from legacy.placements.router import router as placements_router
 from routes.test_rbac import router as test_rbac_router
 from routes.api_router import router as build_api_router
 from routes.v1.api import api_v1_router
@@ -26,6 +26,11 @@ from models.offer import Offer
 from models.minor_degree import MinorDegree
 from models.job_notification import JobNotification
 from models.company_prep import CompanyPrepQuestion
+from models.placement_drive import PlacementDrive
+from models.placement_offer_v2 import PlacementOfferV2
+from models.dashboard_snapshot import DashboardSnapshot
+from models.department import Department
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
@@ -33,6 +38,13 @@ async def lifespan(app: FastAPI):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print("✓ Database connected successfully")
+        
+        # Initialize Admissions Data Cache
+        from agents.admissions.services import AdmissionsDataService
+        from agents.admissions.graph import invalidate_admissions_graph
+        await AdmissionsDataService.fetch_departments_from_db()
+        invalidate_admissions_graph()
+        print("✓ Admissions data cache initialized from DB")
     except Exception as e:
         print(f"⚠ Warning: Database connection failed: {e}")
         print("⚠ App will start without database (classwork module uses Excel files)")
@@ -43,7 +55,6 @@ app = FastAPI(
     title="VNR-ACE Backend",
     lifespan=lifespan
 )
-
 
 @app.exception_handler(LLMServiceError)
 async def llm_service_error_handler(request: Request, exc: LLMServiceError):
@@ -62,8 +73,13 @@ async def llm_service_error_handler(request: Request, exc: LLMServiceError):
 # ---------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_origin_regex=r"https://.*\.vercel\.app|https?://localhost(:\d+)?|https?://127\.0\.0\.1(:\d+)?|.*",
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "https://vnr-ace.vercel.app"
+    ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -88,6 +104,19 @@ def health_check():
 @app.get("/admin/test")
 async def admin_test(user = Depends(role_required("admin"))):
     return {"message": "Admin access granted", "user": user.email}
+
+# ---------------------------
+# 🚀 Static Files (Artifacts)
+# ---------------------------
+from fastapi.staticfiles import StaticFiles
+import os
+
+# Ensure artifacts directory exists
+if not os.path.exists("artifacts"):
+    os.makedirs("artifacts")
+    os.makedirs("artifacts/classwork_reports")
+
+app.mount("/artifacts", StaticFiles(directory="artifacts"), name="artifacts")
 
 # ---------------------------
 # 🚀 Routers

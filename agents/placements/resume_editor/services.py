@@ -261,6 +261,47 @@ class ResumeEditorService:
             mode="apply_suggestion",
         )
 
+    async def improve_full_resume(
+        self,
+        db: AsyncSession,
+        *,
+        resume: Resume,
+        user_instruction: Optional[str] = None,
+    ) -> ResumeVersion:
+        """
+        Improves all sections of the resume sequentially using AI.
+        """
+        current = normalize_resume_json(resume.structured_json)
+        sections_to_improve = ["experience", "projects", "education", "skills", "achievements"]
+        
+        updated = deepcopy(current)
+        for section in sections_to_improve:
+            if section in current and current[section]:
+                try:
+                    # Reuse existing LLM rewrite logic
+                    target_fragment = current[section]
+                    prompt = IMPROVE_SECTION_SYSTEM_PROMPT
+                    
+                    updated_fragment_raw = await self._rewrite_with_llm(
+                        system_prompt=prompt,
+                        current_section=target_fragment,
+                        user_instruction=user_instruction or "Optimize for ATS and clarity.",
+                    )
+                    parsed_fragment = parse_json_object(updated_fragment_raw)
+                    # Grounding check
+                    ensure_generated_content_is_grounded(target_fragment, parsed_fragment, section=section)
+                    updated[section] = parsed_fragment
+                except Exception as e:
+                    print(f"Error improving section {section}: {e}")
+                    # Continue with other sections if one fails
+        
+        return await self.versioning.save_version(
+            db,
+            resume=resume,
+            content=updated,
+            change_summary="Full resume AI improvement applied",
+        )
+
     async def reanalyze_resume(self, db: AsyncSession, *, resume: Resume) -> Dict[str, Any]:
         analysis = await asyncio.to_thread(
             self.rag_service.analyze_resume,

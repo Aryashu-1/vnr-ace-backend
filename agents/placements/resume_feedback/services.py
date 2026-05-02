@@ -7,24 +7,12 @@ from docx import Document
 from pathlib import Path
 import json
 import re
-import os
 import google.generativeai as genai
-from dotenv import load_dotenv
-from pydantic import BaseModel
+from google.api_core import exceptions
+from core.llm import get_gemini_keys
+from core.config import settings
 from .constants import COLLEGE_RESUME_RULES
-load_dotenv()
-
-class SectionFeedback(BaseModel):
-    issues: List[str]
-    suggestions: List[str]
-    example_rewrites: List[str]
-
-class ResumeAnalysis(BaseModel):
-    overall_score: int
-    summary: List[str]
-    section_feedback: Dict[str, SectionFeedback]
-    ats_issues: List[str]
-    priority_fixes: List[str]
+from .schemas import StructuredResumeAnalysis
 
 class ResumeAdvisor:
     def __init__(self, name: str = "Assistant", email: str = "assistant@vnr.edu.in"):
@@ -33,26 +21,41 @@ class ResumeAdvisor:
     
     def _call_gemini(self, messages: list) -> str:
         """
-        Calls Gemini API with the provided messages.
+        Calls Gemini API with the provided messages, supporting key rotation on 429.
         """
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-        MODEL_NAME = "models/gemini-2.5-flash"
+        keys = get_gemini_keys()
+        if not keys:
+            raise ValueError("No Gemini API keys found in configuration.")
 
-        model = genai.GenerativeModel(
-            model_name=MODEL_NAME,
-            system_instruction=messages[0]["content"]
-        )
+        last_error = None
+        for key in keys:
+            try:
+                genai.configure(api_key=key)
+                model = genai.GenerativeModel(
+                    model_name=settings.GEMINI_MODEL,
+                    system_instruction=messages[0]["content"]
+                )
 
-        chat = model.start_chat(history=[])
+                chat = model.start_chat(history=[])
 
-        response = chat.send_message(
-            messages[1]["content"],
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.2
-            )
-        )
+                response = chat.send_message(
+                    messages[1]["content"],
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=0.2
+                    )
+                )
 
-        return response.text
+                return response.text
+            except exceptions.ResourceExhausted as e:
+                print(f"Gemini quota exceeded for a key. Trying next key... Error: {e}")
+                last_error = e
+                continue
+            except Exception as e:
+                print(f"Gemini call failed with error: {e}")
+                last_error = e
+                continue
+        
+        raise last_error or Exception("Gemini rotation failed to produce a result.")
 
     def _extract_text(self, file_path: str) -> str:
         path = Path(file_path)
@@ -88,7 +91,7 @@ class ResumeAdvisor:
             resume_text: str,
             target_role: str = "General",
             experience_level: str = "Unknown"
-        ) -> ResumeAnalysis:
+        ) -> StructuredResumeAnalysis:
 
         SYSTEM_PROMPT = """
         You are an expert resume reviewer, recruiter, and ATS optimization specialist.
@@ -113,15 +116,22 @@ class ResumeAdvisor:
         {{
         "overall_score": number (0-100),
         "summary": [string],
+        "strengths": [string],
+        "weaknesses": [string],
+        "ats_issues": [string],
+        "priority_fixes": [string],
         "section_feedback": {{
             "experience": {{
-            "issues": [string],
-            "suggestions": [string],
-            "example_rewrites": [string]
-            }}
-        }},
-        "ats_issues": [string],
-        "priority_fixes": [string]
+                "score": number (0-10),
+                "strengths": [string],
+                "issues": [string],
+                "suggestions": [string],
+                "example_rewrites": [string]
+            }},
+            "education": {{ "score": number (0-10), "strengths": [string], "issues": [string], "suggestions": [string], "example_rewrites": [string] }},
+            "skills": {{ "score": number (0-10), "strengths": [string], "issues": [string], "suggestions": [string], "example_rewrites": [string] }},
+            "projects": {{ "score": number (0-10), "strengths": [string], "issues": [string], "suggestions": [string], "example_rewrites": [string] }}
+        }}
         }}
 
         Be specific. Provide concrete rewrite examples.
@@ -141,9 +151,9 @@ class ResumeAdvisor:
         response = response.replace("```", " ").strip()
 
         parsed = json.loads(response)
-        return ResumeAnalysis(**parsed)
+        return StructuredResumeAnalysis(**parsed)
 
-    def analyze(self, resume_path: str = None, resume_text: str = None) -> ResumeAnalysis:
+    def analyze(self, resume_path: str = None, resume_text: str = None) -> StructuredResumeAnalysis:
         if resume_path:
             raw_text = self._extract_text(resume_path)
             clean_text = self._normalize_resume(raw_text)

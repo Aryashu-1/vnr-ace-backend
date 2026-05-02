@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
@@ -35,6 +36,7 @@ class Student(Base):
     placement_status = Column(String, index=True, nullable=True, default="unplaced")
     highest_package = Column(Float, nullable=True, default=0.0)
     total_offers = Column(Integer, nullable=True, default=0)
+    attendance = Column(Float, nullable=True, default=0.0)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -42,3 +44,12 @@ class Student(Base):
     # Relationships
     profile = relationship("Profile", back_populates="student_profile")
     department_rel = relationship("Department")
+    interview_experiences = relationship("InterviewExperience", back_populates="student")
+
+    @property
+    def branch(self) -> Optional[str]:
+        return self.department_rel.name if self.department_rel else None
+
+    @property
+    def full_name(self) -> Optional[str]:
+        return self.profile.full_name if self.profile else None

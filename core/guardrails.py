@@ -6,13 +6,15 @@ async def check_input_guardrail(query: str) -> bool:
     Returns True if the input is SAFE to process.
     Returns False if the input is UNSAFE (abusive/toxic).
     """
-    prompt = f"""You are a strict safety guardrail for a university chatbot system.
+    prompt = f"""You are a strict but reasonable safety guardrail for a university chatbot system.
 Your task is to analyze the following user input and determine if it contains any abusive, toxic, highly offensive, or hateful language.
 
 User Input: "{query}"
 
-If the input is safe, polite, or just a normal question (even if it's frustrated but not abusive), respond exactly with the word "SAFE".
-If the input contains abusive, toxic, highly offensive, or hateful language, respond exactly with the word "UNSAFE".
+Instructions:
+1. If the input is safe, polite, or a normal educational/admissions question (even if it mentions specific branches like CSE, ECE, etc.), respond exactly with the word "SAFE".
+2. If the input contains clear abusive, toxic, highly offensive, or hateful language, respond exactly with the word "UNSAFE".
+3. Do NOT block normal questions about college, branches, or admissions.
 
 Response:"""
     try:
@@ -32,7 +34,7 @@ async def check_output_guardrail(response: str, query: str) -> bool:
     Returns True if the output is SAFE to show to the user.
     Returns False if the output is UNSAFE.
     """
-    prompt = f"""You are a strict safety guardrail for a university chatbot system.
+    prompt = f"""You are a strict but reasonable safety guardrail for a university chatbot system.
 Your task is to analyze the generated response to a user's query and determine if it is safe to display.
 
 User Query: "{query}"
@@ -40,11 +42,13 @@ Generated Response: "{response}"
 
 Criteria for UNSAFE:
 1. Contains abusive, toxic, or highly offensive language.
-2. Contains highly sensitive confidential information (e.g. passwords, SSNs, personal contact details that should not be public).
+2. Contains highly sensitive confidential information (e.g. passwords, personal contact details).
 3. Explicitly states dangerous or illegal instructions.
 
-If the response is safe, respond exactly with the word "SAFE".
-If the response violates any of the above criteria or seems like a severe hallucination that shouldn't be shown, respond exactly with the word "UNSAFE".
+Instructions:
+- If the response is safe and relevant to the college admissions context, respond exactly with the word "SAFE".
+- If the response violates any of the criteria above, respond exactly with the word "UNSAFE".
+- Be lenient towards helpful, positive information about the university.
 
 Response:"""
     try:

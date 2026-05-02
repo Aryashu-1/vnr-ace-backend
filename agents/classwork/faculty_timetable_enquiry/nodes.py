@@ -71,6 +71,8 @@ def _heuristic_intent(query: str) -> IntentClassifierOutput:
         interpreted_entities=entities,
         clarification_needed=False,
         clarification_question=None,
+        is_follow_up=False,
+        data_strategy="SEARCH_DB"
     )
 
 
@@ -111,13 +113,13 @@ def language_guardrail_node(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def scope_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
+async def scope_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
     query = state.get("user_query", "")
     if llm_service is None:
         result = _heuristic_scope(query)
     else:
         try:
-            result = llm_service.invoke_structured(
+            result = await llm_service.ainvoke_structured(
                 system_prompt=SCOPE_CLASSIFIER_PROMPT,
                 user_prompt=query,
                 schema=ScopeClassifierOutput,
@@ -141,7 +143,7 @@ def scope_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dic
     return state
 
 
-def intent_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
+async def intent_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
     memory = trim_memory(state.get("memory", []), 10)
     user_prompt = (
         f"Conversation memory: {memory}\n"
@@ -153,7 +155,7 @@ def intent_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Di
         result = _heuristic_intent(state.get("user_query", ""))
     else:
         try:
-            result = llm_service.invoke_structured(
+            result = await llm_service.ainvoke_structured(
                 system_prompt=INTENT_CLASSIFIER_PROMPT,
                 user_prompt=user_prompt,
                 schema=IntentClassifierOutput,
@@ -166,6 +168,7 @@ def intent_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Di
     state["interpreted_entities"] = result.interpreted_entities
     state["clarification_needed"] = result.clarification_needed
     state["clarification_question"] = result.clarification_question
+    state["data_strategy"] = result.data_strategy
 
     state.setdefault("audit_events", []).append(
         make_audit_event(
@@ -177,6 +180,7 @@ def intent_classifier_node(state: Dict[str, Any], llm_service: Any = None) -> Di
                 "confidence": result.confidence,
                 "entities": result.interpreted_entities,
                 "clarification_needed": result.clarification_needed,
+                "data_strategy": result.data_strategy,
             },
         )
     )
@@ -195,6 +199,10 @@ async def faculty_data_loader_node(state: Dict[str, Any], sql_repo: Any = None) 
     """
     Loads faculty directory data from the database, with JSON fallback only if needed.
     """
+    # Cache optimization: Skip DB if data strategy is REUSE_DATA
+    if state.get("data_strategy") == "REUSE_DATA" and state.get("query_result_rows"):
+        return state
+
     if sql_repo is not None:
         try:
             state["query_result_rows"] = await sql_repo.load_faculty_directory(
@@ -206,34 +214,29 @@ async def faculty_data_loader_node(state: Dict[str, Any], sql_repo: Any = None) 
         except Exception as e:
             print(f"Error loading faculty data from DB: {e}")
 
-    json_path = os.path.join(os.path.dirname(__file__), "../../../data/faculty_data.json")
-    try:
-        if os.path.exists(json_path):
-            with open(json_path, "r") as f:
-                data = json.load(f)
-            state["query_result_rows"] = data
-        else:
-            state["query_result_rows"] = []
-    except Exception as e:
-        print(f"Error loading faculty JSON: {e}")
-        state["query_result_rows"] = []
-    
+    # Simplified fallback: in a real system, we might log an error here
     return state
 
 
-def sql_generation_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
+async def sql_generation_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
     if llm_service is None:
         raise ValueError("sql_generation_node requires llm_service for production use.")
+
+    SCHEMA_INFO = (
+        "Table 'profiles' (p) -> id, full_name\n"
+        "Table 'faculty' (f) -> id, profile_id, department, cabin, designation\n"
+        "Table 'faculty_schedule_entries' (s) -> faculty_id, day, time_range, activity"
+    )
 
     user_prompt = (
         f"Intent: {state.get('intent')}\n"
         f"Entities: {state.get('interpreted_entities', {})}\n"
-        f"Schema: {DB_SCHEMA_HINT}\n"
+        f"Schema: {SCHEMA_INFO}\n"
         f"Current query: {state.get('user_query', '')}\n"
         f"Conversation memory: {trim_memory(state.get('memory', []), 10)}"
     )
 
-    result: SQLGeneratorOutput = llm_service.invoke_structured(
+    result: SQLGeneratorOutput = await llm_service.ainvoke_structured(
         system_prompt=SQL_GENERATOR_PROMPT,
         user_prompt=user_prompt,
         schema=SQLGeneratorOutput,
@@ -303,7 +306,7 @@ async def sql_execution_node(state: Dict[str, Any], sql_repo: Any = None) -> Dic
     return state
 
 
-def answer_formatter_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
+async def answer_formatter_node(state: Dict[str, Any], llm_service: Any = None) -> Dict[str, Any]:
     rows = state.get("query_result_rows", [])
 
     if not rows:
@@ -311,34 +314,39 @@ def answer_formatter_node(state: Dict[str, Any], llm_service: Any = None) -> Dic
         return state
 
     if llm_service is None:
-        state["final_response"] = f"Found data for {len(rows)} faculty members."
+        state["final_response"] = f"Found data for {len(rows)} matching entries."
         return state
 
     # Direct JSON-to-Answer flow
+    import uuid
+    def uuid_serializer(obj):
+        if isinstance(obj, uuid.UUID):
+            return str(obj)
+        raise TypeError(f"Type {type(obj)} not serializable")
+
     user_prompt = (
         f"User query: {state.get('user_query')}\n"
         f"Extracted Entities: {state.get('interpreted_entities', {})}\n"
         f"Conversation history: {state.get('memory', [])}\n"
-        f"Faculty Data (JSON): {json.dumps(rows, indent=2)}\n"
+        f"Faculty Data (JSON): {json.dumps(rows, indent=2, default=uuid_serializer)}\n"
     )
     
     system_prompt = (
         "You are a helpful Faculty Enquiry assistant. "
         "Answer the user's query strictly based on the provided Faculty Data JSON, while considering the conversation history. "
-        "If the user is asking a follow-up question (e.g., 'What about their room?'), locate the faculty member from the history and answer using the current data. "
         "Include cabin numbers, designations, and schedules in your answer where relevant. "
         "If a specific faculty is found, give their full details. "
         "If multiple matches or no matches, explain why clearly."
     )
     
     try:
-        answer = llm_service.invoke_text(
+        answer = await llm_service.ainvoke_text(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
         )
         state["final_response"] = answer
     except Exception:
-        # Fallback response to remain available during LLM outages/quota limits.
+        # Fallback response
         state["final_response"] = (
             f"Found {len(rows)} matching record(s). "
             f"Here are key details: {compact_rows(rows, limit=3)}"

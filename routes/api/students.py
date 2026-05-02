@@ -4,6 +4,8 @@ from sqlalchemy import select, func
 from typing import Optional
 from core.db import get_db
 from models.student import Student
+from models.profile import Profile
+from models.department import Department
 from models.placement_drive import PlacementDrive
 from models.placement_offer_v2 import PlacementOfferV2
 
@@ -21,13 +23,15 @@ async def get_students(
     
     if search:
         search_filter = f"%{search}%"
-        query = query.filter(
-            (Student.full_name.ilike(search_filter)) | 
+        query = query.join(Profile, Student.profile_id == Profile.id).filter(
+            (Profile.full_name.ilike(search_filter)) | 
             (Student.roll_no.ilike(search_filter))
         )
 
     if branch:
-        query = query.filter(func.upper(Student.branch) == branch.upper())
+        query = query.join(Department, Student.department_id == Department.id).filter(
+            func.upper(Department.name) == branch.upper()
+        )
     
     if placed is not None or salary_min is not None:
         query = query.join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id, isouter=True)

@@ -16,6 +16,8 @@ class IntentClassifierOutput(BaseModel):
     interpreted_entities: Dict[str, Any] = Field(default_factory=dict)
     clarification_needed: bool = False
     clarification_question: Optional[str] = None
+    is_follow_up: bool = False
+    data_strategy: str = "SEARCH_DB"
 
 
 class SQLGeneratorOutput(BaseModel):

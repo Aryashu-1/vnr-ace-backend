@@ -1,0 +1,19 @@
+
+
+Allotment 
+Automatic updation
+
+Students availability 
+Terms and conditions 
+
+
+"What is the schedule for Ms. Sana Inayath on Monday?"
+"Where is Dr. S. Appa Rao on Saturday?"
+"What is the venue for Engineering Chemistry (CE-A)?"
+
+
+
+
+"Generate a report of all IT students with more than 2 backlogs"
+"Show me a list of defaulters (attendance below 75%) for the current semester"
+"Get the performance report for students in section A with CGPA above 8.5"

@@ -10,5 +10,8 @@ class Department(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, server_default=text("gen_random_uuid()"))
     name = Column(String, unique=True, nullable=False, index=True)
+    code = Column(String, unique=True, nullable=True, index=True)
+    intake = Column(String, nullable=True) # Or Integer, but String is safer if they use ranges
+    hod = Column(String, nullable=True)
     description = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

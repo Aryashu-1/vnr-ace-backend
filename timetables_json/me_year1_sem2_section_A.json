@@ -1,0 +1,282 @@
+{
+    "metadata": {
+        "branch": "ME",
+        "year": 1,
+        "semester": 2,
+        "regulation": "R25",
+        "section": "A",
+        "room_no": "D-301"
+    },
+    "subjects": {
+        "ODEVC": {
+            "code": "25BS1MT105",
+            "name": "Ordinary Differential Equations and Vector Calculus",
+            "faculty": [
+                "Dr. K. Shyamala"
+            ]
+        },
+        "EC": {
+            "code": "25BS1CH102",
+            "name": "Engineering Chemistry",
+            "faculty": [
+                "Dr. S. Appa Rao"
+            ]
+        },
+        "EM": {
+            "code": "25PC1ME102",
+            "name": "Engineering Mechanics",
+            "faculty": [
+                "Dr. V. Ramesh"
+            ]
+        },
+        "MP": {
+            "code": "25PC1ME103",
+            "name": "Manufacturing Processes",
+            "faculty": [
+                "Dr. M. Ramesh"
+            ]
+        },
+        "ED": {
+            "code": "25ES1ME101",
+            "name": "Engineering Drawing",
+            "faculty": [
+                "Mr. M. Sandeep"
+            ]
+        },
+        "ES": {
+            "code": "25MN6HS102",
+            "name": "Environmental Science",
+            "faculty": [
+                "Dr. G. Lalitha"
+            ]
+        },
+        "WORKSHOP": {
+            "code": "25ES3ME101",
+            "name": "Workshop Practice",
+            "faculty": [
+                "Mr. G. Samba Siva Rao",
+                "Mr. V. Rakesh"
+            ]
+        },
+        "EC LAB": {
+            "code": "25BS2CH101",
+            "name": "Engineering Chemistry Laboratory",
+            "faculty": [
+                "Dr. S. Appa Rao",
+                "Dr. Archana Kushwaha"
+            ]
+        },
+        "WORKSHOP LAB": {
+            "code": "25ES3ME101",
+            "name": "Workshop Practice Laboratory",
+            "faculty": [
+                "Mr. G. Samba Siva Rao",
+                "Mr. V. Rakesh"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "EM"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 3,
+                    "subject": "MP"
+                },
+                {
+                    "slot": 4,
+                    "subject": [
+                        "WORKSHOP LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 5,
+                    "subject": [
+                        "WORKSHOP LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 6,
+                    "subject": [
+                        "WORKSHOP LAB"
+                    ],
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "EC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "EC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "EC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "EM"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MP"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 2,
+                    "subject": "EM"
+                },
+                {
+                    "slot": 3,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 4,
+                    "subject": "MP"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ED"
+                },
+                {
+                    "slot": 6,
+                    "subject": "ES"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "MP"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 3,
+                    "subject": "EM"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ECA/CCA",
+                    "type": "activity"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MENTORING",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "LIBRARY",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "WORKSHOP LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 2,
+                    "subject": [
+                        "WORKSHOP LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 3,
+                    "subject": [
+                        "WORKSHOP LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "EM"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "SPORTS",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "ES"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ED"
+                },
+                {
+                    "slot": 3,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 4,
+                    "subject": "MP"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MTP",
+                    "type": "activity"
+                }
+            ]
+        }
+    ]
+}

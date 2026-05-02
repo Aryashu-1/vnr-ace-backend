@@ -1,0 +1,242 @@
+{
+    "metadata": {
+        "branch": "EEE",
+        "year": 1,
+        "semester": 2,
+        "regulation": "R25",
+        "section": "B",
+        "room_no": "D-202"
+    },
+    "subjects": {
+        "ODEVC": {
+            "code": "25BS1MT105",
+            "name": "Ordinary Differential Equations and Vector Calculus",
+            "faculty": [
+                "Dr. P. V. Siva Kumar"
+            ]
+        },
+        "EC-II": {
+            "code": "25BS1PH102",
+            "name": "Engineering Physics",
+            "faculty": [
+                "Dr. A. Kavitha"
+            ]
+        },
+        "CFE": {
+            "code": "25PC1EE102",
+            "name": "Circuit Fundamentals and Elements",
+            "faculty": [
+                "Dr. P. Suresh"
+            ]
+        },
+        "BEDC": {
+            "code": "25PC1EE103",
+            "name": "Basic Electrical Drives and Control",
+            "faculty": [
+                "Dr. S. Srikanth"
+            ]
+        },
+        "DS": {
+            "code": "25PC1EE104",
+            "name": "Digital Systems",
+            "faculty": [
+                "Mr. K. Akhil"
+            ]
+        },
+        "ED": {
+            "code": "25ES1ME101",
+            "name": "Engineering Drawing",
+            "faculty": [
+                "Mr. M. Sandeep"
+            ]
+        },
+        "ES": {
+            "code": "25MN6HS102",
+            "name": "Environmental Science",
+            "faculty": [
+                "Dr. G. Lalitha"
+            ]
+        },
+        "EC LAB": {
+            "code": "25BS2PH101",
+            "name": "Engineering Physics Laboratory",
+            "faculty": [
+                "Dr. A. Kavitha",
+                "Dr. B. Ramesh"
+            ]
+        },
+        "DS LAB": {
+            "code": "25PC2EE104",
+            "name": "Digital Systems Laboratory",
+            "faculty": [
+                "Mr. K. Akhil",
+                "Mr. N. Praveen"
+            ]
+        },
+        "BEDC LAB": {
+            "code": "25PC2EE103",
+            "name": "Electrical Drives and Control Lab",
+            "faculty": [
+                "Dr. S. Srikanth",
+                "Dr. M. Ramesh"
+            ]
+        },
+        "ELC LAB": {
+            "code": "25PC2EE105",
+            "name": "Electrical Circuits Lab",
+            "faculty": [
+                "Dr. P. Suresh",
+                "Mr. Ch. Vijay Kumar"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "ELC LAB",
+                        "BEDC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ED"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "DS"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "EC LAB",
+                        "DS LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "BEDC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "DS"
+                },
+                {
+                    "slot": 6,
+                    "subject": "CFE"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "DS"
+                },
+                {
+                    "slot": 2,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 3,
+                    "subject": "EC-II"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ED"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "BEDC"
+                },
+                {
+                    "slot": 2,
+                    "subject": "CFE"
+                },
+                {
+                    "slot": 3,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": [
+                        "DS LAB",
+                        "EC LAB"
+                    ],
+                    "type": "lab"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "BEDC LAB",
+                        "ELC LAB"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "EC-II"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "BEDC"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 2,
+                    "subject": "DS"
+                },
+                {
+                    "slot": 3,
+                    "subject": "CFE"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ES"
+                },
+                {
+                    "slot": 5,
+                    "subject": "MTP",
+                    "type": "activity"
+                }
+            ]
+        }
+    ]
+}

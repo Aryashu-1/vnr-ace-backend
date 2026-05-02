@@ -1,7 +1,7 @@
 # agents/placements/graphs.py
 
-from .chart_generator.graph import build_chart_generator_graph
-from .live_dashboard.graph import build_live_dashboard_graph
+from agents.archive.chart_generator.graph import build_chart_generator_graph
+from agents.archive.live_dashboard.graph import build_live_dashboard_graph
 from .resume_feedback.graph import build_resume_feedback_graph
 from .resume_editor.graph import build_resume_editor_graph
 from .shortlisting.graph import build_shortlisting_graph

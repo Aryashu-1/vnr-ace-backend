@@ -1,0 +1,237 @@
+{
+    "metadata": {
+        "branch": "CE",
+        "year": 1,
+        "semester": 2,
+        "regulation": "R25",
+        "section": "B",
+        "room_no": "D-114"
+    },
+    "subjects": {
+        "ODEVC": {
+            "code": "25BS1MT105",
+            "name": "Ordinary Differential Equations and Vector Calculus",
+            "faculty": [
+                "Dr. T. Kusuma"
+            ]
+        },
+        "EC": {
+            "code": "25BS1CH102",
+            "name": "Engineering Chemistry",
+            "faculty": [
+                "Dr. A. R. Balavardhana Rao"
+            ]
+        },
+        "SUV": {
+            "code": "25PC1CE102",
+            "name": "Surveying",
+            "faculty": [
+                "Dr. S. Sangeetha"
+            ]
+        },
+        "AM": {
+            "code": "25ES1CE101",
+            "name": "Applied Mechanics",
+            "faculty": [
+                "Dr. S. Rakesh"
+            ]
+        },
+        "BPC": {
+            "code": "25PC1CE103",
+            "name": "Building Planning and Construction",
+            "faculty": [
+                "Dr. D. Praseeda"
+            ]
+        },
+        "CAEG": {
+            "code": "25ES3CE101",
+            "name": "Computer Aided Engineering Graphics",
+            "faculty": [
+                "Dr. K. Veerendra Gopi",
+                "Ms. A. Jyothirmai",
+                "Ms. T. Bhavani"
+            ]
+        },
+        "ES": {
+            "code": "25MN6HS102",
+            "name": "Environmental Science",
+            "faculty": [
+                "Dr. P V S Gopiraghunadh"
+            ]
+        },
+        "EC Lab": {
+            "code": "25BS2CH101",
+            "name": "Engineering Chemistry Laboratory",
+            "faculty": [
+                "Dr. A. R. Balavardhana Rao",
+                "Dr. S. Pratyusha",
+                "Dr. Archana Kushwaha"
+            ]
+        },
+        "SUV Lab": {
+            "code": "25PC2CE102",
+            "name": "Surveying Laboratory",
+            "faculty": [
+                "Dr. S. Sangeetha",
+                "Dr. K. Sai Sahithya",
+                "Mr. S H Vamsi Krishna"
+            ]
+        }
+    },
+    "schedule": [
+        {
+            "day": "Monday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "SUV Lab",
+                        "EC Lab"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "SUV"
+                },
+                {
+                    "slot": 6,
+                    "subject": "AM"
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 2,
+                    "subject": "SUV"
+                },
+                {
+                    "slot": 3,
+                    "subject": "AM"
+                },
+                {
+                    "slot": 6,
+                    "subject": "CAEG"
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": [
+                        "EC Lab",
+                        "SUV Lab"
+                    ],
+                    "type": "lab"
+                },
+                {
+                    "slot": 4,
+                    "subject": "BPC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "ES"
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "AM"
+                },
+                {
+                    "slot": 2,
+                    "subject": "BPC"
+                },
+                {
+                    "slot": 3,
+                    "subject": "SUV"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ECA",
+                    "type": "activity"
+                },
+                {
+                    "slot": 6,
+                    "subject": "MTP",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "CAEG"
+                },
+                {
+                    "slot": 4,
+                    "subject": "SUV"
+                },
+                {
+                    "slot": 5,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "SPORTS",
+                    "type": "activity"
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "slots": [
+                {
+                    "slot": 1,
+                    "subject": "ES"
+                },
+                {
+                    "slot": 2,
+                    "subject": "AM"
+                },
+                {
+                    "slot": 3,
+                    "subject": "EC"
+                },
+                {
+                    "slot": 4,
+                    "subject": "ODEVC"
+                },
+                {
+                    "slot": 5,
+                    "subject": "BPC"
+                },
+                {
+                    "slot": 6,
+                    "subject": "CCA",
+                    "type": "activity"
+                }
+            ]
+        }
+    ]
+}

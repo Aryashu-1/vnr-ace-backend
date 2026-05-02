@@ -2,7 +2,7 @@
 
 AGENT_NAME = "classwork_report_generation"
 
-ALLOWED_ROLES = {"faculty", "hod"}
+ALLOWED_ROLES = {"faculty", "hod", "admin"}
 
 ALLOWED_REPORT_TYPES = {
     "student_list",

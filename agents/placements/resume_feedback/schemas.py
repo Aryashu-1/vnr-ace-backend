@@ -21,12 +21,19 @@ class ResumeFollowupAnswerOutput(BaseModel):
     answer: str
 
 
+class SectionFeedback(BaseModel):
+    score: float = Field(..., ge=0.0, le=10.0)
+    strengths: List[str] = Field(default_factory=list)
+    issues: List[str] = Field(default_factory=list)
+    suggestions: List[str] = Field(default_factory=list)
+    example_rewrites: List[str] = Field(default_factory=list)
+
+
 class StructuredResumeAnalysis(BaseModel):
-    summary: str
+    overall_score: float = Field(..., ge=0.0, le=100.0)
+    summary: List[str] = Field(default_factory=list)
     strengths: List[str] = Field(default_factory=list)
     weaknesses: List[str] = Field(default_factory=list)
-    missing_elements: List[str] = Field(default_factory=list)
-    improvement_suggestions: List[str] = Field(default_factory=list)
-    ats_notes: List[str] = Field(default_factory=list)
-    section_feedback: Dict[str, Any] = Field(default_factory=dict)
-    score_breakdown: Dict[str, Any] = Field(default_factory=dict)
+    ats_issues: List[str] = Field(default_factory=list)
+    priority_fixes: List[str] = Field(default_factory=list)
+    section_feedback: Dict[str, SectionFeedback] = Field(default_factory=dict)

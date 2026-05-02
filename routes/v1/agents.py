@@ -24,8 +24,9 @@ async def admissions_chat(
     db: AsyncSession = Depends(get_db)
 ):
     if not await check_input_guardrail(req.message):
-        return ChatResponse(reply="I cannot process this request due to safety guidelines.", route="blocked_input")
+        return ChatResponse(reply="I'm sorry, I cannot process this request as it seems to violate our safety guidelines. How can I help you with VNR admissions?", route="blocked_input")
 
+    # The messages list in state should ideally come from history, but here we provide the latest
     initial_state = {
         "message": req.message,
         "messages": [("human", req.message)],
@@ -35,6 +36,7 @@ async def admissions_chat(
     
     config = {"configurable": {"thread_id": req.thread_id}}
     try:
+        # LangGraph with checkpointer will merge 'messages' automatically
         result = await admissions_graph.ainvoke(initial_state, config=config)
     except LLMServiceError:
         fallback = AdmissionsDataService.build_fallback_response(req.message)
@@ -47,7 +49,7 @@ async def admissions_chat(
     reply = result.get("reply")
 
     if reply and not await check_output_guardrail(reply, req.message):
-        return ChatResponse(reply="I cannot provide a response due to safety guidelines.", route="blocked_output")
+        return ChatResponse(reply="I'm sorry, I cannot provide a detailed response for this specific query right now. Is there something else about VNR you'd like to know?", route="blocked_output")
 
     return ChatResponse(
         reply=reply,

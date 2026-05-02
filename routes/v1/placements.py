@@ -1,11 +1,11 @@
 import os
 import traceback
 import uuid
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile, status, Request
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ace_graphs.tp_admin_graph import tp_admin_agent
@@ -23,6 +23,7 @@ from models.placement_drive import PlacementDrive
 from models.placement_offer_v2 import PlacementOfferV2
 from models.profile import Profile
 from models.student import Student
+from models.placement_application import PlacementApplication
 from schemas.agents import ChatResponse
 from schemas.placements import (
     DashboardResponse,
@@ -79,14 +80,23 @@ async def _assert_resume_access(db: AsyncSession, current_user, resume_id: str) 
 
 @router.get("/stats", response_model=DashboardResponse)
 async def get_dashboard_stats(db: AsyncSession = Depends(get_db)):
-    snapshot = await db.scalar(
-        select(DashboardSnapshot).order_by(DashboardSnapshot.updated_at.desc()).limit(1)
-    )
+    # Calculate real-time stats
+    total_students = (await db.execute(select(func.count(Student.id)))).scalar() or 0
+    placed_students = (
+        await db.execute(select(func.count(func.distinct(PlacementOfferV2.student_id))))
+    ).scalar() or 0
+    placement_percentage = (placed_students / total_students * 100) if total_students > 0 else 0
+    highest_salary = (await db.execute(select(func.max(PlacementOfferV2.offered_ctc)))).scalar() or 0
+    average_salary = (await db.execute(select(func.avg(PlacementOfferV2.offered_ctc)))).scalar() or 0
+    unplaced_students = total_students - placed_students
+
+    # Also check if there are recent placements to show
     from models.department import Department
     recent_rows = (
         await db.execute(
             select(Profile.full_name, Department.name, Company.name, PlacementOfferV2.offered_ctc)
-            .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
+            .select_from(PlacementOfferV2)
+            .join(Student, Student.id == PlacementOfferV2.student_id)
             .join(PlacementDrive, PlacementDrive.id == PlacementOfferV2.drive_id)
             .join(Company, Company.id == PlacementDrive.company_id)
             .outerjoin(Profile, Profile.id == Student.profile_id)
@@ -96,33 +106,26 @@ async def get_dashboard_stats(db: AsyncSession = Depends(get_db)):
         )
     ).all()
 
-    if snapshot:
-        stats = [
-            PlacementStats(label="Total Placements", value=str(snapshot.placed_students)),
-            PlacementStats(label="Avg Package", value=f"{snapshot.avg_package:.1f} LPA"),
-            PlacementStats(label="Placement Rate", value=f"{snapshot.placement_rate:.1f}%"),
-            PlacementStats(label="Total Students", value=str(snapshot.total_students)),
-        ]
-        recent_placements = [
-            RecentPlacement(
-                name=name or "Unknown",
-                branch=branch or "Unknown",
-                company=company or "Unknown",
-                package=f"{(package or 0):.1f} LPA",
-            )
-            for name, branch, company, package in recent_rows
-        ]
-        return DashboardResponse(stats=stats, recent_placements=recent_placements)
+    stats = [
+        PlacementStats(label="Total Eligible Students", value=str(total_students)),
+        PlacementStats(label="Placed Students", value=str(placed_students)),
+        PlacementStats(label="Placement %", value=f"{placement_percentage:.1f}"),
+        PlacementStats(label="Highest Salary", value=f"{highest_salary:.1f}"),
+        PlacementStats(label="Average Salary", value=f"{average_salary:.1f}"),
+        PlacementStats(label="Unplaced Students", value=str(unplaced_students)),
+    ]
 
-    return DashboardResponse(
-        stats=[
-            PlacementStats(label="Total Placements", value="0"),
-            PlacementStats(label="Avg Package", value="0.0 LPA"),
-            PlacementStats(label="Placement Rate", value="0.0%"),
-            PlacementStats(label="Total Students", value="0"),
-        ],
-        recent_placements=[],
-    )
+    recent_placements = [
+        RecentPlacement(
+            name=name or "Unknown",
+            branch=branch or "Unknown",
+            company=company or "Unknown",
+            package=f"{(package or 0):.1f} LPA",
+        )
+        for name, branch, company, package in recent_rows
+    ]
+
+    return DashboardResponse(stats=stats, recent_placements=recent_placements)
 
 
 @router.post("/resume/upload", response_model=ResumeUploadResponse, status_code=status.HTTP_201_CREATED)
@@ -309,6 +312,52 @@ async def reanalyze_resume(
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+@router.post("/resume/{resume_id}/improve-all", response_model=ResumeMutationResponse)
+async def improve_all_resume(
+    resume_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        await _assert_resume_access(db, current_user, resume_id)
+        resume = await resume_editor_service.fetch_resume(db, resume_id)
+        
+        await resume_editor_service.improve_full_resume(db, resume=resume)
+        analysis = await resume_editor_service.reanalyze_resume(db, resume=resume)
+        await db.commit()
+        
+        detail = await resume_editor_service.build_resume_detail_payload(db, resume_id)
+        return ResumeMutationResponse(
+            message="All sections improved successfully.",
+            resume_id=detail["resume_id"],
+            structured_json=detail["structured_json"],
+            version=detail["versions"][0],
+            analysis=analysis,
+        )
+    except Exception as exc:
+        await db.rollback()
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/resume/{resume_id}/latex")
+async def get_resume_latex(
+    resume_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        from agents.placements.resume_editor.latex_generator import generate_latex_resume
+        await _assert_resume_access(db, current_user, resume_id)
+        resume = await resume_editor_service.fetch_resume(db, resume_id)
+        
+        latex_code = generate_latex_resume(resume.structured_json)
+        return {"latex": latex_code}
+    except Exception as exc:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 @router.post("/resume/analyze")
 async def analyze_resume(
     request: Request,
@@ -462,7 +511,9 @@ async def get_job_detail(
 
     # Check if user has already registered externally
     profile_id = await _profile_id_for_current_user(db, current_user)
-    student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    student = None
+    if profile_id:
+        student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
     
     is_registered_externally = False
     if student:
@@ -475,6 +526,10 @@ async def get_job_detail(
         if application:
             is_registered_externally = application.is_registered_externally
 
+    company_data = load_company_data(company_name) if company_name != "Unknown" else {}
+    experiences = company_data.get("experiences", [])
+
+    criteria = drive.criteria or {}
     return JobDetailResponse(
         id=str(drive.id),
         role=drive.role,
@@ -483,6 +538,15 @@ async def get_job_detail(
         external_registration_url=drive.external_registration_url,
         requires_external_registration=drive.requires_external_registration,
         is_registered_externally=is_registered_externally,
+        location=criteria.get("location"),
+        deadline=str(drive.deadline) if drive.deadline else None,
+        tags=criteria.get("tags", []),
+        description=criteria.get("description"),
+        criteria=criteria.get("eligibility"),
+        skills=criteria.get("skills", []),
+        examRounds=criteria.get("exam_rounds", []),
+        instructions=criteria.get("instructions", []),
+        experiences=experiences
     )
 
 
@@ -537,9 +601,25 @@ async def apply_for_job(
         raise HTTPException(status_code=404, detail="Job not found")
 
     profile_id = await _profile_id_for_current_user(db, current_user)
-    student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    student = None
+    if profile_id:
+        student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    
     if not student:
-        raise HTTPException(status_code=404, detail="Student profile not found")
+        raise HTTPException(status_code=404, detail="Student profile not found. Please ensure your profile is complete.")
+
+    # ONE JOB POLICY ENFORCEMENT
+    if student.placement_status == "placed":
+        current_salary = student.highest_package or 0.0
+        new_salary = drive.ctc or 0.0
+        
+        # Policy: Only allowed if new salary is 1.5x or more than current salary
+        if new_salary < (1.5 * current_salary):
+            raise HTTPException(
+                status_code=403, 
+                detail=f"One Job Policy: You are already placed at {current_salary} LPA. "
+                       f"You can only apply for jobs offering at least {1.5 * current_salary:.1f} LPA (1.5x)."
+            )
 
     application = await db.scalar(
         select(PlacementApplication).where(
@@ -552,16 +632,39 @@ async def apply_for_job(
         if not application or not application.is_registered_externally:
             raise HTTPException(status_code=403, detail="External registration required first")
 
+    # Fetch latest resume
+    resume_query = select(Resume).where(Resume.student_id == student.id).order_by(Resume.created_at.desc())
+    latest_resume = await db.scalar(resume_query)
+    
+    resume_url = None
+    if latest_resume and latest_resume.structured_json:
+        try:
+            from utils.pdf_utils import generate_resume_pdf
+            from utils.storage_utils import upload_to_supabase
+            
+            pdf_bytes = generate_resume_pdf(latest_resume.structured_json)
+            filename = f"resume_{student.roll_no or student.id}.pdf"
+            resume_url = await upload_to_supabase(pdf_bytes, filename)
+        except Exception as e:
+            print(f"Error generating or uploading PDF: {e}")
+            traceback.print_exc()
+
     if not application:
         application = PlacementApplication(
-            id=str(uuid.uuid4()),
+            id=uuid.uuid4(),
             student_id=student.id,
             drive_id=job_id,
             status="applied",
+            resume_url=resume_url,
+            created_at=func.now()
         )
         db.add(application)
     else:
-        application.status = "applied"
+        if application.status == "withdrawn":
+            application.status = "applied"
+            application.resume_url = resume_url
+        else:
+            raise HTTPException(status_code=400, detail="You have already applied for this job")
 
     await db.commit()
     return {"status": "success", "message": "Application submitted successfully"}
@@ -569,8 +672,7 @@ async def apply_for_job(
 
 @router.get("/policies", response_model=PolicyResponse)
 async def get_placement_policies():
-    # In a real app, these might come from a DB table 'placement_policies'
-    # For now, we'll return the standard VNR policies
+    from datetime import datetime
     return PolicyResponse(
         policies=[
             PolicyCategory(
@@ -584,8 +686,8 @@ async def get_placement_policies():
             PolicyCategory(
                 category="One Job Policy",
                 items=[
-                    "Once a student is placed in a company, they are not eligible for other companies unless the package difference is > 2 LPA.",
-                    "Dream offer policy applies for packages above 10 LPA."
+                    "Once a student is placed in a company, they are not eligible for other companies unless the package difference is > 1.5x.",
+                    "Dream offer policy applies for packages significantly higher than current CTC."
                 ]
             ),
             PolicyCategory(
@@ -598,3 +700,113 @@ async def get_placement_policies():
         ],
         last_updated=datetime.now()
     )
+
+
+@router.get("/jobs", response_model=List[JobDetailResponse])
+async def list_jobs(
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    query = select(PlacementDrive, Company.name).join(Company, Company.id == PlacementDrive.company_id)
+    result = await db.execute(query)
+    drives = result.all()
+
+    profile_id = await _profile_id_for_current_user(db, current_user)
+    student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    
+    user_apps = {}
+    if student:
+        apps = await db.execute(
+            select(PlacementApplication).where(PlacementApplication.student_id == student.id)
+        )
+        user_apps = {str(app.drive_id): app for app in apps.scalars().all()}
+
+    return [
+        JobDetailResponse(
+            id=str(drive.id),
+            role=drive.role,
+            ctc=drive.ctc,
+            company_name=company_name,
+            external_registration_url=drive.external_registration_url,
+            requires_external_registration=drive.requires_external_registration,
+            is_registered_externally=user_apps.get(str(drive.id)).is_registered_externally if user_apps.get(str(drive.id)) else False,
+            status=user_apps.get(str(drive.id)).status if user_apps.get(str(drive.id)) else "not_applied",
+            location=(drive.criteria or {}).get("location"),
+            deadline=str(drive.deadline) if drive.deadline else None,
+            tags=(drive.criteria or {}).get("tags", []),
+            description=(drive.criteria or {}).get("description"),
+            criteria=(drive.criteria or {}).get("eligibility"),
+            skills=(drive.criteria or {}).get("skills", []),
+            examRounds=(drive.criteria or {}).get("exam_rounds", []),
+            instructions=(drive.criteria or {}).get("instructions", [])
+        )
+        for drive, company_name in drives
+    ]
+
+
+@router.get("/my-applications")
+async def get_my_applications(
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    profile_id = await _profile_id_for_current_user(db, current_user)
+    student = None
+    if profile_id:
+        student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    
+    if not student:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+
+    query = (
+        select(PlacementApplication, PlacementDrive, Company.name)
+        .join(PlacementDrive, PlacementDrive.id == PlacementApplication.drive_id)
+        .join(Company, Company.id == PlacementDrive.company_id)
+        .where(PlacementApplication.student_id == student.id)
+    )
+    result = await db.execute(query)
+    rows = result.all()
+
+    return [
+        {
+            "application_id": str(app.id),
+            "job_id": str(drive.id),
+            "role": drive.role,
+            "company_name": company_name,
+            "ctc": drive.ctc,
+            "status": app.status,
+            "applied_at": app.created_at,
+        }
+        for app, drive, company_name in rows
+    ]
+
+
+@router.post("/withdraw/{job_id}")
+async def withdraw_application(
+    job_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    profile_id = await _profile_id_for_current_user(db, current_user)
+    student = None
+    if profile_id:
+        student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    
+    if not student:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+
+    application = await db.scalar(
+        select(PlacementApplication).where(
+            PlacementApplication.student_id == student.id,
+            PlacementApplication.drive_id == job_id
+        )
+    )
+
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    if application.status == "placed":
+        raise HTTPException(status_code=403, detail="Cannot withdraw after being placed")
+
+    application.status = "withdrawn"
+    await db.commit()
+    return {"status": "success", "message": "Application withdrawn successfully"}

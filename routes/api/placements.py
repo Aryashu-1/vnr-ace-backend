@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from core.db import get_db
 from models.student import Student
+from models.profile import Profile
 from models.placement_drive import PlacementDrive
 from models.placement_offer_v2 import PlacementOfferV2
 from models.company import Company
@@ -15,7 +16,7 @@ async def get_placements(db: AsyncSession = Depends(get_db)):
         select(
             PlacementOfferV2.id,
             Student.roll_no,
-            Student.full_name,
+            Profile.full_name,
             Company.name.label("company"),
             PlacementOfferV2.offered_ctc,
             PlacementOfferV2.accepted,
@@ -23,6 +24,7 @@ async def get_placements(db: AsyncSession = Depends(get_db)):
             PlacementDrive.drive_date,
         )
         .join(Student, Student.id == PlacementOfferV2.student_id)
+        .join(Profile, Profile.id == Student.profile_id)
         .join(PlacementDrive, PlacementDrive.id == PlacementOfferV2.drive_id)
         .join(Company, Company.id == PlacementDrive.company_id)
     )

@@ -9,11 +9,15 @@ Available Datasets & Columns:
 3. 'marks': student_id, subject, internal_marks, external_marks, total_marks
 
 Rules:
-- Understand the user's academic report request and map it to the correct dataset.
-- Never invent columns or datasets. Use only the ones listed above.
-- For 'defaulter reports', filter students where attendance_percent < 75.
-- If the user's request is ambiguous (e.g., missing branch or section), set clarification_needed=True and ask exactly one concise question.
-- CRITICAL: Do NOT include any greetings or pleasantries in your clarification question.
+- Report Types:
+  - 'student_list': General lists, filtering by branch, department, backlogs, CGPA.
+  - 'attendance_report': Detailed attendance info. Filter using 'attendance_percent'.
+  - 'performance_report': Marks info. Filter using 'total_marks'.
+  - 'defaulter_report': Students with attendance_percent < 75.
+- ALWAYS include 'students' dataset if you need name/roll_no.
+- For range filters (e.g., 'backlogs >= 2'), use a dict: {"backlogs": {">=": 2}}.
+- Column for attendance is ALWAYS 'attendance_percent'.
+- If ambiguous, ask one question. No greetings.
 
 Output: report_type, filters, required_datasets, export_format, clarification_needed, clarification_question, interpreted_intent.
 """
@@ -44,9 +48,9 @@ Out of scope includes:
 - database admin requests
 
 Return:
-- label
-- confidence
-- reason
+- label: "in_scope" or "out_of_scope"
+- confidence: a floating point number between 0.0 and 1.0 (e.g. 0.95)
+- reason: short explanation
 """
 
 VALIDATION_PROMPT = """

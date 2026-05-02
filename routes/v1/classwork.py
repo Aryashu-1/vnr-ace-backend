@@ -75,6 +75,13 @@ async def email_automation(
         
         if body.get("approval"):
             initial_state["human_approved"] = body.get("approval") == "approved"
+            # Allow manual overrides during approval
+            if body.get("recipients"):
+                initial_state["recipients"] = body.get("recipients")
+            if body.get("subject"):
+                initial_state["subject"] = body.get("subject")
+            if body.get("body"):
+                initial_state["body"] = body.get("body")
 
         result = await email_automation_graph.ainvoke(initial_state)
         return {
@@ -113,6 +120,10 @@ async def report_generation(
             "messages": [("human", query)],
             "audit_events": []
         }
+        
+        # Detect approval keywords
+        if query.lower() in ["approved", "yes", "proceed", "confirm", "approve"]:
+            initial_state["human_approved"] = True
         
         config = {"configurable": {"thread_id": thread_id}}
         result = await report_generation_graph.ainvoke(initial_state, config=config)

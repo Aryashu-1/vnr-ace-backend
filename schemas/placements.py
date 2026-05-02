@@ -96,12 +96,22 @@ class ResumeMutationResponse(BaseModel):
 
 class JobDetailResponse(BaseModel):
     id: str
-    role: str
+    role: Optional[str] = None
     ctc: Optional[float] = None
     company_name: str
     external_registration_url: Optional[str] = None
     requires_external_registration: bool = False
     is_registered_externally: bool = False
+    status: Optional[str] = "not_applied"
+    location: Optional[str] = None
+    deadline: Optional[str] = None
+    tags: List[str] = []
+    description: Optional[str] = None
+    criteria: Optional[Dict[str, Any]] = None
+    skills: List[str] = []
+    examRounds: List[Dict[str, Any]] = []
+    instructions: List[str] = []
+    experiences: List[Dict[str, Any]] = []
 
 class ExternalRegistrationVerifyRequest(BaseModel):
     external_registration_id: Optional[str] = None

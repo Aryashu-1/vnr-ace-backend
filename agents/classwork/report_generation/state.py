@@ -8,6 +8,8 @@ class ReportGenerationState(TypedDict, total=False):
     user_id: str
     user_name: str
     user_role: str
+    user_department_id: Optional[str]
+    user_department_name: Optional[str]
 
     # chat context
     user_query: str

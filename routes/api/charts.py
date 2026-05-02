@@ -10,6 +10,7 @@ from models.company import Company
 from models.placement_drive import PlacementDrive
 from models.placement_offer_v2 import PlacementOfferV2
 from models.student import Student
+from models.department import Department
 
 router = APIRouter(prefix="/charts", tags=["Charts API"])
 
@@ -29,13 +30,18 @@ async def get_placement_trend(db: AsyncSession = Depends(get_db)):
 @router.get("/branch-wise")
 async def get_branch_wise_stats(db: AsyncSession = Depends(get_db)):
     total_rows = (
-        await db.execute(select(Student.branch, func.count(Student.id)).group_by(Student.branch))
+        await db.execute(
+            select(Department.name, func.count(Student.id))
+            .join(Department, Student.department_id == Department.id)
+            .group_by(Department.name)
+        )
     ).all()
     placed_rows = (
         await db.execute(
-            select(Student.branch, func.count(func.distinct(Student.id)))
+            select(Department.name, func.count(func.distinct(Student.id)))
+            .join(Student, Student.department_id == Department.id)
             .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
-            .group_by(Student.branch)
+            .group_by(Department.name)
         )
     ).all()
     placed_map = {branch: count for branch, count in placed_rows}
@@ -133,18 +139,16 @@ If the query does not match any of these charts, reply with ONLY the word: unkno
 User Query: {query}
 """
 
-async def _process_dynamic_chart(query: str, db: AsyncSession):
-    try:
-        llm = get_llm(temperature=0)
-    except ValueError as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
-    prompt_template = PromptTemplate(template=CHART_PROMPT, input_variables=["query"])
-    chain = prompt_template | llm
+
+async def _process_dynamic_chart(query: str, db: AsyncSession):
+    from core.llm import call_llm
+    
+    prompt = CHART_PROMPT.format(query=query)
     
     try:
-        response = await chain.ainvoke({"query": query})
-        identifier = response.content.strip().lower()
+        response = await call_llm(prompt)
+        identifier = response.strip().lower()
         
         if identifier == "placement-trend":
             data = await get_placement_trend(db)
@@ -168,7 +172,9 @@ async def _process_dynamic_chart(query: str, db: AsyncSession):
             return {"error": "Could not identify a matching chart.", "chart": "unknown"}
             
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Chart Error: {str(e)}")
 
 @router.get("/dynamic")
 async def get_dynamic_chart(query: str, db: AsyncSession = Depends(get_db)):

@@ -37,7 +37,7 @@ def seed_passwords_and_admin():
 
         # 3. Add Admin user
         print("Adding admin user...")
-        admin_email = 'admina@vnr.com'
+        admin_email = 'admin@vnr.edu'
         
         cur.execute("SELECT id FROM profiles WHERE email = %s", (admin_email,))
         existing_admin = cur.fetchone()
@@ -51,7 +51,7 @@ def seed_passwords_and_admin():
             cur.execute("""
                 INSERT INTO profiles (id, full_name, email, user_type, hashed_password)
                 VALUES (%s, %s, %s, %s, %s)
-            """, (admin_id, 'System Administrator', admin_email, 'admin', admin_hash))
+            """, (admin_id, 'Admin', admin_email, 'admin', admin_hash))
             print("Admin user created.")
 
         conn.commit()

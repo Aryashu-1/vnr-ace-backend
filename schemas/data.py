@@ -1,18 +1,26 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List, Any
 from datetime import datetime
 
 class StudentBase(BaseModel):
-    roll_no: str
-    full_name: Optional[str] = None
+    rollNumber: str = Field(alias="roll_no", serialization_alias="rollNumber")
+    name: Optional[str] = Field(None, alias="full_name", serialization_alias="name")
     gender: Optional[str] = None
     branch: Optional[str] = None
     cgpa: Optional[float] = None
     minor_degree: Optional[str] = None
     intern_status: Optional[bool] = False
+    placed: bool = False
+    company: Optional[str] = None
+    salary: Optional[float] = Field(None, alias="highest_package", serialization_alias="salary")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True
+    )
 
 class StudentResponse(StudentBase):
-    id: str
+    id: Any
     created_at: Optional[datetime] = None
 
     class Config:
@@ -23,7 +31,7 @@ class CompanyBase(BaseModel):
     sector: Optional[str] = None
 
 class CompanyResponse(CompanyBase):
-    id: str
+    id: Any
 
     class Config:
         from_attributes = True

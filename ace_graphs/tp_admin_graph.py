@@ -8,6 +8,8 @@ from models.job_notification import JobNotification
 from models.student import Student
 from models.company import Company
 from models.placement import Placement
+from models.department import Department
+from models.profile import Profile
 import os
 import imaplib
 import email
@@ -15,6 +17,7 @@ from email.header import decode_header
 import json
 from bs4 import BeautifulSoup
 import asyncio
+from core.mail import email_service
 
 def clean_html(html_content: str) -> str:
     soup = BeautifulSoup(html_content, "html.parser")
@@ -140,15 +143,26 @@ async def shortlist_and_email_students_tool(company_name: str, role: str, min_cg
     """
     async for session in get_db():
         # Query matching students
-        stmt = select(Student).where(Student.cgpa >= min_cgpa).where(Student.branch.in_(allowed_branches))
+        stmt = (
+            select(Student)
+            .join(Department, Student.department_id == Department.id)
+            .join(Profile, Student.profile_id == Profile.id)
+            .where(Student.cgpa >= min_cgpa)
+            .where(Department.name.in_(allowed_branches))
+        )
         result = await session.execute(stmt)
         students = result.scalars().all()
         
-        count = len(students)
-        # Mock sending email
-        print(f"--> [MOCK EMAIL] Sent notification to {count} students for {company_name} - {role}.")
+        # Real sending
+        subject = f"New Job Opportunity: {role} at {company_name}"
+        body = f"Hello,\n\nA new job drive has been announced for {role} at {company_name}.\nCriteria: {min_cgpa} CGPA\n\nPlease check the portal for more details."
         
-        return f"Shortlisted and emailed {count} eligible students for {company_name} - {role}."
+        recipient_emails = [s.profile.email for s in students if s.profile and s.profile.email]
+        if recipient_emails:
+            email_service.send_email(recipient_emails, subject, body)
+            return f"Shortlisted and emailed {len(recipient_emails)} eligible students for {company_name} - {role}."
+        
+        return f"Shortlisted {count} students, but no valid emails found."
     return "Error: Could not connect to DB."
 
 @tool

@@ -36,6 +36,9 @@ class FacultyTimetableEnquiryState(TypedDict, total=False):
     sql_safe: bool
     sql_validation_issues: List[str]
 
+    # retrieval
+    data_strategy: Optional[str] # REUSE_DATA, SEARCH_DB, DYNAMIC_SQL
+    
     # result
     query_result_rows: List[Dict[str, Any]]
     result_count: int
