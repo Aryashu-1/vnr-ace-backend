@@ -1,6 +1,7 @@
 # agents/classwork/mail_automation/graph.py
 
 from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
 from .state import MailAutomationState
 from .nodes import *
 from functools import partial
