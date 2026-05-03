@@ -16,6 +16,28 @@ yarn-error.log*
 backend/.env
 frontend/.env
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+poetry.lock.bak
+
+# App specific
+tmp/
+artifacts/
+*.pdf
+*.docx
+*.xlsx
+*.zip
+
+# Keep Faiss indexes (overriding previous ignores if any)
+!**/faiss_index/
+!**/faiss_index/**
+
 # OS
 .DS_Store
 Thumbs.db

@@ -712,7 +712,9 @@ async def list_jobs(
     drives = result.all()
 
     profile_id = await _profile_id_for_current_user(db, current_user)
-    student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+    student = None
+    if profile_id:
+        student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
     
     user_apps = {}
     if student:
