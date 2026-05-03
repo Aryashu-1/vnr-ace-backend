@@ -123,6 +123,12 @@ async def send_node(state, email_service):
     if success:
         state["email_sent"] = True
         state["final_response"] = STANDARD_MESSAGES["sent_success"]
+        # Clear state after successful send to allow new drafts in the same thread
+        state["human_approved"] = False
+        state["approval_status"] = None
+        state["recipients"] = []
+        state["subject"] = None
+        state["body"] = None
     else:
         state["final_response"] = "Failed to send email. Please check configuration."
     return state

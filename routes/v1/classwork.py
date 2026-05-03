@@ -1,4 +1,5 @@
 import traceback
+import uuid
 from fastapi import APIRouter, Depends, HTTPException
 
 from core.deps import get_current_user, role_required
