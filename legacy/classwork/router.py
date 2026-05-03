@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from core.deps import role_required, get_current_user
+from core.deps import role_required, get_current_user, roles_required
 from core.guardrails import check_input_guardrail, check_output_guardrail
 from ace_graphs.classwork_graph import classwork_graph
 from ace_graphs.classwork_student_graph import classwork_student_graph
@@ -26,7 +26,7 @@ async def student_access(user = Depends(role_required("student"))):
 async def classwork_chat(
     body: dict,
     # current_user=Depends(get_current_user) # OLD DB-dependent auth
-    current_user=Depends(role_required("admin"))      # Requiring Admin for the Excel graph for now
+    current_user=Depends(roles_required(["admin", "faculty"]))      # Allowing Admin and Faculty
 ):
     """
     Process natural language queries about student data.
@@ -145,7 +145,7 @@ async def student_chat(
 # ---------------------------
 
 @router.post("/email-automation")
-async def email_automation(body: dict, current_user=Depends(role_required("admin"))):
+async def email_automation(body: dict, current_user=Depends(roles_required(["admin", "faculty"]))):
     """
     Agent for drafting and sending emails.
     """
@@ -155,7 +155,7 @@ async def email_automation(body: dict, current_user=Depends(role_required("admin
 
     initial_state = {
         "user_query": query,
-        "user_role": "admin",
+        "user_role": current_user.user_type,
         "user_id": current_user.id,
         "messages": [],
         "audit_events": []
@@ -210,7 +210,7 @@ async def faculty_enquiry(body: dict, current_user=Depends(get_current_user)):
     }
 
 @router.post("/report-generation")
-async def report_generation(body: dict, current_user=Depends(role_required("admin"))):
+async def report_generation(body: dict, current_user=Depends(roles_required(["admin", "faculty"]))):
     """
     Agent for generating complex reports and analyzing data.
     """
@@ -221,7 +221,7 @@ async def report_generation(body: dict, current_user=Depends(role_required("admi
     thread_id = body.get("thread_id", f"report_gen_{current_user.id}")
     initial_state = {
         "user_query": query,
-        "user_role": "admin",
+        "user_role": current_user.user_type,
         "user_id": current_user.id,
         "messages": [("human", query)],
         "audit_events": []

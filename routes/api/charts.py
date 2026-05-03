@@ -36,22 +36,26 @@ async def get_branch_wise_stats(db: AsyncSession = Depends(get_db)):
             .group_by(Department.name)
         )
     ).all()
-    placed_rows = (
+    
+    # Get placed counts and average salary
+    placed_stats = (
         await db.execute(
-            select(Department.name, func.count(func.distinct(Student.id)))
+            select(Department.name, func.count(func.distinct(Student.id)), func.avg(PlacementOfferV2.offered_ctc))
             .join(Student, Student.department_id == Department.id)
             .join(PlacementOfferV2, PlacementOfferV2.student_id == Student.id)
             .group_by(Department.name)
         )
     ).all()
-    placed_map = {branch: count for branch, count in placed_rows}
+    
+    stats_map = {branch: (count, avg) for branch, count, avg in placed_stats}
     result = []
     for branch, total in total_rows:
-        placed = placed_map.get(branch, 0)
+        placed, avg_salary = stats_map.get(branch, (0, 0))
         result.append({
             "name": branch or "UNKNOWN",
-            "value": placed,
+            "value": placed, # Number of students placed
             "total": total,
+            "avg_salary": round(avg_salary or 0, 2),
             "percentage": round((placed / total * 100), 2) if total else 0,
         })
     return result
@@ -124,20 +128,27 @@ class ChartQueryRequest(BaseModel):
     query: str
 
 CHART_PROMPT = """
-You are an intelligent router for a placement dashboard. The user is asking for a specific chart or data visualization.
-Match the user's query to one of the following available chart identifiers:
-- placement-trend : Shows the trend of placements over years/months.
-- branch-wise : Shows total vs placed students and percentage per branch.
-- salary-distribution : Shows how salaries are distributed into buckets (<5, 5-10, 10-15, >15 LPA).
-- company-wise : Shows the top hiring companies and placement counts.
-- minor-degree : Shows the impact of having a minor degree on placements.
-- multiple-offers : Shows the count of students with multiple offers.
+You are an expert AI data router for a VNR-ACE placement dashboard. Your job is to classify the user's natural language request into the most appropriate chart identifier.
 
-If the user's query matches one of these, reply with ONLY the exact identifier name from the list above. Do not include quotes, periods, or formatting.
-If the query does not match any of these charts, reply with ONLY the word: unknown
+Available Charts:
+1. placement-trend : Yearly/Monthly hiring trends. (Keywords: trend, over time, years, progress)
+2. branch-wise : Statistics per branch/department, including placement counts. (Keywords: branch, department, cse, ece, it, branch performance)
+3. salary-distribution : Global salary ranges and buckets. (Keywords: salary range, buckets, distribution, package spread)
+4. branch-salary : Average salary comparison between branches. (Keywords: average salary per branch, branch salary, which branch gets highest pay, cse avg package, package per department)
+5. company-wise : Top companies by hiring volume. (Keywords: top companies, who hired most, company stats)
+6. minor-degree : Success rate of students with vs without minor degrees. (Keywords: minor degree, impact of minor)
+7. multiple-offers : Count of students who secured more than one job. (Keywords: dual offers, 2+ jobs, multiple placements)
+
+Classification Rules:
+- If the user asks for "average salary of branches" or "package per department", use 'branch-salary'.
+- If they ask for "how many placed in CSE", use 'branch-wise'.
+- If they ask for "salary distribution" or "package buckets", use 'salary-distribution'.
+- Reply with ONLY the exact identifier name (e.g., 'branch-wise').
+- If no match is found, reply with 'unknown'.
 
 User Query: {query}
 """
+
 
 
 
@@ -156,6 +167,9 @@ async def _process_dynamic_chart(query: str, db: AsyncSession):
         elif identifier == "branch-wise":
             data = await get_branch_wise_stats(db)
             return {"chart": "branch-wise", "data": data}
+        elif identifier == "branch-salary":
+            data = await get_branch_wise_stats(db)
+            return {"chart": "branch-salary", "data": data}
         elif identifier == "salary-distribution":
             data = await get_salary_distribution(db)
             return {"chart": "salary-distribution", "data": data}

@@ -49,3 +49,17 @@ def role_required(required_role: str):
 
     return role_checker
 
+def roles_required(allowed_roles: list[str]):
+    async def role_checker(
+        profile: Profile = Depends(get_current_user),
+    ):
+        if profile.user_type not in allowed_roles:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Requires one of {allowed_roles} roles. Current: '{profile.user_type}'",
+            )
+
+        return profile
+
+    return role_checker
+
