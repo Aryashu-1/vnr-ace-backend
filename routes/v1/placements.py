@@ -707,43 +707,50 @@ async def list_jobs(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    query = select(PlacementDrive, Company.name).join(Company, Company.id == PlacementDrive.company_id)
-    result = await db.execute(query)
-    drives = result.all()
+    try:
+        query = select(PlacementDrive, Company.name).join(Company, Company.id == PlacementDrive.company_id)
+        result = await db.execute(query)
+        drives = result.all()
 
-    profile_id = await _profile_id_for_current_user(db, current_user)
-    student = None
-    if profile_id:
-        student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
-    
-    user_apps = {}
-    if student:
-        apps = await db.execute(
-            select(PlacementApplication).where(PlacementApplication.student_id == student.id)
-        )
-        user_apps = {str(app.drive_id): app for app in apps.scalars().all()}
+        profile_id = await _profile_id_for_current_user(db, current_user)
+        student = None
+        if profile_id:
+            try:
+                student = await db.scalar(select(Student).where(Student.profile_id == uuid.UUID(profile_id)))
+            except Exception:
+                student = None
+        
+        user_apps = {}
+        if student:
+            apps = await db.execute(
+                select(PlacementApplication).where(PlacementApplication.student_id == student.id)
+            )
+            user_apps = {str(app.drive_id): app for app in apps.scalars().all()}
 
-    return [
-        JobDetailResponse(
-            id=str(drive.id),
-            role=drive.role,
-            ctc=drive.ctc,
-            company_name=company_name,
-            external_registration_url=drive.external_registration_url,
-            requires_external_registration=drive.requires_external_registration,
-            is_registered_externally=user_apps.get(str(drive.id)).is_registered_externally if user_apps.get(str(drive.id)) else False,
-            status=user_apps.get(str(drive.id)).status if user_apps.get(str(drive.id)) else "not_applied",
-            location=(drive.criteria or {}).get("location"),
-            deadline=str(drive.deadline) if drive.deadline else None,
-            tags=(drive.criteria or {}).get("tags", []),
-            description=(drive.criteria or {}).get("description"),
-            criteria=(drive.criteria or {}).get("eligibility"),
-            skills=(drive.criteria or {}).get("skills", []),
-            examRounds=(drive.criteria or {}).get("exam_rounds", []),
-            instructions=(drive.criteria or {}).get("instructions", [])
-        )
-        for drive, company_name in drives
-    ]
+        return [
+            JobDetailResponse(
+                id=str(drive.id),
+                role=drive.role,
+                ctc=drive.ctc,
+                company_name=company_name,
+                external_registration_url=drive.external_registration_url,
+                requires_external_registration=drive.requires_external_registration,
+                is_registered_externally=getattr(user_apps.get(str(drive.id)), "is_registered_externally", False) if user_apps.get(str(drive.id)) else False,
+                status=getattr(user_apps.get(str(drive.id)), "status", "not_applied") if user_apps.get(str(drive.id)) else "not_applied",
+                location=(drive.criteria or {}).get("location"),
+                deadline=str(drive.deadline) if drive.deadline else None,
+                tags=(drive.criteria or {}).get("tags", []),
+                description=(drive.criteria or {}).get("description"),
+                criteria=(drive.criteria or {}).get("eligibility"),
+                skills=(drive.criteria or {}).get("skills", []),
+                examRounds=(drive.criteria or {}).get("exam_rounds", []),
+                instructions=(drive.criteria or {}).get("instructions", [])
+            )
+            for drive, company_name in drives
+        ]
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/my-applications")
