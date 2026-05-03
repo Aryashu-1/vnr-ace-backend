@@ -1,3 +1,4 @@
+import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -24,6 +25,34 @@ class EmailService:
             return False
 
         try:
+            # 1. Try Resend HTTP API (Hugging Face compatible)
+            resend_key = os.getenv("RESEND_API_KEY")
+            if resend_key:
+                try:
+                    import requests
+                    response = requests.post(
+                        "https://api.resend.com/emails",
+                        headers={
+                            "Authorization": f"Bearer {resend_key}",
+                            "Content-Type": "application/json"
+                        },
+                        json={
+                            "from": "VNR-ACE <onboarding@resend.dev>",
+                            "to": recipients,
+                            "subject": subject,
+                            "html": html_body or body.replace("\n", "<br>")
+                        },
+                        timeout=10
+                    )
+                    if response.status_code < 300:
+                        print("Successfully sent email via Resend HTTP API")
+                        return True
+                    else:
+                        print(f"Resend API failed: {response.text}")
+                except Exception as e_resend:
+                    print(f"Resend fallback error: {e_resend}")
+
+            # 2. Try SMTP (Will work locally, but fail on Hugging Face)
             msg = MIMEMultipart("alternative")
             msg["Subject"] = subject
             msg["From"] = user
@@ -37,8 +66,8 @@ class EmailService:
             # Connect and send - Try 587 (TLS) then 465 (SSL)
             try:
                 with smtplib.SMTP(settings.SMTP_SERVER, settings.SMTP_PORT, timeout=10) as server:
-                    server.set_debuglevel(1)  # Enable debug output for Hugging Face logs
-                    server.starttls()  # Secure the connection
+                    server.set_debuglevel(1)
+                    server.starttls()
                     server.login(user, password)
                     server.sendmail(user, recipients, msg.as_string())
                     print(f"Successfully sent email via Port {settings.SMTP_PORT}")
