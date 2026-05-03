@@ -326,7 +326,7 @@ async def resume_feedback(body: dict, current_user=Depends(get_current_user)):
 
     initial_state = {
         "user_query": query,
-        "user_role": current_user.role_id,
+        "user_role": current_user.user_type,
         "user_id": current_user.id,
         "resume_text": body.get("resume_text"),
         "resume_id": body.get("resume_id"),
@@ -373,7 +373,7 @@ async def shortlisting_agent_endpoint(body: dict, current_user=Depends(role_requ
 async def analyze_resume_direct(
     file: Optional[UploadFile] = File(None),
     resume_text: Optional[str] = Form(None),
-    # current_user=Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
     """
     Direct endpoint for detailed resume analysis.
@@ -450,7 +450,7 @@ class ResumeChatRequest(BaseModel):
 @router.post("/resume/chat")
 async def resume_chat(
     body: ResumeChatRequest,
-    # current_user=Depends(get_current_user)   # uncomment when auth is ready
+    current_user=Depends(get_current_user)   # enabled auth
 ):
     """
     Multi-turn contextual chat grounded on a prior resume analysis.
@@ -461,8 +461,8 @@ async def resume_chat(
       send back in the next request.
     """
     state = {
-        "user_id": 999,           # replace with current_user.id when auth enabled
-        "user_role": "student",
+        "user_id": current_user.id,
+        "user_role": current_user.user_type,
         "user_query": body.message,
         "structured_analysis": body.structured_analysis,
         "conversation_history": body.conversation_history,

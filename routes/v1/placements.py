@@ -1,6 +1,7 @@
 import os
 import traceback
 import uuid
+from datetime import datetime
 from typing import Optional, List
 
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile, status, Request
@@ -732,7 +733,7 @@ async def list_jobs(
                 id=str(drive.id),
                 role=drive.role,
                 ctc=drive.ctc,
-                company_name=company_name,
+                company_name=company_name or "Unknown Company",
                 external_registration_url=drive.external_registration_url,
                 requires_external_registration=drive.requires_external_registration,
                 is_registered_externally=getattr(user_apps.get(str(drive.id)), "is_registered_externally", False) if user_apps.get(str(drive.id)) else False,
