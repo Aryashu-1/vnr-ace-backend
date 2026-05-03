@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     
     # Use existing IMAP env vars as defaults
-    EMAIL_ACCOUNT: Optional[str] = None
-    EMAIL_PASSWORD: Optional[str] = None
+    EMAIL_ACCOUNT: Optional[str] = "aryataduri@gmail.com"
+    EMAIL_PASSWORD: Optional[str] = "rxfitsxqslvnqbdu"
     
     SMTP_USER: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None

@@ -46,4 +46,4 @@ def build_mail_graph(llm, email_service, audit_repo, sql_repo):
     g.add_edge("send", "audit")
     g.add_edge("audit", END)
 
-    return g.compile()
+    return g.compile(checkpointer=MemorySaver())

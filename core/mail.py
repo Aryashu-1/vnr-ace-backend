@@ -43,7 +43,7 @@ class EmailService:
             print(f"Successfully sent email to {len(recipients)} recipients.")
             return True
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            print(f"CRITICAL ERROR: Failed to send email: {e}")
             return False
 
 # Global instance
