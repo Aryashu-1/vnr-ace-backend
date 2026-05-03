@@ -83,7 +83,11 @@ async def email_automation(
             if body.get("body"):
                 initial_state["body"] = body.get("body")
 
-        result = await email_automation_graph.ainvoke(initial_state)
+        # Use persistence via thread_id
+        thread_id = body.get("thread_id", f"email_auto_{current_user.id}")
+        config = {"configurable": {"thread_id": thread_id}}
+
+        result = await email_automation_graph.ainvoke(initial_state, config=config)
         return {
             "reply": result.get("final_response"),
             "state": {
